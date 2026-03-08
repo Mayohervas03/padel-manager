@@ -1,0 +1,69 @@
+<div class="container mt-4 mb-5">
+  
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Gestión de Pistas</h2>
+    <button class="btn btn-primary" (click)="toggleFormulario()">
+      + Nueva Pista
+    </button>
+  </div>
+
+  <div class="card shadow-sm mb-4" *ngIf="mostrarFormulario">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Añadir Nueva Pista</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevaPista.nombre" placeholder="Ej: Pista Central">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Tipo</label>
+          <select class="form-select" [(ngModel)]="nuevaPista.tipo">
+            <option value="Indoor">Indoor</option>
+            <option value="Outdoor">Outdoor</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Precio (€/hora)</label>
+          <input type="number" class="form-control" [(ngModel)]="nuevaPista.precio">
+        </div>
+        <div class="col-12 mt-3 d-flex justify-content-end">
+          <button class="btn btn-success" (click)="guardarPista()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-striped table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pista of pistas">
+            <td>{{ pista.id }}</td>
+            <td><strong>{{ pista.nombre }}</strong></td>
+            <td>
+              <span class="badge" 
+                    [ngClass]="pista.tipo === 'Indoor' ? 'bg-info text-dark' : 'bg-warning text-dark'">
+                {{ pista.tipo }}
+              </span>
+            </td>
+            <td>{{ pista.precio }} €</td>
+          </tr>
+          
+          <tr *ngIf="pistas.length === 0">
+            <td colspan="4" class="text-center py-4">
+              Cargando datos o no hay pistas registradas...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

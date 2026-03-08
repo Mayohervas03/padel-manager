@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: padel_db
+    restart: always
+    environment:
+      POSTGRES_USER: padel_admin
+      POSTGRES_PASSWORD: padel_password
+      POSTGRES_DB: padel_club_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: padel_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres-db
+
+volumes:
+  postgres_data:

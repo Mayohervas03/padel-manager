@@ -1,0 +1,14 @@
+# Java / IntelliJ
+target/
+*.class
+.idea/
+*.iml
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+
+# Sistema
+.DS_Store
+Thumbs.db

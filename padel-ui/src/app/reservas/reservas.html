@@ -7,14 +7,7 @@
       <div class="card-body">
         <form (ngSubmit)="guardarReserva()">
           <div class="row g-3 align-items-end">
-            <div class="col-md-3">
-              <label for="usuarioId" class="form-label">Usuario</label>
-              <select class="form-select" id="usuarioId" name="usuarioId" [(ngModel)]="nuevaReserva.usuarioId" required>
-                <option [ngValue]="null">Selecciona usuario...</option>
-                <option *ngFor="let u of usuarios" [ngValue]="u.id">{{ u.nombre }}</option>
-              </select>
-            </div>
-            
+
             <div class="col-md-3">
               <label for="pistaId" class="form-label">Pista</label>
               <select class="form-select" id="pistaId" name="pistaId" [(ngModel)]="nuevaReserva.pistaId" required>

@@ -2,10 +2,16 @@ import { Routes } from '@angular/router';
 import { UsuariosComponent } from './usuarios/usuarios';
 import { PistasComponent } from './pistas/pistas';
 import { ReservasComponent } from './reservas/reservas';
+import { LoginComponent } from './login/login';
+import { RegisterComponent } from './register/register';
+import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
-  { path: 'usuarios', component: UsuariosComponent },
-  { path: 'pistas', component: PistasComponent },
-  { path: 'reservas', component: ReservasComponent },
-  { path: '', redirectTo: 'usuarios', pathMatch: 'full' }
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'usuarios', component: UsuariosComponent, canActivate: [authGuard] },
+  { path: 'pistas', component: PistasComponent, canActivate: [authGuard] },
+  { path: 'reservas', component: ReservasComponent, canActivate: [authGuard] },
+  { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
+  { path: '**', redirectTo: 'usuarios' }
 ];

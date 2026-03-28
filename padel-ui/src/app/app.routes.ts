@@ -4,14 +4,16 @@ import { PistasComponent } from './pistas/pistas';
 import { ReservasComponent } from './reservas/reservas';
 import { LoginComponent } from './login/login';
 import { RegisterComponent } from './register/register';
+import { DashboardComponent } from './dashboard/dashboard';
 import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'usuarios', component: UsuariosComponent, canActivate: [authGuard] },
   { path: 'pistas', component: PistasComponent, canActivate: [authGuard] },
   { path: 'reservas', component: ReservasComponent, canActivate: [authGuard] },
-  { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
-  { path: '**', redirectTo: 'usuarios' }
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: 'dashboard' }
 ];

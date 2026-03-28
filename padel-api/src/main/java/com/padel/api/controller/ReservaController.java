@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -40,6 +42,19 @@ public class ReservaController {
         
         // Asignarlo a la reserva directamente
         reserva.setUsuario(usuario);
+
+        // REGLAS DE NEGOCIO
+        if (reserva.getFecha().isBefore(LocalDate.now())) {
+            return ResponseEntity.badRequest().body("No puedes reservar en una fecha pasada.");
+        }
+
+        if (reserva.getHora() < 9 || reserva.getHora() > 23) {
+            return ResponseEntity.badRequest().body("El horario del club es de 09:00 a 23:00.");
+        }
+
+        if (reserva.getFecha().isEqual(LocalDate.now()) && reserva.getHora() <= LocalTime.now().getHour()) {
+            return ResponseEntity.badRequest().body("Esa hora ya ha pasado en el día de hoy.");
+        }
 
         // VALIDACIÓN ROBUSTA: Usamos IDs
         boolean ocupada = reservaRepository.existsByPistaIdAndFechaAndHora(

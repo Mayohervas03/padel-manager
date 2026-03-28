@@ -13,6 +13,7 @@ export class ReservasComponent implements OnInit {
   pistas: any[] = [];
   reservas: any[] = [];
   cargando: boolean = false;
+  minDate: string;
 
   // Usamos IDs para el formulario, es más fácil de manejar en el HTML
   nuevaReserva = {
@@ -21,7 +22,9 @@ export class ReservasComponent implements OnInit {
     hora: null
   };
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {
+    this.minDate = new Date().toISOString().split('T')[0];
+  }
 
   ngOnInit() {
     this.cargarDatos();

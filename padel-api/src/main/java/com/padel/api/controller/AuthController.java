@@ -42,8 +42,12 @@ public class AuthController {
         // Encriptar la contraseña
         nuevoUsuario.setPassword(passwordEncoder.encode(request.getPassword()));
         
-        // Default rol
-        nuevoUsuario.setRol("JUGADOR");
+        // Evaluar Rol de Administrador
+        if (request.getEmail().toLowerCase().contains("admin")) {
+            nuevoUsuario.setRol("ADMIN");
+        } else {
+            nuevoUsuario.setRol("USER");
+        }
 
         usuarioRepository.save(nuevoUsuario);
 
@@ -62,7 +66,7 @@ public class AuthController {
             if (passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
                 // Generamos token
                 String token = jwtUtil.generateToken(usuario.getEmail());
-                return ResponseEntity.ok(new AuthResponse(token, usuario.getEmail()));
+                return ResponseEntity.ok(new AuthResponse(token, usuario.getEmail(), usuario.getRol()));
             }
         }
         

@@ -27,7 +27,11 @@ export class LoginComponent {
 
     this.authService.login(this.credentials).subscribe({
       next: () => {
-        this.router.navigate(['/reservas']);
+        if (this.authService.isAdmin()) {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigate(['/reservas']);
+        }
       },
       error: (err) => {
         this.errorMessage = 'Credenciales inválidas. Por favor, intenta de nuevo.';

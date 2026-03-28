@@ -24,11 +24,19 @@ public class ReservaController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Listar todas las reservas
+    // Listar reservas (ADMIN = Todas, USER = Solo las suyas)
     @GetMapping
     public List<Reserva> listarReservas() {
-        List<Reserva> lista = reservaRepository.findAll();
-        System.out.println("Enviando " + lista.size() + " reservas al frontend");
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow();
+        
+        List<Reserva> lista;
+        if ("ADMIN".equals(usuario.getRol())) {
+            lista = reservaRepository.findAll();
+        } else {
+            lista = reservaRepository.findByUsuarioEmail(email);
+        }
+        
         return lista;
     }
 

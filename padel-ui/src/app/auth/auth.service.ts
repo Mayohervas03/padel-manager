@@ -10,6 +10,7 @@ export class AuthService {
 
   private apiUrl = 'http://localhost:8080/api/auth';
   private tokenKey = 'padel_token';
+  private roleKey = 'padel_role';
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -22,6 +23,9 @@ export class AuthService {
       tap(response => {
         if (response && response.token) {
           this.setToken(response.token);
+          if (response.rol) {
+            localStorage.setItem(this.roleKey, response.rol);
+          }
         }
       })
     );
@@ -39,8 +43,17 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  getRole(): string | null {
+    return localStorage.getItem(this.roleKey);
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'ADMIN';
+  }
+
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.roleKey);
     this.router.navigate(['/login']);
   }
 }

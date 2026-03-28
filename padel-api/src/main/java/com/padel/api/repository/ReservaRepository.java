@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     boolean existsByPistaIdAndFechaAndHora(Long pistaId, java.time.LocalDate fecha, Integer hora);
     long countByFecha(java.time.LocalDate fecha);
+    java.util.List<Reserva> findByUsuarioEmail(String email);
 }

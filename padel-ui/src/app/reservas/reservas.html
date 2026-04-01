@@ -1,74 +1,107 @@
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="card">
-      <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Nueva Reserva</h5>
-      </div>
-      <div class="card-body">
-        <form (ngSubmit)="guardarReserva()">
-          <div class="row g-3 align-items-end">
+<div class="reservas-layout">
+  <!-- Cabecera -->
+  <div class="header-section text-center mb-5">
+    <h2 class="title-oswald text-primary">RESERVA TU PISTA</h2>
+    <p class="text-muted">Elige fecha, hora y pista al instante</p>
+  </div>
 
-            <div class="col-md-3">
-              <label for="pistaId" class="form-label">Pista</label>
-              <select class="form-select" id="pistaId" name="pistaId" [(ngModel)]="nuevaReserva.pistaId" required>
-                <option [ngValue]="null">Selecciona pista...</option>
-                <option *ngFor="let p of pistas" [ngValue]="p.id">{{ p.nombre }}</option>
-              </select>
-            </div>
-            
-            <div class="col-md-2">
-              <label for="fecha" class="form-label">Fecha</label>
-              <input type="date" class="form-control" id="fecha" name="fecha" [(ngModel)]="nuevaReserva.fecha" [min]="minDate" required>
-            </div>
-            
-            <div class="col-md-2">
-              <label for="hora" class="form-label">Hora (9-23)</label>
-              <input type="number" class="form-control" id="hora" name="hora" [(ngModel)]="nuevaReserva.hora" min="9" max="23" required>
-            </div>
-
-            <div class="col-md-2">
-              <button type="submit" class="btn btn-success w-100" [disabled]="cargando">
-                {{ cargando ? '⏳ Guardando...' : 'Guardar Reserva' }}
-              </button>
-            </div>
-          </div>
-        </form>
+  <!-- Paso 1: Día -->
+  <div class="step-section">
+    <h4 class="title-oswald text-primary">1. Elige Fecha</h4>
+    <div class="scroller-dias">
+      <div 
+        *ngFor="let dia of diasDisponibles" 
+        class="chip-dia" 
+        [class.activa]="fechaSeleccionada === dia.fecha"
+        (click)="seleccionarDia(dia.fecha)"
+      >
+        <span class="dia-letra">{{ dia.diaLetra }}</span>
+        <span class="dia-num">{{ dia.diaNum }}</span>
+        <span class="dia-mes">{{ dia.mes }}</span>
       </div>
     </div>
   </div>
+
+  <!-- Paso 2: Hora -->
+  <div class="step-section mt-4" *ngIf="fechaSeleccionada">
+    <h4 class="title-oswald text-primary">2. Elige Hora <span class="text-muted fs-6" style="font-family: Roboto;">({{ fechaSeleccionada }})</span></h4>
+    <div class="grid-horas">
+      <div 
+        *ngFor="let hora of horasDisponibles" 
+        class="chip-hora" 
+        [class.activa]="horaSeleccionada === hora"
+        (click)="seleccionarHora(hora)"
+      >
+        {{ hora }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Paso 3: Pista y Confirmar -->
+  <div class="step-section mt-4" *ngIf="fechaSeleccionada && horaSeleccionada">
+    <h4 *ngIf="pistasDisponibles.length > 0">3. Selecciona una Pista</h4>
+    
+    <div *ngIf="pistasDisponibles.length === 0" class="alert alert-warning">
+      Lo sentimos, no hay pistas disponibles a esa hora. Prueba con otro horario.
+    </div>
+
+    <div class="grid-pistas" *ngIf="pistasDisponibles.length > 0">
+      <div 
+        *ngFor="let pista of pistasDisponibles" 
+        class="court-card"
+        [class.activa]="pistaSeleccionada?.id === pista.id"
+        (click)="seleccionarPista(pista)"
+      >
+        <div class="court-img">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-layout-wtf" viewBox="0 0 16 16">
+              <path d="M5 1v8H1V1h4zM1 10h4v5H1v-5zm5 0h9v5H6v-5zm0-9h9v8H6V1z"/>
+            </svg>
+        </div>
+        <div class="court-info">
+            <h5>{{ pista.nombre }}</h5>
+            <p>Indoor | Cristal</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón Confirmar Flotante / Inferior -->
+    <div class="confirm-bar mt-4" *ngIf="pistaSeleccionada">
+       <button class="btn-confirmar" (click)="guardarReserva()" [disabled]="cargando">
+           {{ cargando ? 'Espera...' : 'Confirmar ' + pistaSeleccionada.nombre + ' a las ' + horaSeleccionada }}
+       </button>
+    </div>
+  </div>
+
 </div>
 
-<div class="row">
+<!-- Mis Reservas (Mantenido abajo) -->
+<div class="row mt-5 pt-4 border-top">
   <div class="col-12">
-    <div class="card">
-      <div class="card-header bg-secondary text-white">
-        <h5 class="mb-0">Listado de Reservas</h5>
+    <div class="card shadow-sm border-0 reservas-layout" style="padding: 0;">
+      <div class="card-header bg-white border-bottom-0 py-3">
+        <h5 class="mb-0 text-primary title-oswald" style="padding-left: 1rem;">TUS RESERVAS</h5>
       </div>
-      <div class="card-body table-responsive">
-        <table class="table table-striped table-hover align-middle">
-          <thead>
+      <div class="card-body p-0 table-responsive p-3">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
             <tr>
-              <th>ID</th>
-              <th>Usuario</th>
-              <th>Pista</th>
+              <th class="ps-4">Pista</th>
               <th>Fecha</th>
               <th>Hora</th>
-              <th class="text-end">Acciones</th>
+              <th class="text-end pe-4">Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let reserva of reservas">
-              <td>{{ reserva.id }}</td>
-              <td>{{ reserva.usuario?.nombre }}</td>
-              <td>{{ reserva.pista?.nombre }}</td>
+              <td class="ps-4 fw-bold">{{ reserva.pista?.nombre }}</td>
               <td>{{ reserva.fecha }}</td>
-              <td>{{ reserva.hora }}:00</td>
-              <td class="text-end">
-                <button class="btn btn-danger btn-sm" (click)="borrarReserva(reserva.id)">Eliminar</button>
+              <td>{{ reserva.hora | slice:0:5 }}</td>
+              <td class="text-end pe-4">
+                <button class="btn btn-outline-danger btn-sm rounded-pill" (click)="borrarReserva(reserva.id)">Cancelar</button>
               </td>
             </tr>
             <tr *ngIf="reservas.length === 0">
-              <td colspan="6" class="text-center text-muted">No hay reservas registradas.</td>
+              <td colspan="4" class="text-center text-muted py-4">Aún no tienes reservas futuras.</td>
             </tr>
           </tbody>
         </table>

@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @RestController
 @RequestMapping("/api/pistas")
@@ -19,6 +22,13 @@ public class PistaController {
     @GetMapping
     public List<Pista> listarPistas() {
         return pistaRepository.findAll();
+    }
+
+    @GetMapping("/disponibles")
+    public List<Pista> getPistasDisponibles(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime hora) {
+        return pistaRepository.findDisponibles(fecha, hora);
     }
 
     @PostMapping

@@ -3,7 +3,7 @@ package com.padel.api.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
-
+import java.time.LocalTime;
 @Entity
 @Data
 @Table(name = "reservas")
@@ -13,8 +13,8 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate fecha; // Ej: 2023-10-20
-    private Integer hora;    // Ej: 10 (significa las 10:00)
+    private LocalDate fecha;
+    private LocalTime hora;
 
     // Conectamos con el Usuario (Muchas reservas pueden ser de un Usuario)
     @ManyToOne

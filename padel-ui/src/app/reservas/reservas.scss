@@ -1,0 +1,207 @@
+/* Paleta de colores */
+$primary-blue: #004e92;
+$accent-yellow: #ccff00;
+$text-dark: #333333;
+$bg-light: #f4f6f7;
+$border-color: #e0e0e0;
+
+.reservas-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-family: 'Roboto', sans-serif;
+}
+
+.title-oswald {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.text-primary { color: $primary-blue !important; }
+
+/* Scroller Horizontal Días */
+.scroller-dias {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 5px 20px 5px;
+    
+    /* Scrollbar estilizada */
+    &::-webkit-scrollbar {
+        height: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 20px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #004e92;
+        border-radius: 20px;
+    }
+    scrollbar-width: thin;
+    scrollbar-color: #004e92 rgba(0, 0, 0, 0.03);
+}
+
+.chip-dia {
+    flex: 0 0 auto;
+    width: 70px;
+    height: 90px;
+    background: white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+    .dia-letra { font-size: 0.85rem; color: #777; text-transform: uppercase; font-weight: bold; }
+    .dia-num { font-size: 1.8rem; font-weight: 700; color: $text-dark; line-height: 1; margin: 4px 0; font-family: 'Oswald', sans-serif; }
+    .dia-mes { font-size: 0.8rem; color: #777; font-weight: 500;}
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-color: $primary-blue;
+    }
+
+    &.activa {
+        background: $primary-blue;
+        border-color: $primary-blue;
+        
+        .dia-letra, .dia-mes { color: white; opacity: 0.9; }
+        .dia-num { color: $accent-yellow; }
+    }
+}
+
+.step-section {
+    h4 {
+        font-family: 'Oswald', sans-serif;
+        color: $primary-blue;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Grid de Horas */
+.grid-horas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+}
+
+.chip-hora {
+    background: white;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    padding: 12px 0;
+    text-align: center;
+    font-weight: 700;
+    color: $text-dark;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: $primary-blue;
+        color: $primary-blue;
+    }
+
+    &.activa {
+        background: $primary-blue;
+        color: $accent-yellow;
+        border-color: $primary-blue;
+        box-shadow: 0 4px 8px rgba(0,78,146,0.3);
+    }
+}
+
+/* Tarjetas de Pistas */
+.grid-pistas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.court-card {
+    background: white;
+    border: 2px solid $border-color;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .court-img {
+        width: 60px;
+        height: 60px;
+        background: #f0f4f8;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: $primary-blue;
+    }
+
+    .court-info h5 {
+        margin: 0;
+        font-family: 'Oswald', sans-serif;
+        color: $primary-blue;
+    }
+    
+    .court-info p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    &:hover {
+        border-color: rgba(0, 78, 146, 0.5);
+    }
+
+    &.activa {
+        border-color: $primary-blue;
+        background: rgba(0, 78, 146, 0.03);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        
+        .court-img {
+            background: $primary-blue;
+            color: $accent-yellow;
+        }
+    }
+}
+
+/* Botón Confirmar */
+.confirm-bar {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.btn-confirmar {
+    background: $primary-blue;
+    color: white;
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(0,78,146,0.4);
+    transition: all 0.3s;
+    cursor: pointer;
+
+    &:hover {
+        background: #003366;
+        transform: translateY(-2px);
+    }
+    
+    &:disabled {
+        background: #999;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+}

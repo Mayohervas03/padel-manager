@@ -3,6 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+interface Dia {
+  fecha: string;
+  diaLetra: string;
+  diaNum: number;
+  mes: string;
+}
+
 @Component({
   selector: 'app-reservas',
   imports: [CommonModule, FormsModule],
@@ -10,35 +17,79 @@ import { CommonModule } from '@angular/common';
   styleUrl: './reservas.scss',
 })
 export class ReservasComponent implements OnInit {
-  pistas: any[] = [];
+  diasDisponibles: Dia[] = [];
+  horasDisponibles: string[] = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30', '21:00', '22:30'];
+  
+  fechaSeleccionada: string | null = null;
+  horaSeleccionada: string | null = null;
+  pistaSeleccionada: any = null;
+
+  pistasDisponibles: any[] = [];
   reservas: any[] = [];
   cargando: boolean = false;
-  minDate: string;
 
-  // Usamos IDs para el formulario, es más fácil de manejar en el HTML
-  nuevaReserva = {
-    pistaId: null,
-    fecha: '',
-    hora: null
-  };
-
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {
-    this.minDate = new Date().toISOString().split('T')[0];
-  }
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.cargarDatos();
+    this.generarDias();
+    this.cargarMisReservas();
   }
 
-  cargarDatos() {
-    this.http.get<any[]>('http://localhost:8080/api/pistas').subscribe(
-      data => {
-        this.pistas = data;
-        this.cdr.detectChanges();
-      },
-      error => console.error("Error cargando pistas:", error)
-    );
+  generarDias() {
+    const nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const nombresMeses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
+    for (let i = 0; i < 14; i++) {
+        let date = new Date();
+        date.setDate(date.getDate() + i);
+        
+        let localISO = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        
+        this.diasDisponibles.push({
+            fecha: localISO,
+            diaLetra: nombresDias[date.getDay()],
+            diaNum: date.getDate(),
+            mes: nombresMeses[date.getMonth()]
+        });
+    }
+  }
+
+  seleccionarDia(fecha: string) {
+    this.fechaSeleccionada = fecha;
+    this.pistaSeleccionada = null;
+    this.comprobarDisponibilidad();
+  }
+
+  seleccionarHora(hora: string) {
+    this.horaSeleccionada = hora;
+    this.pistaSeleccionada = null;
+    this.comprobarDisponibilidad();
+  }
+
+  seleccionarPista(pista: any) {
+    this.pistaSeleccionada = pista;
+  }
+
+  comprobarDisponibilidad() {
+      if (this.fechaSeleccionada && this.horaSeleccionada) {
+          const url = `http://localhost:8080/api/pistas/disponibles?fecha=${this.fechaSeleccionada}&hora=${this.horaSeleccionada}:00`;
+          console.log(`Consultando disponibilidad -> ${url}`);
+          
+          this.http.get<any[]>(url)
+            .subscribe({
+                next: (data) => {
+                    console.log("Pistas libres recibidas desde BD:", data);
+                    this.pistasDisponibles = data;
+                    this.cdr.detectChanges();
+                },
+                error: (err) => console.error("Error obteniendo disponibilidad", err)
+            });
+      } else {
+          this.pistasDisponibles = [];
+      }
+  }
+
+  cargarMisReservas() {
     this.http.get<any[]>('http://localhost:8080/api/reservas').subscribe(
       data => {
         this.reservas = data;
@@ -49,46 +100,50 @@ export class ReservasComponent implements OnInit {
   }
 
   guardarReserva() {
-    if (!this.nuevaReserva.pistaId || !this.nuevaReserva.fecha || this.nuevaReserva.hora == null) {
-      alert("Por favor rellena todos los campos.");
+    if (!this.pistaSeleccionada || !this.fechaSeleccionada || !this.horaSeleccionada) {
       return;
     }
 
     this.cargando = true;
 
-    // Convertimos los IDs simples en los objetos que espera Java
     const reservaData = {
-      pista: { id: Number(this.nuevaReserva.pistaId) },
-      fecha: this.nuevaReserva.fecha,
-      hora: Number(this.nuevaReserva.hora)
+      pista: { id: this.pistaSeleccionada.id },
+      fecha: this.fechaSeleccionada,
+      hora: `${this.horaSeleccionada}:00`
     };
 
     this.http.post('http://localhost:8080/api/reservas', reservaData).subscribe({
       next: () => {
-        // Limpiamos el formulario en caso de éxito
-        this.nuevaReserva = { pistaId: null, fecha: '', hora: null };
-        this.cargarDatos(); // Recargamos la tabla
+        alert("¡Reserva confirmada con éxito!");
+        this.resetearFlujo();
+        this.cargarMisReservas();
       },
       error: (err) => {
         console.error("Error al guardar reserva:", err);
         if (err.status === 400) {
-          alert(err.error); 
+           alert(err.error); 
         } else {
-          alert("Ocurrió un error inesperado. Mira la consola para más detalles.");
+           alert("Ocurrió un error inesperado.");
         }
       }
     }).add(() => {
-      // Se ejecuta siempre, tanto si hay error como si no, asegurando que se desbloquee
       this.cargando = false;
+      this.cdr.detectChanges();
     });
+  }
+
+  resetearFlujo() {
+      this.fechaSeleccionada = null;
+      this.horaSeleccionada = null;
+      this.pistaSeleccionada = null;
+      this.pistasDisponibles = [];
   }
 
   borrarReserva(id: number) {
     if (confirm("¿Estás seguro de que quieres cancelar esta reserva?")) {
       this.http.delete(`http://localhost:8080/api/reservas/${id}`).subscribe({
         next: () => {
-          this.cargarDatos();
-          this.cdr.detectChanges();
+          this.cargarMisReservas();
         },
         error: (err) => {
           console.error("Error al borrar reserva:", err);

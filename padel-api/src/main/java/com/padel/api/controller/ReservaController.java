@@ -56,11 +56,11 @@ public class ReservaController {
             return ResponseEntity.badRequest().body("No puedes reservar en una fecha pasada.");
         }
 
-        if (reserva.getHora() < 9 || reserva.getHora() > 23) {
+        if (reserva.getHora().isBefore(LocalTime.of(9, 0)) || reserva.getHora().isAfter(LocalTime.of(23, 0))) {
             return ResponseEntity.badRequest().body("El horario del club es de 09:00 a 23:00.");
         }
 
-        if (reserva.getFecha().isEqual(LocalDate.now()) && reserva.getHora() <= LocalTime.now().getHour()) {
+        if (reserva.getFecha().isEqual(LocalDate.now()) && !reserva.getHora().isAfter(LocalTime.now())) {
             return ResponseEntity.badRequest().body("Esa hora ya ha pasado en el día de hoy.");
         }
 

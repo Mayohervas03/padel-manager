@@ -1,0 +1,65 @@
+/* pistas.scss */
+.card-neon {
+  background-color: var(--bg-card);
+  border: 1px solid rgba(0, 208, 132, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.text-accent {
+  color: var(--accent-neon);
+  text-shadow: 0 0 5px rgba(0, 208, 132, 0.3);
+}
+
+.label-neon {
+  color: var(--accent-neon);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.input-neon {
+  background-color: var(--bg-dark-app) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-light) !important;
+  transition: all 0.3s ease;
+
+  &:focus {
+    border-color: var(--accent-neon) !important;
+    box-shadow: 0 0 8px rgba(0, 208, 132, 0.5) !important;
+  }
+}
+
+.btn-action {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s;
+  
+  &:hover {
+    background: rgba(0, 208, 132, 0.2);
+    border-color: var(--accent-neon);
+    transform: translateY(-2px);
+  }
+}
+
+.badge-indoor {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.badge-outdoor {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+/* Custom Table fixes for Dark Mode inside card-neon */
+.table-dark {
+  background-color: transparent !important;
+  --bs-table-bg: transparent;
+}
+.table-dark tbody tr td {
+  border-bottom-color: rgba(255,255,255,0.05);
+  vertical-align: middle;
+}

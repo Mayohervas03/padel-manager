@@ -1,40 +1,22 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" routerLink="/">🎾 Padel Manager</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
-      <ul class="navbar-nav" *ngIf="authService.isLoggedIn()">
-        <li class="nav-item" *ngIf="authService.isAdmin()">
-          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Inicio</a>
-        </li>
-        <li class="nav-item" *ngIf="authService.isAdmin()">
-          <a class="nav-link" routerLink="/usuarios" routerLinkActive="active">Usuarios</a>
-        </li>
-        <li class="nav-item" *ngIf="authService.isAdmin()">
-          <a class="nav-link" routerLink="/pistas" routerLinkActive="active">Pistas</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/reservas" routerLinkActive="active">Reservas</a>
-        </li>
-      </ul>
-      
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item" *ngIf="!authService.isLoggedIn()">
-          <a class="nav-link" routerLink="/login" routerLinkActive="active">Iniciar Sesión</a>
-        </li>
-        <li class="nav-item" *ngIf="!authService.isLoggedIn()">
-          <a class="btn btn-primary" routerLink="/register">Registrarse</a>
-        </li>
-        <li class="nav-item" *ngIf="authService.isLoggedIn()">
-          <button class="btn btn-outline-danger btn-sm mt-1 ms-2" (click)="logout()">Cerrar Sesión</button>
-        </li>
-      </ul>
-    </div>
+<header id="main-header">
+  <div class="nav-container">
+    <div id="logo">ÉLITE PADEL</div>
+    <nav>
+        <ul>
+            <li *ngIf="authService.isLoggedIn()"><a routerLink="/home" routerLinkActive="active">Inicio</a></li>
+            <li *ngIf="authService.isLoggedIn()"><a routerLink="/reservas" routerLinkActive="active">Reservas</a></li>
+            <li *ngIf="authService.isLoggedIn()"><a routerLink="/clases" routerLinkActive="active">Clases</a></li>
+            <li *ngIf="authService.isLoggedIn()"><a routerLink="/torneos" routerLinkActive="active">Torneos</a></li>
+            <li *ngIf="!authService.isLoggedIn()"><a routerLink="/login" class="btn" routerLinkActive="active">Login</a></li>
+            <li *ngIf="authService.isLoggedIn()"><button class="btn" (click)="logout()">Cerrar Sesión</button></li>
+        </ul>
+    </nav>
   </div>
-</nav>
+</header>
 
-<div class="container mt-4">
-  <router-outlet></router-outlet>
-</div>
+<router-outlet></router-outlet>
+
+<footer>
+  <p>&copy; 2026 Élite Padel Club. Todos los derechos reservados.</p>
+  <p style="font-size: 0.8rem; margin-top: 10px;">Política de Privacidad | Aviso Legal</p>
+</footer>

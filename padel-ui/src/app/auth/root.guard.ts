@@ -13,6 +13,6 @@ export const rootGuard: CanActivateFn = (route, state) => {
   if (authService.isAdmin()) {
     return router.parseUrl('/dashboard');
   } else {
-    return router.parseUrl('/reservas');
+    return router.parseUrl('/home');
   }
 };

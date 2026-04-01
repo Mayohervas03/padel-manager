@@ -21,6 +21,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @Autowired
+    private com.padel.api.repository.UsuarioRepository usuarioRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,18 +46,29 @@ public class JwtFilter extends OncePerRequestFilter {
         // Si hay email y el contexto no está autenticado
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             
-            // Validamos que el token pertenezca al usuario (en este caso el email directamente)
+            // Validamos que el token pertenezca al usuario
             if (jwtUtil.validateToken(jwt, email)) {
                 
-                // Creamos un UserDetails "falso" solo con el email para registrar la sesión en Spring Security
-                UserDetails userDetails = new User(email, "", Collections.emptyList());
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                java.util.Optional<com.padel.api.model.Usuario> optionalUser = usuarioRepository.findByEmail(email);
                 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // Registramos al usuario en el contexto de seguridad
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (optionalUser.isPresent()) {
+                    com.padel.api.model.Usuario dbUser = optionalUser.get();
+                    String rol = dbUser.getRol() != null ? dbUser.getRol() : "USER";
+                    
+                    // Creamos un UserDetails oficial inyectando el prefijo esperado por @PreAuthorize
+                    UserDetails userDetails = new User(
+                        dbUser.getEmail(), 
+                        "", 
+                        Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + rol))
+                    );
+
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    // Registramos al usuario en el contexto de seguridad
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
         }
         

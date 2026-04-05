@@ -3,6 +3,7 @@ package com.padel.api.controller;
 import com.padel.api.model.Reserva;
 import com.padel.api.repository.ReservaRepository;
 import com.padel.api.repository.UsuarioRepository;
+import com.padel.api.repository.ClaseRepository;
 import com.padel.api.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RestController
@@ -23,6 +26,9 @@ public class ReservaController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ClaseRepository claseRepository;
 
     // Listar reservas (ADMIN = Todas, USER = Solo las suyas)
     @GetMapping
@@ -71,8 +77,14 @@ public class ReservaController {
                 reserva.getHora()
         );
 
-        if (ocupada) {
-            return ResponseEntity.badRequest().body("⚠️ Esa pista ya está reservada a esa hora.");
+        boolean ocupadaPorClase = claseRepository.existsByPistaIdAndFechaAndHora(
+                reserva.getPista().getId(),
+                reserva.getFecha(),
+                reserva.getHora()
+        );
+
+        if (ocupada || ocupadaPorClase) {
+            return ResponseEntity.badRequest().body("⚠️ Esa pista ya está reservada o tiene una clase programada a esa hora.");
         }
 
         Reserva nuevaReserva = reservaRepository.save(reserva);
@@ -80,9 +92,25 @@ public class ReservaController {
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<?> borrarReserva(@PathVariable Long id) {
-        if (!reservaRepository.existsById(id)) {
+        Reserva reserva = reservaRepository.findById(id).orElse(null);
+        if (reserva == null) {
             return ResponseEntity.notFound().build();
         }
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow();
+
+        if (!reserva.getUsuario().getEmail().equals(email) && !"ADMIN".equals(usuario.getRol())) {
+            return ResponseEntity.status(403).body("No tienes permisos para borrar esta reserva.");
+        }
+
+        LocalDateTime fechaHoraReserva = LocalDateTime.of(reserva.getFecha(), reserva.getHora());
+        long horas = ChronoUnit.HOURS.between(LocalDateTime.now(), fechaHoraReserva);
+
+        if (horas < 24) {
+            return ResponseEntity.badRequest().body("No se puede cancelar con menos de 24h de antelación.");
+        }
+
         reservaRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }

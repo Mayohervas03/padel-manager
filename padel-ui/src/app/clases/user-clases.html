@@ -1,0 +1,69 @@
+<div class="user-view">
+  <div class="academy-header">
+    <h2>ACADEMIA ÉLITE</h2>
+    <p>Mejora tu técnica con los mejores profesionales del sector. Selecciona tu nivel y asegura tu plaza.</p>
+  </div>
+
+  <div class="clases-grid">
+    <div *ngIf="clasesDisponibles.length === 0" class="no-clases">
+      <p>No hay clases disponibles en este momento. ¡Vuelve pronto!</p>
+    </div>
+
+    <!-- CARDS DE CLASES -->
+    <div class="clase-card" *ngFor="let clase of clasesDisponibles">
+      
+      <!-- Badge de Precio flotante -->
+      <div class="precio-badge">
+        {{ clase.precio }}€
+      </div>
+
+      <div class="card-top" [ngClass]="clase.nivel.toLowerCase()">
+        <span class="nivel-badge">{{ clase.nivel }}</span>
+      </div>
+
+      <div class="card-body">
+        <h3 class="titulo">{{ clase.titulo }}</h3>
+        
+        <div class="info-line">
+          <i class="fas fa-calendar-alt"></i>
+          <span>{{ clase.fecha }} a las {{ clase.hora }}</span>
+        </div>
+        
+        <div class="info-line">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span>Profesor: <strong>{{ clase.monitor }}</strong></span>
+        </div>
+        
+        <div class="info-line urgencia" [class.lleno]="clase.alumnos.length >= clase.maxAlumnos">
+          <i class="fas fa-users"></i>
+          <span>Quedan <strong>{{ clase.maxAlumnos - (clase.alumnos?.length || 0) }}</strong> de {{ clase.maxAlumnos }} plazas</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button class="btn-inscribir" 
+                *ngIf="clase.status !== 'INSCRITO' && clase.alumnos.length < clase.maxAlumnos" 
+                (click)="inscribirse(clase)" 
+                [disabled]="inscripcionesEnCurso[clase.id]">
+          
+          <ng-container *ngIf="!inscripcionesEnCurso[clase.id]">
+            <i class="fas fa-check-circle"></i> Inscribirme
+          </ng-container>
+          <ng-container *ngIf="inscripcionesEnCurso[clase.id]">
+            <i class="fas fa-spinner fa-spin"></i> Procesando...
+          </ng-container>
+
+        </button>
+
+        <button class="btn-apuntado" *ngIf="clase.status === 'INSCRITO'" disabled>
+          Apuntado ✅
+        </button>
+
+        <button class="btn-lleno" *ngIf="clase.status !== 'INSCRITO' && clase.alumnos.length >= clase.maxAlumnos" disabled>
+          Clase Llena
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

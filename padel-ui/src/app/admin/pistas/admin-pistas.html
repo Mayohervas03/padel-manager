@@ -1,0 +1,74 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h2>Gestión de Pistas</h2>
+  </div>
+
+  <div class="table-container" style="margin-bottom: 2rem;">
+    <div style="padding: 1.5rem; background: #f8f9fa; border-bottom: 1px solid #eee;">
+      <h3 style="margin-top:0; font-family: 'Oswald', sans-serif;">Añadir Nueva Pista</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: flex-end;">
+        <div>
+          <label style="display: block; margin-bottom: 8px;">Nombre:</label>
+          <input type="text" [(ngModel)]="nuevaPista.nombre" placeholder="Pista 3 (Cristal)" class="form-control" style="width:100%; padding: 0.5rem; border:1px solid #ccc; border-radius:4px;">
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 8px;">Tipo:</label>
+          <select [(ngModel)]="nuevaPista.tipo" class="form-control" style="width:100%; padding: 0.5rem; border:1px solid #ccc; border-radius:4px;">
+            <option value="Cristal">Cristal</option>
+            <option value="Muro">Muro</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 8px;">Ubicación:</label>
+          <select [(ngModel)]="nuevaPista.ubicacion" class="form-control" style="width:100%; padding: 0.5rem; border:1px solid #ccc; border-radius:4px;">
+            <option value="Indoor">Indoor</option>
+            <option value="Outdoor">Outdoor</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 8px;">Precio (€):</label>
+          <input type="number" [(ngModel)]="nuevaPista.precio" class="form-control" style="width:100%; padding: 0.5rem; border:1px solid #ccc; border-radius:4px;">
+        </div>
+        <div>
+          <button type="button" class="btn" style="background:#004e92; color:white; border:none; padding: 0.6rem 1.5rem; border-radius:4px; font-weight:bold; cursor:pointer;" (click)="crearPista()">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <table class="reservas-table" *ngIf="pistas.length > 0; else noPistas">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Ubicación</th>
+          <th>Precio</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pista of pistas">
+          <td>#{{ pista.id }}</td>
+          <td><b>{{ pista.nombre }}</b></td>
+          <td>{{ pista.tipo }}</td>
+          <td>{{ pista.ubicacion }}</td>
+          <td>{{ pista.precio }} €</td>
+          <td>
+            <span *ngIf="pista.activo" style="color:green; font-weight:bold;">Activa</span>
+            <span *ngIf="!pista.activo" style="color:red; font-weight:bold;">Inactiva</span>
+          </td>
+          <td>
+            <button class="btn btn-danger" (click)="borrarPista(pista.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noPistas>
+      <div class="empty-state">
+        <p>No hay pistas creadas.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

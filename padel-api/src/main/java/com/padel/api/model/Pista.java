@@ -14,7 +14,12 @@ public class Pista {
 
     private String nombre; // Ej: "Pista 1 (Cristal)"
 
-    private String tipo;   // Ej: "Indoor", "Outdoor"
+    private String tipo;      // Ej: "Cristal", "Muro"
+    
+    private String ubicacion; // Ej: "Indoor", "Outdoor"
 
     private Double precio; // Ej: 12.50
+
+    @Column(columnDefinition = "boolean default true")
+    private Boolean activo = true;
 }

@@ -1,0 +1,228 @@
+.user-view {
+  background-color: #f4f7f9; // Gris sutil premium
+  min-height: 100vh;
+  padding: 60px 20px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.academy-header {
+  text-align: center;
+  margin-bottom: 50px;
+  
+  h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.8rem;
+    color: #003366; // Azul Marino Profesional
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  
+  p {
+    color: #555; // Gris oscuro legible
+    font-size: 1.15rem;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+}
+
+.clases-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 30px;
+
+  .no-clases {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #666;
+    font-size: 1.3rem;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 15px;
+    border: 1px dashed #ccc;
+  }
+}
+
+.clase-card {
+  background: #ffffff; // Blanco puro
+  border: 1px solid #e0e0e0; // Borde fino
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); // Sombra muy suave
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 51, 102, 0.1);
+    border-color: #003366;
+  }
+
+  // --- PRECIO BADGE ---
+  .precio-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #ccff00; // Amarillo Flúor
+    color: #000;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(204, 255, 0, 0.3);
+  }
+
+  // --- HEADER DE TARJETA ---
+  .card-top {
+    background-color: #003366; // Azul Marino Sólido
+    padding: 20px 25px;
+    color: white;
+    display: flex;
+    align-items: center;
+
+    .nivel-badge {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      
+      // Indicador de color minúsculo al lado del texto si se desea, 
+      // o simplemente confiar en el texto. El usuario pidió header azul sólido.
+    }
+    
+    // Podemos añadir una pequeña franja de color según nivel en la base del header
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 60px;
+    }
+    &.iniciacion::after { background-color: #28a745; }
+    &.intermedio::after { background-color: #0088cc; }
+    &.avanzado::after { background-color: #e63946; }
+  }
+
+  // --- CUERPO DE TARJETA ---
+  .card-body {
+    padding: 25px;
+    flex-grow: 1;
+
+    .titulo {
+      font-size: 1.5rem;
+      color: #000;
+      margin: 0 0 20px 0;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .info-line {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 18px;
+      color: #333; // Gris muy oscuro para contraste
+      font-size: 1rem;
+
+      i {
+        color: #003366; // Iconos en Azul Marino
+        font-size: 1.1rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      strong {
+        color: #000;
+      }
+
+      &.urgencia {
+        margin-top: 25px;
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+
+        i { color: #003366; }
+
+        &.lleno {
+          border-color: #ff4d4d;
+          color: #ff4d4d;
+          i { color: #ff4d4d; }
+        }
+      }
+    }
+  }
+
+  // --- FOOTER DE TARJETA ---
+  .card-footer {
+    padding: 20px 25px;
+    background: #fafafa;
+    border-top: 1px solid #f0f0f0;
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+
+      &.btn-inscribir {
+        background-color: #ccff00; // Amarillo Flúor
+        color: #000; // Texto Negro
+
+        &:hover:not(:disabled) {
+          background-color: #003366;
+          color: #fff;
+          transform: translateY(-3px);
+          box-shadow: 0 6px 15px rgba(0, 51, 102, 0.2);
+        }
+
+        &:disabled {
+          background: #e0e0e0;
+          color: #888;
+          cursor: not-allowed;
+        }
+      }
+
+      &.btn-apuntado {
+        background: #28a745;
+        color: white;
+        cursor: default;
+      }
+
+      &.btn-lleno {
+        background: #f8f9fa;
+        color: #999;
+        border: 1px solid #ddd;
+        cursor: default;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .academy-header h2 { font-size: 2rem; }
+  .user-view { padding: 30px 15px; }
+}

@@ -1,0 +1,149 @@
+.admin-view {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h2 {
+    font-family: 'Oswald', sans-serif;
+    color: #333;
+    margin: 0;
+  }
+
+  .search-wrap {
+    position: relative;
+    width: 350px;
+
+    .search-input {
+      width: 100%;
+      padding: 12px 15px 12px 40px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: #002b55;
+        box-shadow: 0 0 0 3px rgba(0, 43, 85, 0.1);
+      }
+    }
+
+    .icon-search {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.5;
+    }
+  }
+}
+
+.table-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  thead {
+    background-color: #002b55;
+    color: white;
+
+    th {
+      padding: 15px 20px;
+      text-align: left;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #f1f1f1;
+      transition: background 0.2s;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      td {
+        padding: 15px 20px;
+        color: #444;
+        font-size: 0.95rem;
+      }
+    }
+  }
+}
+
+.role-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  background-color: #e9ecef;
+  color: #495057;
+
+  &.admin {
+    background-color: #ccff00;
+    color: #002b55;
+  }
+}
+
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-action {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  &.btn-role {
+    background-color: #f1f3f5;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    &:hover { background-color: #e9ecef; }
+  }
+
+  &.btn-call {
+    background-color: rgba(0, 43, 85, 0.05);
+    color: #002b55;
+    border: 1px solid rgba(0, 43, 85, 0.2);
+    &:hover { background-color: #002b55; color: white; }
+  }
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.text-center { text-align: center; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

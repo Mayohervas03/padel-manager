@@ -1,14 +1,19 @@
-<header id="main-header">
+<header id="main-header" *ngIf="!isAdminRoute">
   <div class="nav-container">
     <div id="logo">ÉLITE PADEL</div>
     <nav>
         <ul>
             <li *ngIf="authService.isLoggedIn()"><a routerLink="/home" routerLinkActive="active">Inicio</a></li>
             <li *ngIf="authService.isLoggedIn()"><a routerLink="/reservas" routerLinkActive="active">Reservas</a></li>
-            <li *ngIf="authService.isLoggedIn()"><a routerLink="/clases" routerLinkActive="active">Clases</a></li>
+            <li *ngIf="authService.isLoggedIn()"><a routerLink="/clases" routerLinkActive="active">ACADEMIA</a></li>
             <li *ngIf="authService.isLoggedIn()"><a routerLink="/torneos" routerLinkActive="active">Torneos</a></li>
+            <li *ngIf="authService.isAdmin()"><a routerLink="/admin/dashboard" routerLinkActive="active">ADMIN</a></li>
             <li *ngIf="!authService.isLoggedIn()"><a routerLink="/login" class="btn" routerLinkActive="active">Login</a></li>
-            <li *ngIf="authService.isLoggedIn()"><button class="btn" (click)="logout()">Cerrar Sesión</button></li>
+            <li *ngIf="authService.isLoggedIn()">
+              <a routerLink="/perfil" class="user-avatar-link" title="Mi Perfil">
+                <div class="user-avatar">{{ (authService.nombre$ | async)?.substring(0, 1) }}</div>
+              </a>
+            </li>
         </ul>
     </nav>
   </div>
@@ -16,7 +21,7 @@
 
 <router-outlet></router-outlet>
 
-<footer>
+<footer *ngIf="!isAdminRoute">
   <p>&copy; 2026 Élite Padel Club. Todos los derechos reservados.</p>
   <p style="font-size: 0.8rem; margin-top: 10px;">Política de Privacidad | Aviso Legal</p>
 </footer>

@@ -1,0 +1,77 @@
+<header class="admin-navbar">
+  <div class="nav-container">
+    <!-- LADO IZQUIERDO: MARCA -->
+    <div class="nav-left">
+      <div class="logo-admin">
+        ÉLITE PADEL <span class="badge">HUB CONTROL</span>
+      </div>
+    </div>
+
+    <!-- CENTRO: NAVEGACIÓN -->
+    <nav class="nav-center">
+      <ul class="nav-menu">
+        <li>
+          <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeDropdowns()">
+            <i class="fas fa-calendar-alt icon"></i> AGENDA
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/stats" routerLinkActive="active" (click)="closeDropdowns()">
+            <i class="fas fa-chart-line icon"></i> ESTADÍSTICAS
+          </a>
+        </li>
+        
+        <!-- DROP-DOWN GESTIÓN -->
+        <li class="dropdown-item" [class.open]="showGestionDropdown">
+          <a (click)="toggleGestion($event)" class="dropdown-trigger">
+            <i class="fas fa-cogs icon"></i> GESTIÓN <i class="fas fa-chevron-down arrow"></i>
+          </a>
+          <div class="dropdown-menu" *ngIf="showGestionDropdown">
+            <a routerLink="/admin/clases" (click)="closeDropdowns()">
+              <i class="fas fa-graduation-cap icon-sm"></i> ACADEMIA
+            </a>
+            <a routerLink="/admin/pistas" (click)="closeDropdowns()">
+              <i class="fas fa-table-tennis icon-sm"></i> PISTAS
+            </a>
+            <a routerLink="/admin/usuarios" (click)="closeDropdowns()">
+              <i class="fas fa-users icon-sm"></i> USUARIOS
+            </a>
+          </div>
+        </li>
+
+        <li>
+          <a routerLink="/admin/manual" class="btn-manual-reserva" (click)="closeDropdowns()">
+            <i class="fas fa-phone-alt icon-mini"></i> RESERVA MANUAL
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- LADO DERECHO: USUARIO -->
+    <div class="nav-right">
+      <div class="user-menu-wrap" [class.open]="showUserDropdown">
+        <div class="avatar-trigger" (click)="toggleUser($event)" title="Opciones de Administrador">
+          {{ (authService.nombre$ | async)?.substring(0, 1) }}
+        </div>
+        
+        <div class="dropdown-menu user-dropdown" *ngIf="showUserDropdown">
+          <div class="user-header">
+            <span class="name">{{ authService.nombre$ | async }}</span>
+            <span class="role">Administrador</span>
+          </div>
+          <div class="divider"></div>
+          <a routerLink="/home" (click)="closeDropdowns()">
+            <i class="fas fa-globe"></i> IR A LA WEB PÚBLICA
+          </a>
+          <a routerLink="/perfil" (click)="closeDropdowns()">
+            <i class="fas fa-user-cog"></i> CONFIGURACIÓN DE PERFIL
+          </a>
+          <div class="divider"></div>
+          <a (click)="logout()" class="logout-link">
+            <i class="fas fa-sign-out-alt"></i> CERRAR SESIÓN
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

@@ -12,6 +12,7 @@ interface Dia {
 
 @Component({
   selector: 'app-reservas',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './reservas.html',
   styleUrl: './reservas.scss',
@@ -25,14 +26,12 @@ export class ReservasComponent implements OnInit {
   pistaSeleccionada: any = null;
 
   pistasDisponibles: any[] = [];
-  reservas: any[] = [];
   cargando: boolean = false;
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.generarDias();
-    this.cargarMisReservas();
   }
 
   generarDias() {
@@ -73,12 +72,9 @@ export class ReservasComponent implements OnInit {
   comprobarDisponibilidad() {
       if (this.fechaSeleccionada && this.horaSeleccionada) {
           const url = `http://localhost:8080/api/pistas/disponibles?fecha=${this.fechaSeleccionada}&hora=${this.horaSeleccionada}:00`;
-          console.log(`Consultando disponibilidad -> ${url}`);
-          
           this.http.get<any[]>(url)
             .subscribe({
                 next: (data) => {
-                    console.log("Pistas libres recibidas desde BD:", data);
                     this.pistasDisponibles = data;
                     this.cdr.detectChanges();
                 },
@@ -87,16 +83,6 @@ export class ReservasComponent implements OnInit {
       } else {
           this.pistasDisponibles = [];
       }
-  }
-
-  cargarMisReservas() {
-    this.http.get<any[]>('http://localhost:8080/api/reservas').subscribe(
-      data => {
-        this.reservas = data;
-        this.cdr.detectChanges();
-      },
-      error => console.error("Error cargando reservas:", error)
-    );
   }
 
   guardarReserva() {
@@ -116,15 +102,10 @@ export class ReservasComponent implements OnInit {
       next: () => {
         alert("¡Reserva confirmada con éxito!");
         this.resetearFlujo();
-        this.cargarMisReservas();
       },
       error: (err) => {
         console.error("Error al guardar reserva:", err);
-        if (err.status === 400) {
-           alert(err.error); 
-        } else {
-           alert("Ocurrió un error inesperado.");
-        }
+        alert(err.error || "Ocurrió un error inesperado.");
       }
     }).add(() => {
       this.cargando = false;
@@ -137,19 +118,5 @@ export class ReservasComponent implements OnInit {
       this.horaSeleccionada = null;
       this.pistaSeleccionada = null;
       this.pistasDisponibles = [];
-  }
-
-  borrarReserva(id: number) {
-    if (confirm("¿Estás seguro de que quieres cancelar esta reserva?")) {
-      this.http.delete(`http://localhost:8080/api/reservas/${id}`).subscribe({
-        next: () => {
-          this.cargarMisReservas();
-        },
-        error: (err) => {
-          console.error("Error al borrar reserva:", err);
-          alert("Error al borrar la reserva");
-        }
-      });
-    }
   }
 }

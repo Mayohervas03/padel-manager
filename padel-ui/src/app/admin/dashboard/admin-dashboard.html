@@ -1,0 +1,45 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h2>Panel de Administración (Gestión de Reservas)</h2>
+    <div class="date-selector">
+      <label for="fechaReservas">Día de control:</label>
+      <input type="date" id="fechaReservas" [(ngModel)]="fechaActual" (change)="onFechaChange()" />
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="reservas-table" *ngIf="reservas.length > 0; else noReservas">
+      <thead>
+        <tr>
+          <th>Jugador</th>
+          <th>Pista</th>
+          <th>Hora Inicio</th>
+          <th>Hora Fin</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let reserva of reservas" [ngClass]="{'is-clase': reserva.tipo === 'CLASE'}">
+          <td>
+            <div class="jugador-info">
+              <span class="j-nombre">{{ reserva.usuario?.nombre || 'Desconocido' }}</span>
+              <span class="j-email">{{ reserva.usuario?.email }}</span>
+            </div>
+          </td>
+          <td>{{ reserva.pista?.nombre || 'Pista borrada' }}</td>
+          <td>{{ reserva.hora }}</td>
+          <td>{{ calcularHoraFin(reserva.hora) }}</td>
+          <td>
+            <button class="btn btn-danger" (click)="anularElemento(reserva)">Anular</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noReservas>
+      <div class="empty-state">
+        <p>No hay reservas programadas para este día.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

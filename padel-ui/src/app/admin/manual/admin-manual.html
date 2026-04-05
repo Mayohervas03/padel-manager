@@ -1,0 +1,80 @@
+<div class="manual-reserva-container">
+  <div class="step-card step-1">
+    <div class="step-header">
+      <span class="step-number">1</span>
+      <h3>Selección de Usuario</h3>
+    </div>
+    <div class="step-body">
+      <div class="search-box">
+        <input type="email" [(ngModel)]="emailBuscado" placeholder="Introduzca el email del jugador..." class="form-control">
+        <button type="button" class="btn-verificar" (click)="buscarUsuario()">Verificar</button>
+      </div>
+      <div *ngIf="mensajeBusqueda && !usuarioEncontrado" class="error-msg">
+        {{ mensajeBusqueda }}
+      </div>
+      <div *ngIf="usuarioEncontrado" class="user-card-mini">
+        <div class="avatar-sm">{{ usuarioEncontrado.nombre.substring(0, 1) }}</div>
+        <div class="user-info">
+          <span class="u-name">{{ usuarioEncontrado.nombre }}</span>
+          <span class="u-email">{{ usuarioEncontrado.email }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<form (ngSubmit)="crearReserva()">
+  <div class="step-card step-2" [class.disabled]="!usuarioEncontrado">
+    <div class="step-header">
+      <span class="step-number">2</span>
+      <h3>Detalles de la Reserva</h3>
+    </div>
+    <div class="step-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Fecha del Partido:</label>
+          <input type="date" [(ngModel)]="reservaData.fecha" (ngModelChange)="checkFormState()" name="fecha" class="form-control" [disabled]="!usuarioEncontrado">
+        </div>
+        <div class="form-group">
+          <label>Bloque Horario:</label>
+          <select [(ngModel)]="reservaData.hora" (ngModelChange)="checkFormState()" name="hora" class="form-control" [disabled]="!usuarioEncontrado">
+            <option value="09:00">09:00 a 10:30</option>
+            <option value="10:30">10:30 a 12:00</option>
+            <option value="12:00">12:00 a 13:30</option>
+            <option value="13:30">13:30 a 15:00</option>
+            <option value="15:00">15:00 a 16:30</option>
+            <option value="16:30">16:30 a 18:00</option>
+            <option value="18:00">18:00 a 19:30</option>
+            <option value="19:30">19:30 a 21:00</option>
+            <option value="21:00">21:00 a 22:30</option>
+          </select>
+        </div>
+        <div class="form-group fd-full">
+          <label>Pista:</label>
+          <select [(ngModel)]="reservaData.pistaId" (ngModelChange)="checkFormState()" name="pista" class="form-control" [disabled]="!usuarioEncontrado">
+            <option [ngValue]="null" disabled>Selecciona una pista...</option>
+            <option *ngFor="let p of pistas" [value]="p.id">{{ p.nombre }} - {{ p.tipo }} ({{p.ubicacion}}) - {{ p.precio }}€</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card step-3" [class.disabled]="!usuarioEncontrado">
+    <div class="step-header">
+      <span class="step-number">3</span>
+      <h3>Confirmación</h3>
+    </div>
+    <div class="step-body text-center">
+      <div *ngIf="mensajeExito" class="success-msg">
+        ✅ {{ mensajeExito }}
+      </div>
+      <div *ngIf="mensajeError" class="error-msg text-center mb-3">
+        ❌ {{ mensajeError }}
+      </div>
+      <button type="submit" class="btn-confirmar" [disabled]="!usuarioEncontrado || !reservaData.pistaId || !reservaData.fecha || !reservaData.hora">
+        Confirmar Reserva por Teléfono
+      </button>
+    </div>
+  </div>
+</form>
+</div>

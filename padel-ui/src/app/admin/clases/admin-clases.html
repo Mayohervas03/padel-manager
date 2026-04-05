@@ -1,0 +1,85 @@
+<div class="admin-view">
+  <div class="view-header">
+    <h2>Academia Élite: Planificador</h2>
+  </div>
+
+  <div class="card inline-form">
+    <form (ngSubmit)="crearClase()">
+      <div class="form-row">
+        <input type="text" placeholder="Título (Ej. Masterclass Volea)" [(ngModel)]="nuevaClase.titulo" name="titulo" required>
+        <input type="text" placeholder="Monitor" [(ngModel)]="nuevaClase.monitor" name="monitor" required>
+        
+        <select [(ngModel)]="nuevaClase.nivel" name="nivel">
+          <option value="INICIACION">Iniciación</option>
+          <option value="INTERMEDIO">Intermedio</option>
+          <option value="AVANZADO">Avanzado</option>
+        </select>
+        
+        <select [(ngModel)]="nuevaClase.pista.id" name="pista" required>
+          <option [ngValue]="null" disabled selected>-- Elige Pista --</option>
+          <option *ngFor="let p of pistas" [ngValue]="p.id">{{ p.nombre }}</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="input-group">
+          <label>Fecha</label>
+          <input type="date" [(ngModel)]="nuevaClase.fecha" name="fecha" required>
+        </div>
+        <div class="input-group">
+          <label>Hora</label>
+          <input type="time" [(ngModel)]="nuevaClase.hora" name="hora" required>
+        </div>
+        <div class="input-group">
+          <label>Máx Alumnos</label>
+          <input type="number" [(ngModel)]="nuevaClase.maxAlumnos" name="maxAlumnos" required>
+        </div>
+        <div class="input-group">
+          <label>Precio (€)</label>
+          <input type="number" step="0.01" [(ngModel)]="nuevaClase.precio" name="precio" required>
+        </div>
+        <button type="submit" class="btn-create"><i class="fas fa-plus"></i> CREAR CLASE</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Clase</th>
+          <th>Detalles</th>
+          <th>Horario</th>
+          <th>Ocupación y Alumnos</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let clase of clases">
+          <td>
+            <div class="main-info">{{ clase.titulo }}</div>
+            <div class="sub-info"><i class="fas fa-user-circle"></i> {{ clase.monitor }}</div>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="clase.nivel.toLowerCase()">{{ clase.nivel }}</span>
+            <div class="sub-info">{{ clase.precio }}€</div>
+          </td>
+          <td>
+            <div>{{ clase.fecha }}</div>
+            <div class="sub-info">{{ clase.hora }} | {{ clase.pista?.nombre }}</div>
+          </td>
+          <td>
+            <div class="ocupacion">
+              <strong>{{ clase.alumnos?.length || 0 }} / {{ clase.maxAlumnos }}</strong> inscritos
+            </div>
+            <div class="alumnos-list" *ngIf="clase.alumnos && clase.alumnos.length > 0">
+              <span class="alumno-tag" *ngFor="let alumno of clase.alumnos">{{ alumno.nombre }}</span>
+            </div>
+          </td>
+          <td>
+            <button class="btn-delete" (click)="eliminarClase(clase.id)"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

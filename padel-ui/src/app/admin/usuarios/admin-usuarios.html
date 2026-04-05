@@ -1,0 +1,53 @@
+<div class="admin-view">
+  <div class="view-header">
+    <h2>Gestión de la Comunidad</h2>
+    <div class="search-wrap">
+      <input 
+        type="text" 
+        [(ngModel)]="filtro" 
+        (ngModelChange)="filtrarUsuarios()" 
+        placeholder="Buscar por nombre o email..." 
+        class="search-input"
+      >
+      <span class="icon-search">🔍</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of usuariosFiltrados">
+          <td>#{{ user.id }}</td>
+          <td><strong>{{ user.nombre }}</strong></td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="role-badge" [class.admin]="user.rol === 'ADMIN'">
+              {{ user.rol }}
+            </span>
+          </td>
+          <td class="text-center actions-cell">
+            <button class="btn-action btn-role" (click)="cambiarRol(user)" title="Cambiar Rol">
+              🔄 Cambiar Rol
+            </button>
+            <button class="btn-action btn-call" (click)="reservaManual(user.id)" title="Reserva Manual">
+              ☎️ Reserva
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="usuariosFiltrados.length === 0" class="empty-state">
+      <p>No se encontraron usuarios que coincidan con la búsqueda.</p>
+    </div>
+  </div>
+</div>

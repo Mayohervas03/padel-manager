@@ -20,6 +20,34 @@ $border-color: #e0e0e0;
 
 .text-primary { color: $primary-blue !important; }
 
+/* Tabs de Navegación */
+.tabs-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn-tab {
+    background: transparent;
+    color: $primary-blue;
+    border: 2px solid $primary-blue;
+    padding: 0.5rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+        background: rgba(0, 78, 146, 0.1);
+    }
+
+    &.active {
+        background: $primary-blue;
+        color: $accent-yellow;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+}
+
 /* Scroller Horizontal Días */
 .scroller-dias {
     display: flex;

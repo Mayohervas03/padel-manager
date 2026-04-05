@@ -1,0 +1,120 @@
+.admin-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+
+    h2 {
+      font-family: 'Oswald', sans-serif;
+      color: #004e92;
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    .date-selector {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      label {
+        font-weight: 500;
+        color: #333;
+      }
+
+      input[type="date"] {
+        padding: 0.5rem 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 1rem;
+        outline: none;
+
+        &:focus {
+          border-color: #004e92;
+          box-shadow: 0 0 0 2px rgba(0, 78, 146, 0.2);
+        }
+      }
+    }
+  }
+
+  .table-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+
+    .reservas-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      th {
+        background-color: #004e92;
+        color: white;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.95rem;
+      }
+
+      tbody tr {
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: #f8f9fa;
+        }
+      }
+
+      .jugador-info {
+        display: flex;
+        flex-direction: column;
+
+        .j-nombre {
+          font-weight: 600;
+          color: #333;
+        }
+
+        .j-email {
+          font-size: 0.85rem;
+          color: #6c757d;
+        }
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: #c82333;
+        }
+      }
+    }
+
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: #6c757d;
+      font-size: 1.1rem;
+      background-color: #f8f9fa;
+    }
+  }
+}

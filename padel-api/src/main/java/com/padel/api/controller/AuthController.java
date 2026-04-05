@@ -66,7 +66,7 @@ public class AuthController {
             if (passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
                 // Generamos token
                 String token = jwtUtil.generateToken(usuario.getEmail());
-                return ResponseEntity.ok(new AuthResponse(token, usuario.getEmail(), usuario.getRol()));
+                return ResponseEntity.ok(new AuthResponse(token, usuario.getEmail(), usuario.getRol(), usuario.getNombre()));
             }
         }
         

@@ -1,0 +1,11 @@
+.admin-main-wrapper {
+  background-color: #f4f7f9;
+  min-height: calc(100vh - 70px); // Menos la altura de la navbar
+  width: 100%;
+}
+
+.admin-content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}

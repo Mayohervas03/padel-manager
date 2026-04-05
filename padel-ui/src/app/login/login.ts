@@ -28,9 +28,9 @@ export class LoginComponent {
     this.authService.login(this.credentials).subscribe({
       next: () => {
         if (this.authService.isAdmin()) {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/admin/dashboard']);
         } else {
-          this.router.navigate(['/reservas']);
+          this.router.navigate(['/home']);
         }
       },
       error: (err) => {

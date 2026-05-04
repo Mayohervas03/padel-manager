@@ -1,31 +1,44 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import type { LoginRequest } from '../shared/models';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.html',
-  styleUrls: []
+  styleUrl: './login.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  credentials = {
-    email: '',
-    password: ''
-  };
+  readonly credentials = signal<LoginRequest>({ email: '', password: '' });
+  readonly errorMessage = signal('');
+  readonly sessionExpiredMessage = signal('');
 
-  errorMessage = '';
-
-  constructor(private authService: AuthService, private router: Router) {}
+  ngOnInit() {
+    // Verificar si venimos de una sesion expirada
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        this.sessionExpiredMessage.set(params['message']);
+      }
+    });
+  }
 
   onSubmit(): void {
-    if (!this.credentials.email || !this.credentials.password) return;
+    const creds = this.credentials();
+    if (!creds.email || !creds.password) return;
 
-    this.authService.login(this.credentials).subscribe({
+    this.errorMessage.set('');
+    this.sessionExpiredMessage.set('');
+
+    this.authService.login(creds).subscribe({
       next: () => {
         if (this.authService.isAdmin()) {
           this.router.navigate(['/admin/dashboard']);
@@ -34,8 +47,8 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        this.errorMessage = 'Credenciales inválidas. Por favor, intenta de nuevo.';
-        console.error('Error in login', err);
+        // El interceptor normaliza el error: err.error contiene el mensaje del backend
+        this.errorMessage.set(err.error || 'Credenciales invalidas. Por favor, intenta de nuevo.');
       }
     });
   }

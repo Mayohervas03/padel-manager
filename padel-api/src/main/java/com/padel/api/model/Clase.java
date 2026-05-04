@@ -2,7 +2,8 @@ package com.padel.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "clases")
 public class Clase {
 
@@ -20,13 +22,13 @@ public class Clase {
 
     private String titulo;
     private String monitor;
-    
+
     @Enumerated(EnumType.STRING)
     private NivelClase nivel;
-    
+
     private Double precio;
     private Integer maxAlumnos;
-    
+
     private LocalDate fecha;
     private LocalTime hora;
 

@@ -1,9 +1,8 @@
 package com.padel.api.controller;
 
 import com.padel.api.model.Pista;
-import com.padel.api.repository.PistaRepository;
-import com.padel.api.repository.ReservaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.padel.api.service.PistaService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,35 +11,31 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/pistas")
-@CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminPistaController {
 
-    @Autowired
-    private PistaRepository pistaRepository;
-
-    @Autowired
-    private ReservaRepository reservaRepository;
+    private final PistaService pistaService;
 
     @GetMapping
     public List<Pista> listarTodas() {
-        return pistaRepository.findAll();
+        return pistaService.listarTodas();
     }
 
     @PostMapping
     public Pista crearPista(@RequestBody Pista pista) {
         pista.setActivo(true);
-        return pistaRepository.save(pista);
+        return pistaService.crearPista(new com.padel.api.dto.PistaRequest() {{
+            setNombre(pista.getNombre());
+            setTipo(pista.getTipo());
+            setUbicacion(pista.getUbicacion());
+            setPrecio(pista.getPrecio());
+        }});
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> borrarPista(@PathVariable Long id) {
-        if (!pistaRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        // Borrado en cascada manual
-        reservaRepository.deleteByPistaId(id);
-        pistaRepository.deleteById(id);
-        return ResponseEntity.ok().body("Pista y reservas asociadas borradas correctamente.");
+    public ResponseEntity<Void> borrarPista(@PathVariable Long id) {
+        pistaService.borrarPista(id);
+        return ResponseEntity.ok().build();
     }
 }

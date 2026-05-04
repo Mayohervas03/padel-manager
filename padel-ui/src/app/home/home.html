@@ -1,71 +1,243 @@
-<div class="home-container">
-        
-  <main>
-      <section class="intro-section">
-          <h1>El Mejor Pádel Indoor</h1>
-          <img src="https://imgs.search.brave.com/aqlEGRjVRs0KXreUccQ5po1Aqk51xWZBguRY_cqa504/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cy4x/MjNyZi5jb20vNDUw/d20vcmF0b2NhL3Jh/dG9jYTE4MDMvcmF0/b2NhMTgwMzAwMTY1/Lzk3ODMxNDU2LWRp/c2UlQzMlQjFvLWRl/LXMlQzMlQURtYm9s/by1kZS1wJUMzJUEx/ZGVsLmpwZz92ZXI9/Ng"  class="float-img">
-          
-          <p>Bienvenido a Élite Padel Club, el centro deportivo de referencia en la ciudad. Contamos con 8 pistas panorámicas de última generación, césped World Padel Tour y una iluminación led inmejorable para que no pierdas de vista la bola ni un segundo.</p>
-          <p>Tanto si eres principiante como si compites a nivel profesional, aquí encontrarás tu lugar. Disfruta de nuestras instalaciones climatizadas, vestuarios de lujo y nuestra zona de cafetería para el "tercer tiempo" después del partido.</p>
-          <div style="clear: both;"></div>
-      </section>
+<div class="landing-page">
 
-      <section class="cards-wrapper">
-          
-          <article class="home-card">
-              <div class="card-badge">Oferta</div> <img src="https://imgs.search.brave.com/l6QXhd-Fmas9wGqDOyG9I3m5uJlOu24tq1knTVmN0Hg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZWxuZXZlcmF6by5j/b20vd3AtY29udGVu/dC91cGxvYWRzLzIw/MjQvMDIvaHR0cHNf/X193d3cucGFkZWxm/aXAuY29tX3dwLWNv/bnRlbnRfdXBsb2Fk/c18yMDI0XzA3X0dF/Tk9WQS1QUkVNSUVS/LVBBREVMLTEwMC0x/MDIxeDU4MC5qcGc" alt="Pistas de Padel">
-              <div class="card-content">
-                  <h3>Alquiler de Pistas</h3>
-                  <p>Reserva tu pista online desde 12€/hora. Disponemos de pistas indoor y outdoor.</p>
-                  <a routerLink="/reservas" class="btn-original">Reservar Ahora</a>
-              </div>
-          </article>
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-glow"></div>
+    </div>
 
-          <article class="home-card">
-              <img src="https://imgs.search.brave.com/QYS9CY7XUUrI5ylF6mva27R9cCa8Sjwi318Z21FRP3E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dmFsbHBhcmMuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy9lbGVt/ZW50b3IvdGh1bWJz/L0RTQzA3NzA1LXNj/YWxlZC1xdTkzbjZt/ODJtaDNhZjJnNjZk/YWs1Y3U2dG5qbHZ4/OXRlaGo3cHh0emsu/d2VicA" alt="Clases de Padel">
-              <div class="card-content">
-                  <h3>Escuela de Pádel</h3>
-                  <p>Mejora tu bandeja y tu víbora con nuestros monitores titulados. Clases para todos los niveles.</p>
-                  <a href="#" class="btn-original">Ver Horarios</a>
-              </div>
-          </article>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="title-line">Elige tu</span>
+        <span class="title-line title-accent">Pista Perfecta</span>
+        <span class="title-line">y Juega como un Pro</span>
+      </h1>
 
-          <article class="home-card">
-              <div class="card-badge">Nuevo</div>
-              <img src="https://imgs.search.brave.com/xYKT3DrlF6jkqsOVli3bQF2gLRWT4D9Y6S7oWm5mDZw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9saWdh/ZGVwYWRlbGJhcmNl/bG9uYS5jb20vd3At/Y29udGVudC91cGxv/YWRzLzIwMjMvMDcv/dG9ybmVvcy1wYWRl/bC1iY24ud2VicA" alt="Torneos">
-              <div class="card-content">
-                  <h3>Torneos de Finde</h3>
-                  <p>Apúntate a nuestros torneos americanos y pozos todos los fines de semana. ¡Premios increíbles!</p>
-                  <a href="#" class="btn-original">Inscribirse</a>
-              </div>
-          </article>
+      <p class="hero-description">
+        Instalaciones de última generación con césped World Padel Tour, 
+        iluminación LED profesional y vestuarios de lujo. 
+        Tu experiencia de pádel comienza aquí.
+      </p>
 
-      </section>
-  </main>
-
-  <aside>
-      <div class="widget">
-          <h3>Horarios</h3>
-          <ul class="horario-list">
-              <li><span>Lunes - Viernes</span> <span>09:00 - 23:00</span></li>
-              <li><span>Sábados</span> <span>09:00 - 22:00</span></li>
-              <li><span>Domingos</span> <span>09:00 - 15:00</span></li>
-          </ul>
+      <div class="hero-cta">
+        <a routerLink="/reservas" class="btn-primary-hero">
+          <span>Reservar Pista</span>
+          <i class="fas fa-arrow-right"></i>
+        </a>
+        <a (click)="scrollToSection('features')" class="btn-secondary-hero">
+          <span>Descubre Más</span>
+          <i class="fas fa-chevron-down"></i>
+        </a>
       </div>
 
-      <div class="widget">
-          <h3>Contacto Rápido</h3>
-          <p>📍 Calle del Deporte, 22</p>
-          <p>📞 912 345 678</p>
-          <p>📧 hola@elitepadel.com</p>
-      </div>
-
-      <div class="widget">
-          <h3>Patrocinadores</h3>
-          <div style="background: #e0e0e0; height: 100px; display: flex; align-items: center; justify-content: center; color: #555;">
-              Próximamente...
+      <div class="hero-stats">
+        @for (stat of stats; track stat.label) {
+          <div class="hero-stat-item">
+            <span class="stat-number">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
           </div>
+        }
       </div>
-  </aside>
+    </div>
+
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section id="features" class="features-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag">Servicios</span>
+        <h2 class="section-title">Todo lo que Necesitas</h2>
+        <p class="section-subtitle">
+          Diseñado para jugadores que buscan lo mejor. Desde principiantes hasta profesionales.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        @for (feature of features; track feature.title) {
+          <div class="feature-card" [class]="'accent-' + feature.accent">
+            <div class="feature-icon">
+              <i class="fas {{ feature.icon }}"></i>
+            </div>
+            <h3 class="feature-title">{{ feature.title }}</h3>
+            <p class="feature-description">{{ feature.description }}</p>
+            <a [routerLink]="feature.link" class="feature-link">
+              <span>{{ feature.linkText }}</span>
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWCASE SECTION -->
+  <section class="showcase-section">
+    <div class="showcase-bg"></div>
+    
+    <div class="showcase-content">
+      <div class="showcase-text">
+        <span class="showcase-tag">Instalaciones Premium</span>
+        <h2>Juega en las Mejores Condiciones</h2>
+        <p>
+          Nuestras 8 pistas panorámicas cuentan con césped sintético de última generación 
+          homologado por World Padel Tour, iluminación LED sin sombras y un sistema 
+          de climatización que garantiza el confort en cualquier época del año.
+        </p>
+        
+        <ul class="showcase-features">
+          <li>
+            <i class="fas fa-check-circle"></i>
+            <span>Césped WPT homologado</span>
+          </li>
+          <li>
+            <i class="fas fa-check-circle"></i>
+            <span>Iluminación LED profesional</span>
+          </li>
+          <li>
+            <i class="fas fa-check-circle"></i>
+            <span>Climatización 365 días</span>
+          </li>
+          <li>
+            <i class="fas fa-check-circle"></i>
+            <span>Vestuarios con sauna</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="showcase-visual">
+        <div class="showcase-card">
+          <div class="showcase-card-inner">
+            <div class="showcase-card-front">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-layout-wtf" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M5 1v8H1V1h4zM1 10h4v5H1v-5zm5 0h9v5H6v-5zm0-9h9v8H6V1z"/>
+              </svg>
+              <span>8 Pistas</span>
+            </div>
+          </div>
+        </div>
+        <div class="showcase-card">
+          <div class="showcase-card-inner">
+            <div class="showcase-card-front">
+              <i class="fas fa-snowflake"></i>
+              <span>Climatizado</span>
+            </div>
+          </div>
+        </div>
+        <div class="showcase-card">
+          <div class="showcase-card-inner">
+            <div class="showcase-card-front">
+              <i class="fas fa-lightbulb"></i>
+              <span>LED Pro</span>
+            </div>
+          </div>
+        </div>
+        <div class="showcase-card">
+          <div class="showcase-card-inner">
+            <div class="showcase-card-front">
+              <i class="fas fa-shower"></i>
+              <span>Sauna</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS SECTION -->
+  <section class="testimonials-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag">Reseñas</span>
+        <h2 class="section-title">Lo que Dicen Nuestros Jugadores</h2>
+      </div>
+
+      <div class="testimonials-grid">
+        @for (testimonial of testimonials; track testimonial.author) {
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              @for (i of [1,2,3,4,5]; track i) {
+                <i class="fas fa-star"></i>
+              }
+            </div>
+            
+            <p class="testimonial-text">"{{ testimonial.text }}"</p>
+            
+            <div class="testimonial-author">
+              <div class="author-avatar">
+                {{ testimonial.author.charAt(0) }}
+              </div>
+              <div class="author-info">
+                <span class="author-name">{{ testimonial.author }}</span>
+                <span class="author-role">{{ testimonial.role }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    
+    <div class="cta-content">
+      <h2>¿Listo para Jugar?</h2>
+      <p>Únete a la comunidad Élite y empieza a disfrutar del mejor pádel.</p>
+      <a routerLink="/reservas" class="btn-cta">
+        <span>Reservar mi Primera Pista</span>
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer-section">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Élite Padel</h3>
+        <p>El club de referencia para los amantes del pádel.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <h4>Servicios</h4>
+        <ul>
+          <li><a routerLink="/reservas">Reservas</a></li>
+          <li><a routerLink="/clases">Academia</a></li>
+          <li><a routerLink="/torneos">Torneos</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Horario</h4>
+        <ul class="footer-hours">
+          <li><span>Lun - Vie</span> <span>09:00 - 23:00</span></li>
+          <li><span>Sábados</span> <span>09:00 - 22:00</span></li>
+          <li><span>Domingos</span> <span>09:00 - 15:00</span></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Contacto</h4>
+        <ul class="footer-contact">
+          <li><i class="fas fa-map-marker-alt"></i> Calle del Deporte, 22</li>
+          <li><i class="fas fa-phone"></i> 912 345 678</li>
+          <li><i class="fas fa-envelope"></i> hola@elitepadel.com</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p> {{ currentYear() }} Élite Padel Club. Todos los derechos reservados.</p>
+    </div>
+  </footer>
 
 </div>

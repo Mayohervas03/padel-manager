@@ -12,36 +12,41 @@
       <ul class="nav-menu">
         <li>
           <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeDropdowns()">
-            <i class="fas fa-calendar-alt icon"></i> AGENDA
+            <i class="fas fa-calendar-alt icon" aria-hidden="true"></i> AGENDA
           </a>
         </li>
         <li>
           <a routerLink="/admin/stats" routerLinkActive="active" (click)="closeDropdowns()">
-            <i class="fas fa-chart-line icon"></i> ESTADÍSTICAS
+            <i class="fas fa-chart-line icon" aria-hidden="true"></i> ESTADÍSTICAS
           </a>
         </li>
         
         <!-- DROP-DOWN GESTIÓN -->
-        <li class="dropdown-item" [class.open]="showGestionDropdown">
-          <a (click)="toggleGestion($event)" class="dropdown-trigger">
-            <i class="fas fa-cogs icon"></i> GESTIÓN <i class="fas fa-chevron-down arrow"></i>
+        <li class="dropdown-item" [class.open]="showGestionDropdown()">
+          <a (click)="toggleGestion($event)" class="dropdown-trigger" [attr.aria-expanded]="showGestionDropdown()" aria-haspopup="true">
+            <i class="fas fa-cogs icon" aria-hidden="true"></i> GESTIÓN <i class="fas fa-chevron-down arrow" aria-hidden="true"></i>
           </a>
-          <div class="dropdown-menu" *ngIf="showGestionDropdown">
-            <a routerLink="/admin/clases" (click)="closeDropdowns()">
-              <i class="fas fa-graduation-cap icon-sm"></i> ACADEMIA
-            </a>
-            <a routerLink="/admin/pistas" (click)="closeDropdowns()">
-              <i class="fas fa-table-tennis icon-sm"></i> PISTAS
-            </a>
-            <a routerLink="/admin/usuarios" (click)="closeDropdowns()">
-              <i class="fas fa-users icon-sm"></i> USUARIOS
-            </a>
-          </div>
+          @if (showGestionDropdown()) {
+            <div class="dropdown-menu">
+              <a routerLink="/admin/clases" (click)="closeDropdowns()">
+                <i class="fas fa-graduation-cap icon-sm" aria-hidden="true"></i> ACADEMIA
+              </a>
+              <a routerLink="/admin/pistas" (click)="closeDropdowns()">
+                <i class="fas fa-table-tennis icon-sm" aria-hidden="true"></i> PISTAS
+              </a>
+              <a routerLink="/admin/torneos" (click)="closeDropdowns()">
+                <i class="fas fa-trophy icon-sm" aria-hidden="true"></i> TORNEOS
+              </a>
+              <a routerLink="/admin/usuarios" (click)="closeDropdowns()">
+                <i class="fas fa-users icon-sm" aria-hidden="true"></i> USUARIOS
+              </a>
+            </div>
+          }
         </li>
 
         <li>
           <a routerLink="/admin/manual" class="btn-manual-reserva" (click)="closeDropdowns()">
-            <i class="fas fa-phone-alt icon-mini"></i> RESERVA MANUAL
+            <i class="fas fa-phone-alt icon-mini" aria-hidden="true"></i> RESERVA MANUAL
           </a>
         </li>
       </ul>
@@ -49,28 +54,30 @@
 
     <!-- LADO DERECHO: USUARIO -->
     <div class="nav-right">
-      <div class="user-menu-wrap" [class.open]="showUserDropdown">
-        <div class="avatar-trigger" (click)="toggleUser($event)" title="Opciones de Administrador">
-          {{ (authService.nombre$ | async)?.substring(0, 1) }}
+      <div class="user-menu-wrap" [class.open]="showUserDropdown()">
+        <div class="avatar-trigger" (click)="toggleUser($event)" title="Opciones de Administrador" [attr.aria-expanded]="showUserDropdown()" aria-haspopup="true">
+          {{ nombre()?.substring(0, 1) }}
         </div>
         
-        <div class="dropdown-menu user-dropdown" *ngIf="showUserDropdown">
-          <div class="user-header">
-            <span class="name">{{ authService.nombre$ | async }}</span>
-            <span class="role">Administrador</span>
+        @if (showUserDropdown()) {
+          <div class="dropdown-menu user-dropdown">
+            <div class="user-header">
+              <span class="name">{{ nombre() }}</span>
+              <span class="role">Administrador</span>
+            </div>
+            <div class="divider"></div>
+            <a routerLink="/home" (click)="closeDropdowns()">
+              <i class="fas fa-globe" aria-hidden="true"></i> IR A LA WEB PÚBLICA
+            </a>
+            <a routerLink="/perfil" (click)="closeDropdowns()">
+              <i class="fas fa-user-cog" aria-hidden="true"></i> CONFIGURACIÓN DE PERFIL
+            </a>
+            <div class="divider"></div>
+            <a (click)="logout()" class="logout-link">
+              <i class="fas fa-sign-out-alt" aria-hidden="true"></i> CERRAR SESIÓN
+            </a>
           </div>
-          <div class="divider"></div>
-          <a routerLink="/home" (click)="closeDropdowns()">
-            <i class="fas fa-globe"></i> IR A LA WEB PÚBLICA
-          </a>
-          <a routerLink="/perfil" (click)="closeDropdowns()">
-            <i class="fas fa-user-cog"></i> CONFIGURACIÓN DE PERFIL
-          </a>
-          <div class="divider"></div>
-          <a (click)="logout()" class="logout-link">
-            <i class="fas fa-sign-out-alt"></i> CERRAR SESIÓN
-          </a>
-        </div>
+        }
       </div>
     </div>
   </div>

@@ -1,13 +1,15 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { API_BASE_URL } from '../shared/api.config';
+import type { Pista } from '../shared/models';
 
 interface Dia {
-  fecha: string;
-  diaLetra: string;
-  diaNum: number;
-  mes: string;
+  readonly fecha: string;
+  readonly diaLetra: string;
+  readonly diaNum: number;
+  readonly mes: string;
 }
 
 @Component({
@@ -16,19 +18,22 @@ interface Dia {
   imports: [CommonModule, FormsModule],
   templateUrl: './reservas.html',
   styleUrl: './reservas.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReservasComponent implements OnInit {
-  diasDisponibles: Dia[] = [];
-  horasDisponibles: string[] = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30', '21:00', '22:30'];
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = inject(API_BASE_URL);
+
+  readonly diasDisponibles = signal<Dia[]>([]);
+  readonly horasDisponibles = signal<readonly string[]>([
+    '09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30', '21:00', '22:30'
+  ]);
   
-  fechaSeleccionada: string | null = null;
-  horaSeleccionada: string | null = null;
-  pistaSeleccionada: any = null;
-
-  pistasDisponibles: any[] = [];
-  cargando: boolean = false;
-
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  readonly fechaSeleccionada = signal<string | null>(null);
+  readonly horaSeleccionada = signal<string | null>(null);
+  readonly pistaSeleccionada = signal<Pista | null>(null);
+  readonly pistasDisponibles = signal<Pista[]>([]);
+  readonly cargando = signal(false);
 
   ngOnInit() {
     this.generarDias();
@@ -37,86 +42,88 @@ export class ReservasComponent implements OnInit {
   generarDias() {
     const nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
     const nombresMeses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const dias: Dia[] = [];
 
     for (let i = 0; i < 14; i++) {
-        let date = new Date();
-        date.setDate(date.getDate() + i);
-        
-        let localISO = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-        
-        this.diasDisponibles.push({
-            fecha: localISO,
-            diaLetra: nombresDias[date.getDay()],
-            diaNum: date.getDate(),
-            mes: nombresMeses[date.getMonth()]
-        });
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      const localISO = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+      
+      dias.push({
+        fecha: localISO,
+        diaLetra: nombresDias[date.getDay()],
+        diaNum: date.getDate(),
+        mes: nombresMeses[date.getMonth()]
+      });
     }
+    this.diasDisponibles.set(dias);
   }
 
   seleccionarDia(fecha: string) {
-    this.fechaSeleccionada = fecha;
-    this.pistaSeleccionada = null;
+    this.fechaSeleccionada.set(fecha);
+    this.pistaSeleccionada.set(null);
     this.comprobarDisponibilidad();
   }
 
   seleccionarHora(hora: string) {
-    this.horaSeleccionada = hora;
-    this.pistaSeleccionada = null;
+    this.horaSeleccionada.set(hora);
+    this.pistaSeleccionada.set(null);
     this.comprobarDisponibilidad();
   }
 
-  seleccionarPista(pista: any) {
-    this.pistaSeleccionada = pista;
+  seleccionarPista(pista: Pista) {
+    this.pistaSeleccionada.set(pista);
   }
 
   comprobarDisponibilidad() {
-      if (this.fechaSeleccionada && this.horaSeleccionada) {
-          const url = `http://localhost:8080/api/pistas/disponibles?fecha=${this.fechaSeleccionada}&hora=${this.horaSeleccionada}:00`;
-          this.http.get<any[]>(url)
-            .subscribe({
-                next: (data) => {
-                    this.pistasDisponibles = data;
-                    this.cdr.detectChanges();
-                },
-                error: (err) => console.error("Error obteniendo disponibilidad", err)
-            });
-      } else {
-          this.pistasDisponibles = [];
-      }
+    const fecha = this.fechaSeleccionada();
+    const hora = this.horaSeleccionada();
+    
+    if (fecha && hora) {
+      const url = `${this.apiUrl}/pistas/disponibles?fecha=${fecha}&hora=${hora}:00`;
+      this.http.get<Pista[]>(url).subscribe({
+        next: (data) => this.pistasDisponibles.set(data),
+        error: (err) => console.error('Error obteniendo disponibilidad', err)
+      });
+    } else {
+      this.pistasDisponibles.set([]);
+    }
   }
 
   guardarReserva() {
-    if (!this.pistaSeleccionada || !this.fechaSeleccionada || !this.horaSeleccionada) {
-      return;
-    }
+    const pista = this.pistaSeleccionada();
+    const fecha = this.fechaSeleccionada();
+    const hora = this.horaSeleccionada();
+    
+    if (!pista || !fecha || !hora) return;
 
-    this.cargando = true;
+    this.cargando.set(true);
 
+    // Payload actualizado: enviamos pistaId como campo plano (DTO del backend)
     const reservaData = {
-      pista: { id: this.pistaSeleccionada.id },
-      fecha: this.fechaSeleccionada,
-      hora: `${this.horaSeleccionada}:00`
+      pistaId: pista.id,
+      fecha,
+      hora: `${hora}:00`
     };
 
-    this.http.post('http://localhost:8080/api/reservas', reservaData).subscribe({
+    this.http.post(`${this.apiUrl}/reservas`, reservaData).subscribe({
       next: () => {
-        alert("¡Reserva confirmada con éxito!");
+        alert('Reserva confirmada con éxito!');
         this.resetearFlujo();
       },
       error: (err) => {
-        console.error("Error al guardar reserva:", err);
-        alert(err.error || "Ocurrió un error inesperado.");
+        // El interceptor ya normaliza el error para que err.error sea un string
+        alert(err.error || 'Ocurrió un error inesperado.');
       }
     }).add(() => {
-      this.cargando = false;
-      this.cdr.detectChanges();
+      this.cargando.set(false);
     });
   }
 
   resetearFlujo() {
-      this.fechaSeleccionada = null;
-      this.horaSeleccionada = null;
-      this.pistaSeleccionada = null;
-      this.pistasDisponibles = [];
+    this.fechaSeleccionada.set(null);
+    this.horaSeleccionada.set(null);
+    this.pistaSeleccionada.set(null);
+    this.pistasDisponibles.set([]);
   }
 }

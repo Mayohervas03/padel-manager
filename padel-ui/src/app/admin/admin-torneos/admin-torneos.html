@@ -1,0 +1,101 @@
+<div class="admin-torneos-container">
+  <div class="header d-flex justify-content-between align-items-center mb-4">
+    <h2>Gestión de Torneos</h2>
+    <button class="btn btn-primary btn-neon" (click)="toggleFormulario()">
+      <i class="fas" [class.fa-times]="mostrarFormulario()" [class.fa-plus]="!mostrarFormulario()"></i>
+      {{ mostrarFormulario() ? 'Cancelar' : 'Nuevo Torneo' }}
+    </button>
+  </div>
+
+  @if (mostrarFormulario()) {
+    <div class="card form-card mb-4">
+      <div class="card-body">
+        <h3 class="card-title text-neon">{{ nuevoTorneo.id ? 'Editar Torneo' : 'Crear Torneo' }}</h3>
+        <form (ngSubmit)="guardarTorneo()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Título</label>
+              <input type="text" class="form-control" name="titulo" [(ngModel)]="nuevoTorneo.titulo">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Imagen URL</label>
+              <input type="url" class="form-control" name="imagenUrl" [(ngModel)]="nuevoTorneo.imagenUrl">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" name="descripcion" [(ngModel)]="nuevoTorneo.descripcion" rows="3"></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Fecha Inicio</label>
+              <input type="date" class="form-control" name="fechaInicio" [(ngModel)]="nuevoTorneo.fechaInicio">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Fecha Fin</label>
+              <input type="date" class="form-control" name="fechaFin" [(ngModel)]="nuevoTorneo.fechaFin">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Precio Pareja (€)</label>
+              <input type="number" class="form-control" name="precioPareja" [(ngModel)]="nuevoTorneo.precioPareja">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Max. Parejas</label>
+              <input type="number" class="form-control" name="maxParejas" [(ngModel)]="nuevoTorneo.maxParejas">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success"><i class="fas fa-save" aria-hidden="true"></i> Guardar</button>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (!mostrarFormulario()) {
+    <div class="card table-card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <caption class="visually-hidden">Lista de torneos registrados</caption>
+            <thead class="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Fechas</th>
+                <th>Info</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of torneos(); track t.id) {
+                <tr>
+                  <td>{{ t.id }}</td>
+                  <td><strong>{{ t.titulo }}</strong></td>
+                  <td>{{ t.fechaInicio | date:'dd/MM/yyyy' }} - {{ t.fechaFin | date:'dd/MM/yyyy' }}</td>
+                  <td>
+                    Max: {{ t.maxParejas }} parejas<br>
+                    <span class="text-success">{{ t.precioPareja | currency:'EUR':'symbol' }}</span>
+                  </td>
+                  <td>
+                    <a class="btn btn-sm btn-info me-2 text-white" [routerLink]="['/admin/torneos', t.id]" title="Gestionar Parejas">
+                      <i class="fas fa-users me-1" aria-hidden="true"></i> Gestionar Parejas
+                    </a>
+                    <button class="btn btn-sm btn-warning me-2" (click)="editarTorneo(t)" title="Editar">
+                      <i class="fas fa-edit" aria-hidden="true"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="borrarTorneo(t.id)" title="Borrar">
+                      <i class="fas fa-trash" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="text-center py-4 text-muted">No hay torneos creados. Crea el primero.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>

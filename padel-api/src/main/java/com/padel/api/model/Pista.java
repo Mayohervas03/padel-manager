@@ -1,10 +1,12 @@
 package com.padel.api.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "pistas")
 public class Pista {
 
@@ -12,13 +14,13 @@ public class Pista {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nombre; // Ej: "Pista 1 (Cristal)"
+    private String nombre;
 
-    private String tipo;      // Ej: "Cristal", "Muro"
-    
-    private String ubicacion; // Ej: "Indoor", "Outdoor"
+    private String tipo;
 
-    private Double precio; // Ej: 12.50
+    private String ubicacion;
+
+    private Double precio;
 
     @Column(columnDefinition = "boolean default true")
     private Boolean activo = true;

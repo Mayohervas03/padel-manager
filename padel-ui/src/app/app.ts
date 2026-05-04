@@ -1,25 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from './auth/auth.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  title = 'padel-ui';
+  private readonly router = inject(Router);
+  readonly authService = inject(AuthService);
 
-  constructor(public authService: AuthService, private router: Router) {}
+  readonly hideNavbar = signal(false);
+  readonly showMobileMenu = signal(false);
+  readonly isScrolled = signal(false);
+  readonly nombre = toSignal(this.authService.nombre$);
 
-  get isAdminRoute(): boolean {
-    return this.router.url.startsWith('/admin');
+  constructor() {
+    this.router.events.subscribe(() => {
+      const url = this.router.url;
+      this.hideNavbar.set(
+        url.startsWith('/admin') || url === '/login' || url === '/register'
+      );
+    });
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.isScrolled.set(window.scrollY > 50);
   }
 
   logout() {
-    this.authService.logout();
+    this.authService.logoutAndRedirect();
   }
 }

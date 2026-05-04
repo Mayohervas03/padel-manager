@@ -35,40 +35,46 @@
       </div>
     </div>
 
-    <table class="reservas-table" *ngIf="pistas.length > 0; else noPistas">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Tipo</th>
-          <th>Ubicación</th>
-          <th>Precio</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let pista of pistas">
-          <td>#{{ pista.id }}</td>
-          <td><b>{{ pista.nombre }}</b></td>
-          <td>{{ pista.tipo }}</td>
-          <td>{{ pista.ubicacion }}</td>
-          <td>{{ pista.precio }} €</td>
-          <td>
-            <span *ngIf="pista.activo" style="color:green; font-weight:bold;">Activa</span>
-            <span *ngIf="!pista.activo" style="color:red; font-weight:bold;">Inactiva</span>
-          </td>
-          <td>
-            <button class="btn btn-danger" (click)="borrarPista(pista.id)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <ng-template #noPistas>
+    @if (pistas().length > 0) {
+      <table class="reservas-table">
+        <caption class="visually-hidden">Lista de pistas registradas</caption>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Ubicación</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pista of pistas(); track pista.id) {
+            <tr>
+              <td>#{{ pista.id }}</td>
+              <td><b>{{ pista.nombre }}</b></td>
+              <td>{{ pista.tipo }}</td>
+              <td>{{ pista.ubicacion }}</td>
+              <td>{{ pista.precio }} €</td>
+              <td>
+                @if (pista.activo) {
+                  <span style="color:green; font-weight:bold;">Activa</span>
+                } @else {
+                  <span style="color:red; font-weight:bold;">Inactiva</span>
+                }
+              </td>
+              <td>
+                <button class="btn btn-danger" (click)="borrarPista(pista.id)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
       <div class="empty-state">
         <p>No hay pistas creadas.</p>
       </div>
-    </ng-template>
+    }
   </div>
 </div>

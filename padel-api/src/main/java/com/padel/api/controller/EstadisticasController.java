@@ -1,59 +1,36 @@
 package com.padel.api.controller;
 
-import com.padel.api.repository.ReservaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.padel.api.service.EstadisticasService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/stats")
-@CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class EstadisticasController {
 
-    @Autowired
-    private ReservaRepository reservaRepository;
+    private final EstadisticasService estadisticasService;
 
     @GetMapping("/ocupacion")
     public ResponseEntity<Map<String, Long>> getOcupacion() {
-        List<Object[]> results = reservaRepository.getOcupacionPistas();
-        Map<String, Long> ocupacion = new HashMap<>();
-        for (Object[] row : results) {
-            String pista = (String) row[0];
-            Long total = ((Number) row[1]).longValue();
-            ocupacion.put(pista, total);
-        }
-        return ResponseEntity.ok(ocupacion);
+        return ResponseEntity.ok(estadisticasService.getOcupacion());
     }
 
     @GetMapping("/ingresos")
     public ResponseEntity<List<Map<String, Object>>> getIngresos() {
-        LocalDate limite = LocalDate.now().minusDays(30);
-        List<Object[]> results = reservaRepository.getIngresosDias(limite);
-        
-        List<Map<String, Object>> ingresos = new ArrayList<>();
-        for (Object[] row : results) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("fecha", row[0].toString());
-            map.put("total", ((Number) row[1]).doubleValue());
-            ingresos.add(map);
-        }
-        return ResponseEntity.ok(ingresos);
+        return ResponseEntity.ok(estadisticasService.getIngresos());
     }
 
     @GetMapping("/horas")
     public ResponseEntity<Map<String, Long>> getHoras() {
-        List<Object[]> results = reservaRepository.getOcupacionHoras();
-        Map<String, Long> horas = new HashMap<>();
-        for (Object[] row : results) {
-            String hora = row[0].toString();
-            Long total = ((Number) row[1]).longValue();
-            horas.put(hora, total);
-        }
-        return ResponseEntity.ok(horas);
+        return ResponseEntity.ok(estadisticasService.getHoras());
     }
 }

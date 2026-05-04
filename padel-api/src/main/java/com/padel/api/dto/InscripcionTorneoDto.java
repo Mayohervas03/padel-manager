@@ -1,0 +1,31 @@
+package com.padel.api.dto;
+
+import lombok.Data;
+import com.padel.api.model.InscripcionTorneo;
+
+import java.time.LocalDate;
+
+@Data
+public class InscripcionTorneoDto {
+    private Long id;
+    private Long torneoId;
+    private String usuarioNombre;
+    private String usuarioEmail;
+    private String nombreCompanero;
+    private String categoria;
+    private boolean pagado;
+    private LocalDate fechaInscripcion;
+
+    public static InscripcionTorneoDto fromEntity(InscripcionTorneo inscripcion) {
+        InscripcionTorneoDto dto = new InscripcionTorneoDto();
+        dto.setId(inscripcion.getId());
+        dto.setTorneoId(inscripcion.getTorneo().getId());
+        dto.setUsuarioNombre(inscripcion.getUser1().getNombre());
+        dto.setUsuarioEmail(inscripcion.getUser1().getEmail());
+        dto.setNombreCompanero(inscripcion.getNombreCompanero());
+        dto.setCategoria(inscripcion.getCategoria());
+        dto.setPagado(inscripcion.isPagado());
+        dto.setFechaInscripcion(inscripcion.getFechaInscripcion());
+        return dto;
+    }
+}

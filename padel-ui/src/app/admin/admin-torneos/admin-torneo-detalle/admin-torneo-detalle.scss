@@ -1,0 +1,80 @@
+.bg-marino { background-color: #0b132b !important; }
+.text-marino { color: #0b132b; }
+.text-neon { color: #ccff00; }
+
+.font-oswald {
+  font-family: 'Oswald', sans-serif;
+}
+
+.admin-detalle-wrapper {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.btn-pill {
+  border-radius: 50px;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  color: #6c757d;
+  padding: 5px 20px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #f1f3f5;
+  }
+  
+  &.active {
+    background-color: #0b132b;
+    color: #ccff00;
+    border-color: #0b132b;
+    box-shadow: 0 4px 10px rgba(11, 19, 43, 0.3);
+  }
+}
+
+.badge-elite {
+  background-color: rgba(11, 19, 43, 0.05);
+  color: #0b132b;
+  border: 1px solid rgba(11, 19, 43, 0.1);
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #0b132b;
+  color: #ccff00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.cursor-pointer { cursor: pointer; }
+.transition-all { transition: all 0.3s ease; }
+
+.payment-toggle:hover i {
+  transform: scale(1.1);
+}
+
+.fade-in-row {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-outline-marino {
+  color: #0b132b;
+  border-color: #0b132b;
+  &:hover {
+    background-color: #0b132b;
+    color: #fff;
+  }
+}

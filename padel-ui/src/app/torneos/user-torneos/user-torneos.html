@@ -1,0 +1,103 @@
+<div class="user-torneos-wrapper">
+  <div class="page-header">
+    <h1>Torneos <span class="accent">Élite</span></h1>
+    <p>Compite, diviértete y demuestra tu nivel en nuestros torneos exclusivos.</p>
+  </div>
+
+  <div class="content-grid">
+    @if (isLoading()) {
+      @for (s of [1,2,3]; track s) {
+        <div class="skeleton-card">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </div>
+          <div class="skeleton-footer"></div>
+        </div>
+      }
+    }
+
+    @if (!isLoading() && torneos().length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-info-circle" aria-hidden="true"></i>
+        <h4>No hay torneos activos</h4>
+        <p>Revisa la cartelera más adelante.</p>
+      </div>
+    }
+
+    @for (torneo of torneos(); track torneo.id) {
+      <div class="item-card">
+        <div class="card-img-wrapper">
+          <img [src]="torneo.imagenUrl || 'assets/img/default-torneo.jpg'" class="card-img-top" alt="Imagen del torneo {{ torneo.titulo }}" onerror="this.src='https://images.unsplash.com/photo-1554068865-24cecd4e34f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'">
+          <div class="precio-badge">{{ torneo.precioPareja | currency:'EUR':'symbol' }}/pareja</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ torneo.titulo }}</h3>
+          <p class="card-text">{{ torneo.descripcion }}</p>
+          <ul class="meta-list">
+            <li><i class="fas fa-calendar-alt" aria-hidden="true"></i> {{ torneo.fechaInicio | date:'dd/MM/yyyy' }} - {{ torneo.fechaFin | date:'dd/MM/yyyy' }}</li>
+            <li><i class="fas fa-users" aria-hidden="true"></i> Límite: {{ torneo.maxParejas }} parejas</li>
+          </ul>
+          <button class="btn-neon w-100" (click)="abrirModal(torneo)">
+            <i class="fas fa-trophy" aria-hidden="true"></i> Inscribirse
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <i class="fas fa-info-circle" aria-hidden="true"></i>
+        <h4>No hay torneos activos</h4>
+        <p>Revisa la cartelera más adelante.</p>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal Overlay -->
+@if (modalVisible()) {
+  <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-dialog-custom">
+      <div class="modal-content-custom">
+        <div class="modal-header-custom">
+          <h4 id="modal-title"><i class="fas fa-clipboard-list" aria-hidden="true"></i> Inscripción</h4>
+          <button class="btn-close-custom" (click)="cerrarModal()" aria-label="Cerrar modal"><i class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
+        <div class="modal-body-custom">
+
+          @if (mensajeExito()) {
+            <div class="alert-success">
+              <i class="fas fa-check-circle" aria-hidden="true"></i> {{ mensajeExito() }}
+            </div>
+          }
+          @if (mensajeError()) {
+            <div class="alert-danger">
+              <i class="fas fa-exclamation-circle" aria-hidden="true"></i> {{ mensajeError() }}
+            </div>
+          }
+
+          @if (!mensajeExito()) {
+            <form (ngSubmit)="inscribirse()">
+              <h5>{{ torneoSeleccionado()?.titulo }}</h5>
+              <div class="form-group">
+                <label>Nombre del Compañero/a</label>
+                <input type="text" class="form-control" name="nombreCompanero" [(ngModel)]="requestInscripcion().nombreCompanero" placeholder="Ej: Fernando Belasteguín" required>
+              </div>
+              <div class="form-group">
+                <label>Categoría</label>
+                <select class="form-select" name="categoria" [(ngModel)]="requestInscripcion().categoria" required>
+                  <option value="" disabled selected>-- Elige una categoría --</option>
+                  @for (cat of categorias; track cat) {
+                    <option [value]="cat">{{ cat }}</option>
+                  }
+                </select>
+              </div>
+              <button type="submit" class="btn-neon w-100">Confirmar Inscripción</button>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -1,38 +1,29 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from './dashboard.service';
+import type { DashboardStats } from '../shared/models';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.html',
-  styleUrls: []
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
+  private readonly dashboardService = inject(DashboardService);
 
-  stats: any = {
-    totalUsuarios: 0,
-    totalPistas: 0,
-    reservasTotales: 0,
-    reservasHoy: 0
-  };
-
-  cargando = true;
-
-  constructor(private dashboardService: DashboardService, private cdr: ChangeDetectorRef) { }
+  readonly stats = signal<DashboardStats | null>(null);
+  readonly cargando = signal(true);
 
   ngOnInit(): void {
     this.dashboardService.getStats().subscribe({
       next: (data) => {
-        this.stats = data;
-        this.cargando = false;
-        this.cdr.detectChanges();
+        this.stats.set(data);
+        this.cargando.set(false);
       },
-      error: (err) => {
-        console.error('Error al cargar dashboard:', err);
-        this.cargando = false;
-        this.cdr.detectChanges();
+      error: () => {
+        this.cargando.set(false);
       }
     });
   }

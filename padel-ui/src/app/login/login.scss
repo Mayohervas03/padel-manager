@@ -1,0 +1,331 @@
+// =====================================================
+// LOGIN PAGE - Élite Padel Premium Dark
+// =====================================================
+
+$bg-dark:      #0A192F;
+$bg-card:      rgba(17, 34, 64, 0.85);
+$neon-green:   #CCFF00;
+$neon-cyan:    #00D4FF;
+$text-primary: #E6F1FF;
+$text-secondary:#8892B0;
+$text-muted:   #5C6B8A;
+$border-glass: rgba(255,255,255,0.08);
+$shadow-card:  0 8px 32px rgba(0,0,0,0.4);
+
+@mixin glassmorphism {
+  background: $bg-card;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid $border-glass;
+  box-shadow: $shadow-card;
+}
+
+// =====================================================
+// AUTH PAGE LAYOUT
+// =====================================================
+.auth-page {
+  min-height: 100vh;
+  background: $bg-dark;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+}
+
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.auth-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(204,255,0,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0,212,255,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(204,255,0,0.04) 0%, transparent 50%);
+}
+
+.auth-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+.auth-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// =====================================================
+// AUTH CARD
+// =====================================================
+.auth-card {
+  @include glassmorphism;
+  border-radius: 24px;
+  padding: 48px 40px;
+
+  @media (max-width: 480px) {
+    padding: 36px 24px;
+  }
+}
+
+// =====================================================
+// BRAND
+// =====================================================
+.auth-brand {
+  text-align: center;
+  margin-bottom: 36px;
+
+  .brand-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg, rgba(204,255,0,0.15), rgba(0,212,255,0.1));
+    border: 1px solid rgba(204,255,0,0.25);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i { font-size: 1.5rem; color: $neon-green; }
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .brand-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: $text-primary;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .brand-subtitle {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: $text-secondary;
+    letter-spacing: 1px;
+  }
+
+  .brand-logo-svg {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 16px;
+    display: block;
+    filter: drop-shadow(0 0 12px rgba(204,255,0,0.25));
+    animation: floatLogo 3s ease-in-out infinite;
+  }
+}
+
+@keyframes floatLogo {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+// =====================================================
+// ALERTS
+// =====================================================
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  animation: fadeInUp 0.3s ease-out;
+
+  i { font-size: 1rem; flex-shrink: 0; }
+
+  &.alert-warning {
+    background: rgba(255,193,7,0.1);
+    border: 1px solid rgba(255,193,7,0.2);
+    color: #ffc107;
+  }
+
+  &.alert-error {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.2);
+    color: #FF6B6B;
+  }
+
+  &.alert-success {
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.2);
+    color: #4ADE80;
+  }
+}
+
+// =====================================================
+// FORM
+// =====================================================
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $text-secondary;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-icon {
+    position: absolute;
+    left: 16px;
+    color: $text-muted;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid $border-glass;
+    border-radius: 12px;
+    color: $text-primary;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s ease;
+
+    &::placeholder {
+      color: $text-muted;
+    }
+
+    &:focus {
+      border-color: rgba(204,255,0,0.3);
+      box-shadow: 0 0 15px rgba(204,255,0,0.05);
+      background: rgba(255,255,255,0.05);
+
+      ~ .input-icon {
+        color: $neon-green;
+      }
+    }
+  }
+}
+
+.error-text {
+  font-size: 0.8rem;
+  color: #FF6B6B;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: '•';
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+}
+
+// =====================================================
+// SUBMIT BUTTON
+// =====================================================
+.btn-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  margin-top: 8px;
+  background: $neon-green;
+  color: $bg-dark;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(204,255,0,0.3);
+
+  i { font-size: 0.9rem; transition: transform 0.3s ease; }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(204,255,0,0.5);
+
+    i { transform: translateX(4px); }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+// =====================================================
+// FOOTER
+// =====================================================
+.auth-footer {
+  text-align: center;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid $border-glass;
+
+  p {
+    color: $text-secondary;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  a {
+    color: $neon-green;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.3s ease;
+
+    &:hover { opacity: 0.8; }
+  }
+}
+
+// =====================================================
+// ANIMATIONS
+// =====================================================
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

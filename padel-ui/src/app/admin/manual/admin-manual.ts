@@ -1,139 +1,110 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../auth/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { API_BASE_URL } from '../../shared/api.config';
+import type { Usuario, Pista } from '../../shared/models';
 
 @Component({
   selector: 'app-admin-manual',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admin-manual.html',
-  styleUrls: ['./admin-manual.scss']
+  styleUrls: ['./admin-manual.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminManualComponent implements OnInit {
-  emailBuscado = '';
-  usuarioEncontrado: any = null;
-  mensajeBusqueda = '';
+  private readonly http = inject(HttpClient);
+  private readonly route = inject(ActivatedRoute);
+  private readonly apiUrl = inject(API_BASE_URL);
 
-  reservaData: any = {
-    usuarioId: null,
-    pistaId: null,
-    fecha: '',
+  readonly emailBuscado = signal('');
+  readonly usuarioEncontrado = signal<Usuario | null>(null);
+  readonly mensajeBusqueda = signal('');
+
+  readonly reservaData = signal({
+    usuarioId: null as number | null,
+    pistaId: null as number | null,
+    fecha: new Date().toISOString().split('T')[0],
     hora: '09:00'
-  };
+  });
 
-  pistas: any[] = [];
-
-  mensajeExito = '';
-  mensajeError = '';
-
-  constructor(
-    private http: HttpClient, 
-    private authService: AuthService, 
-    private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute
-  ) {
-    const today = new Date();
-    this.reservaData.fecha = today.toISOString().split('T')[0];
-  }
+  readonly pistas = signal<Pista[]>([]);
+  readonly mensajeExito = signal('');
+  readonly mensajeError = signal('');
 
   ngOnInit() {
     this.cargarPistas();
     this.route.queryParams.subscribe(params => {
       const userId = params['userId'];
       if (userId) {
-        this.buscarUsuarioPorId(userId);
+        this.buscarUsuarioPorId(Number(userId));
       }
     });
   }
 
   cargarPistas() {
-    this.http.get<any[]>('http://localhost:8080/api/pistas').subscribe(data => {
-      this.pistas = data;
-      this.cdr.detectChanges();
+    this.http.get<Pista[]>(`${this.apiUrl}/pistas`).subscribe(data => {
+      this.pistas.set(data);
     });
   }
 
   buscarUsuario() {
-    this.mensajeBusqueda = '';
-    this.usuarioEncontrado = null;
-    this.reservaData.usuarioId = null;
-    this.mensajeExito = '';
-    this.mensajeError = '';
+    this.mensajeBusqueda.set('');
+    this.usuarioEncontrado.set(null);
+    this.reservaData.update(d => ({ ...d, usuarioId: null }));
+    this.mensajeExito.set('');
+    this.mensajeError.set('');
 
-    if (!this.emailBuscado) return;
+    if (!this.emailBuscado()) return;
 
-    this.http.get<any>(`http://localhost:8080/api/admin/usuarios/search?email=${this.emailBuscado}`, {
-      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-    }).subscribe({
+    this.http.get<Usuario>(`${this.apiUrl}/admin/usuarios/search?email=${this.emailBuscado()}`).subscribe({
       next: (user) => {
-        this.usuarioEncontrado = user;
-        this.reservaData.usuarioId = user.id;
-        this.mensajeBusqueda = '✅ Usuario verificado';
-        this.checkFormState();
-        this.cdr.detectChanges();
+        this.usuarioEncontrado.set(user);
+        this.reservaData.update(d => ({ ...d, usuarioId: user.id }));
+        this.mensajeBusqueda.set('Usuario verificado');
       },
       error: () => {
-        this.mensajeBusqueda = '❌ Usuario no encontrado';
-        this.checkFormState();
-        this.cdr.detectChanges();
+        this.mensajeBusqueda.set('Usuario no encontrado');
       }
     });
   }
 
   buscarUsuarioPorId(id: number) {
-    this.http.get<any>(`http://localhost:8080/api/admin/usuarios/${id}`, {
-      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-    }).subscribe({
+    this.http.get<Usuario>(`${this.apiUrl}/admin/usuarios/${id}`).subscribe({
       next: (user) => {
-        this.usuarioEncontrado = user;
-        this.reservaData.usuarioId = user.id;
-        this.mensajeBusqueda = '✅ Usuario verificado (desde Gestión)';
-        this.checkFormState();
-        this.cdr.detectChanges();
+        this.usuarioEncontrado.set(user);
+        this.reservaData.update(d => ({ ...d, usuarioId: user.id }));
+        this.mensajeBusqueda.set('Usuario verificado (desde Gestion)');
       },
       error: () => {
-        this.mensajeBusqueda = '❌ Error al cargar usuario';
-        this.cdr.detectChanges();
+        this.mensajeBusqueda.set('Error al cargar usuario');
       }
     });
   }
 
-  checkFormState() {
-    console.log('=== ESTADO DEL FORMULARIO ===');
-    console.log('Datos Reserva:', this.reservaData);
-    console.log('Usuario Asignado:', this.usuarioEncontrado ? this.usuarioEncontrado.nombre : 'NO ASIGNADO');
-    const isValid = !!this.usuarioEncontrado && !!this.reservaData.pistaId && !!this.reservaData.fecha && !!this.reservaData.hora;
-    console.log('Válido para Confirmar:', isValid);
-  }
-
   crearReserva() {
-    this.mensajeExito = '';
-    this.mensajeError = '';
+    this.mensajeExito.set('');
+    this.mensajeError.set('');
 
-    if (!this.reservaData.usuarioId || !this.reservaData.pistaId || !this.reservaData.fecha || !this.reservaData.hora) {
-      this.mensajeError = 'Rellena todos los campos';
+    const data = this.reservaData();
+    if (!data.usuarioId || !data.pistaId || !data.fecha || !data.hora) {
+      this.mensajeError.set('Rellena todos los campos');
       return;
     }
 
-    this.http.post('http://localhost:8080/api/admin/reservas/manual', this.reservaData, {
-      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-    }).subscribe({
+    this.http.post(`${this.apiUrl}/admin/reservas/manual`, data).subscribe({
       next: () => {
-        this.mensajeExito = 'Reserva forzada con éxito.';
-        this.reservaData.usuarioId = null;
-        this.reservaData.pistaId = null;
-        this.usuarioEncontrado = null;
-        this.emailBuscado = '';
-        this.mensajeBusqueda = '';
-        this.checkFormState();
-        this.cdr.detectChanges();
+        this.mensajeExito.set('Reserva forzada con éxito.');
+        this.reservaData.update(d => ({ ...d, usuarioId: null, pistaId: null }));
+        this.usuarioEncontrado.set(null);
+        this.emailBuscado.set('');
+        this.mensajeBusqueda.set('');
       },
       error: (err) => {
-        this.mensajeError = err.error || 'Error al crear la reserva';
-        this.cdr.detectChanges();
+        // El interceptor normaliza el error
+        this.mensajeError.set(err.error || 'Error al crear la reserva');
       }
     });
   }

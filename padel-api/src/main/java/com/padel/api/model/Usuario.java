@@ -3,10 +3,12 @@ package com.padel.api.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data // Esto de Lombok nos crea los Getters y Setters automáticamente
+@Getter
+@Setter
 @Table(name = "usuarios")
 public class Usuario {
 
@@ -17,11 +19,11 @@ public class Usuario {
     private String nombre;
 
     @Column(unique = true)
-    @Email(message = "Email debe ser válido")
+    @Email(message = "Email debe ser valido")
     private String email;
 
-    @NotBlank(message = "La contraseña no puede estar vacía")
+    @NotBlank(message = "La contrasena no puede estar vacia")
     private String password;
 
-    private String rol; // Por ahora usaremos un String simple ("ADMIN", "JUGADOR")
+    private String rol;
 }

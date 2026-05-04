@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -6,110 +6,133 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { API_BASE_URL } from '../shared/api.config';
+import type { PerfilDTO, Reserva, Clase, PasswordChangeRequest } from '../shared/models';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './perfil.html',
-  styleUrl: './perfil.scss'
+  styleUrl: './perfil.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PerfilComponent implements OnInit {
-  perfil: any = null;
-  reservas: any[] = [];
-  clases: any[] = [];
+  private readonly authService = inject(AuthService);
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = inject(API_BASE_URL);
+
+  readonly perfil = signal<PerfilDTO | null>(null);
+  readonly reservas = signal<Reserva[]>([]);
+  readonly clases = signal<Clase[]>([]);
   
-  showPasswordForm = false;
-  passwordData = { oldPassword: '', newPassword: '' };
-  mensajeExito = '';
-  mensajeError = '';
-
-  isLoading = true;
-  hayError = false;
-
-  constructor(
-    private authService: AuthService, 
-    private http: HttpClient, 
-    private cdr: ChangeDetectorRef
-  ) {}
+  readonly showPasswordForm = signal(false);
+  readonly passwordData = signal<PasswordChangeRequest>({ oldPassword: '', newPassword: '' });
+  readonly mensajeExito = signal('');
+  readonly mensajeError = signal('');
+  readonly isLoading = signal(true);
+  readonly hayError = signal(false);
 
   ngOnInit() {
     this.cargarDatos();
   }
 
   cargarDatos() {
-    this.isLoading = true;
-    this.hayError = false;
-    this.cdr.detectChanges();
+    this.isLoading.set(true);
+    this.hayError.set(false);
 
-    const perfil$ = this.authService.getPerfil().pipe(catchError(err => of(null)));
-    
-    const tokenOptions = { headers: { Authorization: `Bearer ${this.authService.getToken()}` } };
-    
-    const reservas$ = this.http.get<any[]>('http://localhost:8080/api/reservas', tokenOptions)
-      .pipe(catchError(err => of(null)));
-      
-    const clases$ = this.http.get<any[]>('http://localhost:8080/api/clases/mis-clases', tokenOptions)
-      .pipe(catchError(err => of(null)));
+    const perfil$ = this.authService.getPerfil().pipe(catchError(() => of(null)));
+    const reservas$ = this.http.get<Reserva[]>(`${this.apiUrl}/reservas`).pipe(catchError(() => of(null)));
+    const clases$ = this.http.get<Clase[]>(`${this.apiUrl}/clases/mis-clases`).pipe(catchError(() => of(null)));
 
     forkJoin([perfil$, reservas$, clases$]).subscribe({
       next: ([perfilData, reservasData, clasesData]) => {
         if (perfilData === null || reservasData === null || clasesData === null) {
-          this.hayError = true;
+          this.hayError.set(true);
         } else {
-          this.perfil = perfilData;
-          this.reservas = reservasData;
-          this.clases = clasesData;
+          this.perfil.set(perfilData);
+          this.reservas.set(reservasData);
+          this.clases.set(clasesData);
         }
-        this.isLoading = false;
-        this.cdr.detectChanges();
+        this.isLoading.set(false);
       },
       error: () => {
-        this.hayError = true;
-        this.isLoading = false;
-        this.cdr.detectChanges();
+        this.hayError.set(true);
+        this.isLoading.set(false);
       }
     });
   }
 
+  /**
+   * Formatea una fecha ISO a formato legible en español
+   * Ej: "2026-05-01" -> "Jue, 1 Mayo"
+   */
+  formatearFecha(fechaStr: string): string {
+    const fecha = new Date(fechaStr + 'T00:00:00');
+    const dias = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    
+    const diaSemana = dias[fecha.getDay()];
+    const diaNum = fecha.getDate();
+    const mes = meses[fecha.getMonth()];
+    
+    return `${diaSemana}, ${diaNum} ${mes}`;
+  }
+
+  /**
+   * Formatea una hora de formato "HH:MM:SS" a "HH:MMh"
+   */
+  formatearHora(horaStr: string): string {
+    return horaStr.substring(0, 5) + 'h';
+  }
+
+  /**
+   * Determina el nivel/rango del jugador basado en partidos del mes
+   */
+  getRangoJugador(partidosMes: number): { titulo: string; icono: string; color: string } {
+    if (partidosMes >= 20) return { titulo: 'Leyenda', icono: 'fa-crown', color: '#FFD700' };
+    if (partidosMes >= 12) return { titulo: 'Elite', icono: 'fa-star', color: '#CCFF00' };
+    if (partidosMes >= 6) return { titulo: 'Avanzado', icono: 'fa-medal', color: '#00D4FF' };
+    if (partidosMes >= 3) return { titulo: 'Intermedio', icono: 'fa-bolt', color: '#FF6B35' };
+    return { titulo: 'Principiante', icono: 'fa-seedling', color: '#A8E6CF' };
+  }
+
   cancelarReserva(id: number) {
-    if (confirm('¿Estás seguro de que deseas cancelar esta reserva? REGLA: Mínimo 24h de antelación.')) {
-      this.http.delete(`http://localhost:8080/api/reservas/${id}`, {
-        headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-      }).subscribe({
+    if (confirm('¿Estas seguro de que deseas cancelar esta reserva? REGLA: Minimo 24h de antelacion.')) {
+      this.http.delete(`${this.apiUrl}/reservas/${id}`).subscribe({
         next: () => {
-          this.cargarDatos(); // Reload all context safely
-          alert('Reserva cancelada correctamente.');
+          this.cargarDatos();
         },
         error: (err) => {
-          alert(err.error || 'No se pudo cancelar la reserva. Verifica la antelación (24h).');
+          alert(err.error || 'No se pudo cancelar la reserva. Verifica la antelacion (24h).');
         }
       });
     }
   }
 
   togglePasswordForm() {
-    this.showPasswordForm = !this.showPasswordForm;
-    this.mensajeExito = '';
-    this.mensajeError = '';
+    this.showPasswordForm.update(v => !v);
+    this.mensajeExito.set('');
+    this.mensajeError.set('');
   }
 
   cambiarPassword() {
-    this.mensajeExito = '';
-    this.mensajeError = '';
-    this.authService.cambiarPassword(this.passwordData).subscribe({
-      next: (res) => {
-        this.mensajeExito = res;
-        this.passwordData = { oldPassword: '', newPassword: '' };
-        setTimeout(() => this.showPasswordForm = false, 2000);
+    this.mensajeExito.set('');
+    this.mensajeError.set('');
+    this.authService.cambiarPassword(this.passwordData()).subscribe({
+      next: () => {
+        this.mensajeExito.set('Contraseña actualizada correctamente.');
+        this.passwordData.set({ oldPassword: '', newPassword: '' });
+        setTimeout(() => this.showPasswordForm.set(false), 2000);
       },
       error: (err) => {
-        this.mensajeError = err.error || 'Error al cambiar contraseña';
+        this.mensajeError.set(err.error || 'Error al cambiar contraseña');
       }
     });
   }
 
   logout() {
-    this.authService.logout();
+    this.authService.logoutAndRedirect();
   }
 }

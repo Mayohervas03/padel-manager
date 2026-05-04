@@ -1,53 +1,115 @@
-<div class="row justify-content-center mt-5">
-  <div class="col-md-6 col-lg-5">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h3 class="card-title text-center mb-4">Registro</h3>
+<div class="auth-page">
+  <div class="auth-bg">
+    <div class="auth-gradient"></div>
+    <div class="auth-grid"></div>
+  </div>
 
-        <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-          {{ errorMessage }}
+  <div class="auth-container">
+    <div class="auth-card">
+      <!-- Logo -->
+      <div class="auth-brand">
+        <svg class="brand-logo-svg" width="90" height="90" viewBox="0 0 680 680" role="img" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="ballClipRegister">
+              <circle cx="340" cy="340" r="176"/>
+            </clipPath>
+          </defs>
+          <polygon fill="#CCFF00" points="340,62 572,192 572,488 340,618 108,488 108,192"/>
+          <polygon fill="#0A192F" points="340,92 546,212 546,468 340,588 134,468 134,212"/>
+          <circle fill="#CCFF00" cx="340" cy="340" r="176"/>
+          <g clip-path="url(#ballClipRegister)">
+            <path fill="none" stroke="#0A192F" stroke-width="18" stroke-linecap="round" d="M 255 164 C 185 230, 185 310, 255 340 C 325 370, 325 450, 255 516" />
+            <path fill="none" stroke="#0A192F" stroke-width="18" stroke-linecap="round" d="M 425 164 C 495 230, 495 310, 425 340 C 355 370, 355 450, 425 516" />
+          </g>
+          <text fill="#0A192F" font-family="Arial Black, sans-serif" font-weight="900" font-size="110px" letter-spacing="-2px" x="340" y="268" text-anchor="middle" dominant-baseline="middle">EP</text>
+        </svg>
+        <div class="brand-text">
+          <span class="brand-title">ÉLITE PADEL</span>
+          <span class="brand-subtitle">Crea tu cuenta</span>
         </div>
-        <div *ngIf="successMessage" class="alert alert-success" role="alert">
-          {{ successMessage }}
+      </div>
+
+      <!-- Alerts -->
+      @if (errorMessage()) {
+        <div class="alert alert-error">
+          <i class="fas fa-times-circle"></i>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+      @if (successMessage()) {
+        <div class="alert alert-success">
+          <i class="fas fa-check-circle"></i>
+          <span>{{ successMessage() }}</span>
+        </div>
+      }
+
+      <!-- Form -->
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="auth-form">
+        <div class="form-group">
+          <label for="nombre">Nombre Completo</label>
+          <div class="input-wrap">
+            <i class="fas fa-user input-icon"></i>
+            <input 
+              type="text" 
+              id="nombre" 
+              name="nombre" 
+              placeholder="Tu nombre"
+              [(ngModel)]="user().nombre" 
+              required 
+              minlength="3" 
+              #nombre="ngModel">
+          </div>
+          @if (nombre.invalid && (nombre.dirty || nombre.touched)) {
+            <span class="error-text">El nombre es obligatorio (mín. 3 caracteres).</span>
+          }
         </div>
 
-        <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-
-          <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre Completo</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" 
-                   [(ngModel)]="user.nombre" required minlength="3" #nombre="ngModel">
-            <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="text-danger small mt-1">
-              El nombre es obligatorio y debe tener mínimo 3 caracteres.
-            </div>
+        <div class="form-group">
+          <label for="email">Correo Electrónico</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope input-icon"></i>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder="tu@email.com"
+              [(ngModel)]="user().email" 
+              required 
+              email 
+              #email="ngModel">
           </div>
-
-          <div class="mb-3">
-            <label for="email" class="form-label">Correo Electrónico</label>
-            <input type="email" class="form-control" id="email" name="email" 
-                   [(ngModel)]="user.email" required email #email="ngModel">
-            <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-danger small mt-1">
-              Ingresa un email válido.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password" class="form-control" id="password" name="password" 
-                   [(ngModel)]="user.password" required minlength="4" #password="ngModel">
-            <div *ngIf="password.invalid && (password.dirty || password.touched)" class="text-danger small mt-1">
-              La contraseña es obligatoria (mínimo 4 caracteres).
-            </div>
-          </div>
-
-          <div class="d-grid mt-4">
-            <button type="submit" class="btn btn-success" [disabled]="registerForm.invalid">Crear Cuenta</button>
-          </div>
-        </form>
-
-        <div class="text-center mt-3">
-          <p class="mb-0">¿Ya tienes cuenta? <a routerLink="/login">Inicia Sesión</a></p>
+          @if (email.invalid && (email.dirty || email.touched)) {
+            <span class="error-text">Ingresa un email válido.</span>
+          }
         </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              placeholder="••••••••"
+              [(ngModel)]="user().password" 
+              required 
+              minlength="4" 
+              #password="ngModel">
+          </div>
+          @if (password.invalid && (password.dirty || password.touched)) {
+            <span class="error-text">Mínimo 4 caracteres.</span>
+          }
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="registerForm.invalid">
+          <span>Crear Cuenta</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia Sesión</a></p>
       </div>
     </div>
   </div>

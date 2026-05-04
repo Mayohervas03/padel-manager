@@ -1,29 +1,31 @@
-import { Component, inject, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PistaService } from './pista.service';
 import { AuthService } from '../auth/auth.service';
+import type { Pista } from '../shared/models';
 
 @Component({
   selector: 'app-pistas',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './pistas.html',
-  styleUrl: './pistas.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PistasComponent implements OnInit {
-  pistaService = inject(PistaService);
-  authService = inject(AuthService);
-  cd = inject(ChangeDetectorRef);
+  private readonly pistaService = inject(PistaService);
+  readonly authService = inject(AuthService);
 
-  pistas: any[] = [];
-  mostrarFormulario = false;
+  readonly pistas = signal<Pista[]>([]);
+  readonly mostrarFormulario = signal(false);
 
-  nuevaPista: any = {
-    id: null,
+  nuevaPista: Partial<Pista> = {
+    id: undefined,
     nombre: '',
     tipo: 'Indoor',
-    precio: 0
+    ubicacion: 'Indoor',
+    precio: 0,
+    activo: true
   };
 
   ngOnInit() {
@@ -32,25 +34,20 @@ export class PistasComponent implements OnInit {
 
   cargarPistas() {
     this.pistaService.getPistas().subscribe({
-      next: (datos: any) => {
-        this.pistas = datos;
-        this.cd.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error cargando pistas:', err);
-      }
+      next: (datos) => this.pistas.set(datos),
+      error: (err) => console.error('Error cargando pistas:', err)
     });
   }
 
   guardarPista() {
     if (this.nuevaPista.id) {
-      this.pistaService.updatePista(this.nuevaPista.id, this.nuevaPista)
+      this.pistaService.updatePista(this.nuevaPista.id, this.nuevaPista as Omit<Pista, 'id'>)
         .subscribe(() => {
           this.limpiarFormulario();
           this.cargarPistas();
         });
     } else {
-      this.pistaService.createPista(this.nuevaPista)
+      this.pistaService.createPista(this.nuevaPista as Omit<Pista, 'id'>)
         .subscribe(() => {
           this.limpiarFormulario();
           this.cargarPistas();
@@ -58,9 +55,9 @@ export class PistasComponent implements OnInit {
     }
   }
 
-  editarPista(pista: any) {
+  editarPista(pista: Pista) {
     this.nuevaPista = { ...pista };
-    this.mostrarFormulario = true;
+    this.mostrarFormulario.set(true);
   }
 
   borrarPista(id: number) {
@@ -72,17 +69,16 @@ export class PistasComponent implements OnInit {
   }
 
   toggleFormulario() {
-    if (this.mostrarFormulario) {
+    if (this.mostrarFormulario()) {
       this.limpiarFormulario();
     } else {
       this.limpiarFormulario();
-      this.mostrarFormulario = true;
+      this.mostrarFormulario.set(true);
     }
   }
 
   limpiarFormulario() {
-    this.mostrarFormulario = false;
-    this.nuevaPista = { id: null, nombre: '', tipo: 'Indoor', precio: 0 };
+    this.mostrarFormulario.set(false);
+    this.nuevaPista = { id: undefined, nombre: '', tipo: 'Indoor', ubicacion: 'Indoor', precio: 0, activo: true };
   }
 }
-

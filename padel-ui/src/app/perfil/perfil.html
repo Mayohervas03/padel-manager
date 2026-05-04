@@ -1,145 +1,295 @@
-<div class="perfil-container">
+<div class="perfil-dashboard">
   
-  <div class="perfil-header" style="position: relative;">
-    <h1 class="title-oswald">MI PANEL DE CONTROL</h1>
-    <p>Gestiona tus reservas, clases y datos de acceso desde un solo lugar.</p>
-    <button class="btn btn-outline btn-refresh" (click)="cargarDatos()" *ngIf="!isLoading">
-      <i class="fas fa-sync-alt"></i> Actualizar
-    </button>
-  </div>
+  <!-- LOADING STATE -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Cargando tu perfil Élite...</p>
+      </div>
+    </div>
+  }
 
-  <ng-container *ngIf="!isLoading; else loadingTemplate">
-    <ng-container *ngIf="!hayError; else errorTemplate">
-      <div class="perfil-grid">
+  <!-- ERROR STATE -->
+  @if (!isLoading() && hayError()) {
+    <div class="error-overlay">
+      <div class="error-content">
+        <i class="fas fa-exclamation-circle error-icon"></i>
+        <h2>No se pudieron cargar tus datos</h2>
+        <p>Ha ocurrido un error al obtener tu información. Por favor, inténtalo de nuevo.</p>
+        <button class="btn-neon" (click)="cargarDatos()">
+          <i class="fas fa-sync-alt"></i> Reintentar
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- MAIN CONTENT -->
+  @if (!isLoading() && !hayError()) {
     
-    <!-- COLUMNA IZQUIERDA: PERFIL Y SEGURIDAD -->
-    <aside class="perfil-sidebar">
-      <div class="card card-perfil">
-        <div class="avatar-large">{{ perfil?.nombre?.substring(0, 1) }}</div>
-        <h2>{{ perfil?.nombre }}</h2>
-        <p class="email">{{ perfil?.email }}</p>
-        <span class="badge-rol">{{ perfil?.rol }}</span>
-        
-        <div class="actions">
-          <button class="btn btn-outline" (click)="togglePasswordForm()">
-            <i class="fas fa-key"></i> {{ showPasswordForm ? 'Cancelar' : 'Seguridad' }}
-          </button>
-          <button class="btn btn-danger-soft" (click)="logout()">
-            <i class="fas fa-sign-out-alt"></i> Salir
-          </button>
+    <!-- USER HERO CARD -->
+    <section class="hero-card">
+      <div class="hero-bg-glow"></div>
+      
+      <div class="hero-content">
+        <div class="hero-avatar">
+          <div class="avatar-ring"></div>
+          <span class="avatar-initials">{{ perfil()?.nombre?.substring(0, 1) }}</span>
+          <div class="avatar-status"></div>
         </div>
 
-        <!-- Formulario Password -->
-        <div class="password-form" *ngIf="showPasswordForm">
-          <h4>Cambiar Contraseña</h4>
-          <input type="password" placeholder="Contraseña actual" [(ngModel)]="passwordData.oldPassword">
-          <input type="password" placeholder="Nueva contraseña" [(ngModel)]="passwordData.newPassword">
-          <button class="btn btn-primary" (click)="cambiarPassword()">Actualizar</button>
-          <p class="msg-success" *ngIf="mensajeExito">{{ mensajeExito }}</p>
-          <p class="msg-error" *ngIf="mensajeError">{{ mensajeError }}</p>
+        <div class="hero-info">
+          <div class="hero-name-section">
+            <h1 class="hero-name">{{ perfil()?.nombre }}</h1>
+            <div class="hero-rango" [style."--rango-color"]="getRangoJugador(perfil()?.partidosMes || 0).color">
+              <i class="fas {{ getRangoJugador(perfil()?.partidosMes || 0).icono }}"></i>
+              <span>{{ getRangoJugador(perfil()?.partidosMes || 0).titulo }}</span>
+            </div>
+          </div>
+          
+          <p class="hero-email">{{ perfil()?.email }}</p>
+          
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-value">{{ perfil()?.partidosMes }}</span>
+              <span class="stat-label">Partidos este mes</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-value">{{ reservas().length }}</span>
+              <span class="stat-label">Reservas activas</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-value">{{ clases().length }}</span>
+              <span class="stat-label">Clases inscritas</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button class="btn-glass" (click)="togglePasswordForm()">
+            <i class="fas fa-shield-alt"></i>
+            <span>{{ showPasswordForm() ? 'Cancelar' : 'Seguridad' }}</span>
+          </button>
+          
+          <button class="btn-glass btn-danger" (click)="logout()">
+            <i class="fas fa-power-off"></i>
+            <span>Cerrar Sesión</span>
+          </button>
         </div>
       </div>
-    </aside>
 
-    <!-- COLUMNA DERECHA: ACTIVIDADES -->
-    <main class="perfil-main">
+      <!-- PASSWORD FORM -->
+      @if (showPasswordForm()) {
+        <div class="password-panel">
+          <div class="password-panel-content">
+            <h3><i class="fas fa-lock"></i> Cambiar Contraseña</h3>
+            
+            <div class="password-inputs">
+              <div class="input-group">
+                <i class="fas fa-key"></i>
+                <input 
+                  type="password" 
+                  placeholder="Contraseña actual" 
+                  [(ngModel)]="passwordData().oldPassword"
+                >
+              </div>
+              
+              <div class="input-group">
+                <i class="fas fa-key"></i>
+                <input 
+                  type="password" 
+                  placeholder="Nueva contraseña" 
+                  [(ngModel)]="passwordData().newPassword"
+                >
+              </div>
+            </div>
+            
+            <div class="password-actions">
+              <button class="btn-neon" (click)="cambiarPassword()">
+                Actualizar Contraseña
+              </button>
+              
+              @if (mensajeExito()) {
+                <span class="msg-success">
+                  <i class="fas fa-check-circle"></i> {{ mensajeExito() }}
+                </span>
+              }
+              
+              @if (mensajeError()) {
+                <span class="msg-error">
+                  <i class="fas fa-times-circle"></i> {{ mensajeError() }}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- ACTIVITY GRID -->
+    <section class="activity-grid">
       
-      <!-- SECCIÓN: MIS RESERVAS -->
-      <section class="activity-section">
-        <h3 class="section-title"><i class="fas fa-calendar-check"></i> MIS RESERVAS DE PISTA</h3>
-        
-        <div class="table-card">
-          <table class="elite-table" *ngIf="reservas.length > 0; else noReservas">
-            <thead>
-              <tr>
-                <th>Pista</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th class="text-end">Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let r of reservas">
-                <td class="fw-bold">{{ r.pista?.nombre }}</td>
-                <td>{{ r.fecha }}</td>
-                <td>{{ r.hora | slice:0:5 }}</td>
-                <td class="text-end">
-                  <button class="btn-cancel" (click)="cancelarReserva(r.id)">Cancelar</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <ng-template #noReservas>
-            <div class="empty-state">
-              <i class="fas fa-table-tennis"></i>
-              <p>Aún no tienes partidos programados.</p>
-              <a routerLink="/reservas" class="btn btn-primary">RESERVAR AHORA</a>
-            </div>
-          </ng-template>
+      <!-- MIS RESERVAS -->
+      <div class="activity-column">
+        <div class="column-header">
+          <div class="column-icon icon-reservas">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="column-title">
+            <h2>Mis Reservas</h2>
+            <span class="column-count">{{ reservas().length }} activas</span>
+          </div>
         </div>
-      </section>
 
-      <!-- SECCIÓN: MIS CLASES -->
-      <section class="activity-section mt-5">
-        <h3 class="section-title"><i class="fas fa-graduation-cap"></i> MIS CLASES DE ACADEMIA</h3>
-        
-        <div class="table-card">
-          <table class="elite-table" *ngIf="clases.length > 0; else noClases">
-            <thead>
-              <tr>
-                <th>Clase / Monitor</th>
-                <th>Fecha</th>
-                <th>Hora / Pista</th>
-                <th class="text-end">Estatus</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let c of clases">
-                <td>
-                  <div class="clase-title">{{ c.titulo }}</div>
-                  <div class="clase-sub">Monitor: {{ c.monitor }}</div>
-                </td>
-                <td>{{ c.fecha }}</td>
-                <td>
-                  <div>{{ c.hora | slice:0:5 }}</div>
-                  <div class="clase-sub">{{ c.pista?.nombre }}</div>
-                </td>
-                <td class="text-end">
-                  <span class="badge-inscrito">MATRICULADO ✅</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <ng-template #noClases>
-            <div class="empty-state">
-              <i class="fas fa-user-graduate"></i>
-              <p>No estás inscrito en ninguna clase de la academia.</p>
-              <a routerLink="/clases" class="btn btn-primary">VER ACADEMIA</a>
+        <div class="column-content">
+          @if (reservas().length > 0) {
+            <div class="cards-container">
+              @for (r of reservas(); track r.id) {
+                <div class="ticket-card">
+                  <div class="ticket-stub">
+                    <div class="ticket-hole"></div>
+                  </div>
+                  
+                  <div class="ticket-content">
+                    <div class="ticket-header">
+                      <span class="ticket-pista">{{ r.pista?.nombre }}</span>
+                      <span class="ticket-type">{{ r.pista?.tipo }}</span>
+                    </div>
+                    
+                    <div class="ticket-datetime">
+                      <div class="ticket-date">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ formatearFecha(r.fecha) }}</span>
+                      </div>
+                      <div class="ticket-time">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ formatearHora(r.hora) }}</span>
+                      </div>
+                    </div>
+                    
+                    <div class="ticket-footer">
+                      <span class="ticket-ubicacion">
+                        <i class="fas fa-map-marker-alt"></i> {{ r.pista?.ubicacion }}
+                      </span>
+                      <button class="btn-cancel-ticket" (click)="cancelarReserva(r.id)">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
-          </ng-template>
+          } @else {
+            <div class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-table-tennis"></i>
+              </div>
+              <p>Aún no tienes partidos programados</p>
+              <a routerLink="/reservas" class="btn-neon-small">
+                Reservar Ahora
+              </a>
+            </div>
+          }
         </div>
-      </section>
+      </div>
 
-    </main>
-  </div>
-    </ng-container>
-  </ng-container>
+      <!-- MIS CLASES -->
+      <div class="activity-column">
+        <div class="column-header">
+          <div class="column-icon icon-clases">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div class="column-title">
+            <h2>Mis Clases</h2>
+            <span class="column-count">{{ clases().length }} inscritas</span>
+          </div>
+        </div>
 
-  <ng-template #loadingTemplate>
-    <div class="loading-state">
-      <i class="fas fa-spinner fa-spin spinner-elite"></i>
-      <p class="title-oswald mt-3" style="font-size: 1.2rem; color: #002b55;">Cargando tu agenda Élite...</p>
-    </div>
-  </ng-template>
+        <div class="column-content">
+          @if (clases().length > 0) {
+            <div class="cards-container">
+              @for (c of clases(); track c.id) {
+                <div class="class-card">
+                  <div class="class-level-badge" [class]="'level-' + c.nivel.toLowerCase()">
+                    {{ c.nivel }}
+                  </div>
+                  
+                  <div class="class-content">
+                    <h3 class="class-title">{{ c.titulo }}</h3>
+                    
+                    <div class="class-monitor">
+                      <i class="fas fa-user-tie"></i>
+                      <span>{{ c.monitor }}</span>
+                    </div>
+                    
+                    <div class="class-datetime">
+                      <div class="class-date">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ formatearFecha(c.fecha) }}</span>
+                      </div>
+                      <div class="class-time">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ formatearHora(c.hora) }}</span>
+                      </div>
+                    </div>
+                    
+                    <div class="class-footer">
+                      <span class="class-pista">
+                        <i class="fas fa-map-marker-alt"></i> {{ c.pista?.nombre }}
+                      </span>
+                      <span class="class-price">{{ c.precio }}€</span>
+                    </div>
+                  </div>
+                  
+                  <div class="class-status">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Confirmado</span>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-user-graduate"></i>
+              </div>
+              <p>No estás inscrito en ninguna clase</p>
+              <a routerLink="/clases" class="btn-neon-small">
+                Ver Academia
+              </a>
+            </div>
+          }
+        </div>
+      </div>
 
-  <ng-template #errorTemplate>
-    <div class="error-state empty-state">
-      <i class="fas fa-exclamation-triangle" style="color: #e63946;"></i>
-      <p>No se pudieron cargar tus datos correctamente.</p>
-      <button class="btn btn-primary" (click)="cargarDatos()">Reintentar</button>
-    </div>
-  </ng-template>
+      <!-- MIS TORNEOS (Placeholder para futuro) -->
+      <div class="activity-column">
+        <div class="column-header">
+          <div class="column-icon icon-torneos">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <div class="column-title">
+            <h2>Torneos</h2>
+            <span class="column-count">Próximamente</span>
+          </div>
+        </div>
+
+        <div class="column-content">
+          <div class="empty-state empty-premium">
+            <div class="empty-icon">
+              <i class="fas fa-trophy"></i>
+            </div>
+            <p>Inscríbete en torneos y compite por el podio</p>
+            <a routerLink="/torneos" class="btn-neon-small">
+              Ver Torneos
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  }
 
 </div>

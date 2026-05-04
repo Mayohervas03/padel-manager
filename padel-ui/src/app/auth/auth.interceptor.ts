@@ -6,14 +6,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
 
+  console.log('[AuthInterceptor] Peticion:', req.method, req.url);
+  console.log('[AuthInterceptor] Token existe:', !!token);
+
   if (token) {
-    // Clona la petición para agregarle el header de Authorization
     const clonedReq = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`)
     });
+    console.log('[AuthInterceptor] Header Authorization agregado');
     return next(clonedReq);
   }
 
-  // Si no hay token, continúa con la petición original
+  console.warn('[AuthInterceptor] No hay token, enviando peticion sin autenticacion');
   return next(req);
 };

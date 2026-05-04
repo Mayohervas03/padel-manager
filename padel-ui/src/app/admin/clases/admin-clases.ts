@@ -1,32 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../auth/auth.service';
+import { API_BASE_URL } from '../../shared/api.config';
+import type { Clase, Pista } from '../../shared/models';
 
 @Component({
   selector: 'app-admin-clases',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admin-clases.html',
-  styleUrls: ['./admin-clases.scss']
+  styleUrls: ['./admin-clases.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminClasesComponent implements OnInit {
-  clases: any[] = [];
-  pistas: any[] = [];
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = inject(API_BASE_URL);
+
+  readonly clases = signal<Clase[]>([]);
+  readonly pistas = signal<Pista[]>([]);
   
+  // Payload actualizado: enviamos pistaId como campo plano (DTO del backend)
   nuevaClase = {
     titulo: '',
     monitor: '',
-    nivel: 'INICIACION',
+    nivel: 'INICIACION' as const,
     precio: 0,
     maxAlumnos: 4,
     fecha: '',
     hora: '',
-    pista: { id: null }
+    pistaId: null as number | null
   };
-
-  constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit() {
     this.cargarPistas();
@@ -34,35 +38,32 @@ export class AdminClasesComponent implements OnInit {
   }
 
   cargarPistas() {
-    this.http.get<any[]>('http://localhost:8080/api/pistas', {
-      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-    }).subscribe(data => this.pistas = data);
+    this.http.get<Pista[]>(`${this.apiUrl}/pistas`).subscribe(data => this.pistas.set(data));
   }
 
   cargarClases() {
-    this.http.get<any[]>('http://localhost:8080/api/admin/clases', {
-      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-    }).subscribe(data => this.clases = data);
+    this.http.get<Clase[]>(`${this.apiUrl}/admin/clases`).subscribe(data => this.clases.set(data));
   }
 
   crearClase() {
-    this.http.post('http://localhost:8080/api/admin/clases', this.nuevaClase, {
-      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-    }).subscribe({
+    this.http.post<Clase>(`${this.apiUrl}/admin/clases`, this.nuevaClase).subscribe({
       next: () => {
         this.cargarClases();
-        // Reset form
-        this.nuevaClase = { titulo: '', monitor: '', nivel: 'INICIACION', precio: 0, maxAlumnos: 4, fecha: '', hora: '', pista: { id: null } };
+        this.nuevaClase = { titulo: '', monitor: '', nivel: 'INICIACION', precio: 0, maxAlumnos: 4, fecha: '', hora: '', pistaId: null };
       },
-      error: (err) => alert('Error al crear la clase: ' + (err.error || err.message))
+      error: (err) => {
+        // El interceptor normaliza el error
+        alert('Error al crear la clase: ' + (err.error || err.message));
+      }
     });
   }
 
   eliminarClase(id: number) {
     if (confirm('¿Borrar esta clase? Todos los alumnos inscritos la perderán.')) {
-      this.http.delete(`http://localhost:8080/api/admin/clases/${id}`, {
-        headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-      }).subscribe(() => this.cargarClases());
+      this.http.delete(`${this.apiUrl}/admin/clases/${id}`).subscribe({
+        next: () => this.cargarClases(),
+        error: (err) => alert('Error al eliminar la clase: ' + (err.error || err.message))
+      });
     }
   }
 }

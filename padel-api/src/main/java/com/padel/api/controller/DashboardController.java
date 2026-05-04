@@ -1,35 +1,21 @@
 package com.padel.api.controller;
 
 import com.padel.api.dto.DashboardDTO;
-import com.padel.api.repository.PistaRepository;
-import com.padel.api.repository.ReservaRepository;
-import com.padel.api.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
+import com.padel.api.service.DashboardService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/dashboard")
-@CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
 public class DashboardController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private PistaRepository pistaRepository;
-
-    @Autowired
-    private ReservaRepository reservaRepository;
+    private final DashboardService dashboardService;
 
     @GetMapping
     public DashboardDTO getDashboardStats() {
-        long totalUsuarios = usuarioRepository.count();
-        long totalPistas = pistaRepository.count();
-        long reservasTotales = reservaRepository.count();
-        long reservasHoy = reservaRepository.countByFecha(LocalDate.now());
-
-        return new DashboardDTO(totalUsuarios, totalPistas, reservasTotales, reservasHoy);
+        return dashboardService.getDashboardStats();
     }
 }

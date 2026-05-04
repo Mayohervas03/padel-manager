@@ -1,69 +1,88 @@
 <div class="user-view">
-  <div class="academy-header">
-    <h2>ACADEMIA ÉLITE</h2>
+  <div class="page-header">
+    <h1>Academia <span class="accent">Élite</span></h1>
     <p>Mejora tu técnica con los mejores profesionales del sector. Selecciona tu nivel y asegura tu plaza.</p>
   </div>
 
-  <div class="clases-grid">
-    <div *ngIf="clasesDisponibles.length === 0" class="no-clases">
-      <p>No hay clases disponibles en este momento. ¡Vuelve pronto!</p>
-    </div>
-
-    <!-- CARDS DE CLASES -->
-    <div class="clase-card" *ngFor="let clase of clasesDisponibles">
-      
-      <!-- Badge de Precio flotante -->
-      <div class="precio-badge">
-        {{ clase.precio }}€
-      </div>
-
-      <div class="card-top" [ngClass]="clase.nivel.toLowerCase()">
-        <span class="nivel-badge">{{ clase.nivel }}</span>
-      </div>
-
-      <div class="card-body">
-        <h3 class="titulo">{{ clase.titulo }}</h3>
-        
-        <div class="info-line">
-          <i class="fas fa-calendar-alt"></i>
-          <span>{{ clase.fecha }} a las {{ clase.hora }}</span>
+  <div class="content-grid">
+    @if (isLoading()) {
+      @for (s of [1,2,3]; track s) {
+        <div class="skeleton-card">
+          <div class="skeleton-header"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </div>
+          <div class="skeleton-footer"></div>
         </div>
-        
-        <div class="info-line">
-          <i class="fas fa-chalkboard-teacher"></i>
-          <span>Profesor: <strong>{{ clase.monitor }}</strong></span>
-        </div>
-        
-        <div class="info-line urgencia" [class.lleno]="clase.alumnos.length >= clase.maxAlumnos">
-          <i class="fas fa-users"></i>
-          <span>Quedan <strong>{{ clase.maxAlumnos - (clase.alumnos?.length || 0) }}</strong> de {{ clase.maxAlumnos }} plazas</span>
-        </div>
-      </div>
+      }
+    }
 
-      <div class="card-footer">
-        <button class="btn-inscribir" 
-                *ngIf="clase.status !== 'INSCRITO' && clase.alumnos.length < clase.maxAlumnos" 
-                (click)="inscribirse(clase)" 
-                [disabled]="inscripcionesEnCurso[clase.id]">
+    @if (!isLoading() && clasesDisponibles().length === 0) {
+      <div class="empty-state">
+        <p>No hay clases disponibles en este momento. ¡Vuelve pronto!</p>
+      </div>
+    }
+
+    @for (clase of clasesDisponibles(); track clase.id) {
+      <div class="item-card">
+        
+        <!-- Badge de Precio flotante -->
+        <div class="precio-badge">
+          {{ clase.precio }}€
+        </div>
+
+        <div class="card-header" [class]="clase.nivel.toLowerCase()">
+          <span class="nivel-badge">{{ clase.nivel }}</span>
+        </div>
+
+        <div class="card-body">
+          <h3 class="titulo">{{ clase.titulo }}</h3>
           
-          <ng-container *ngIf="!inscripcionesEnCurso[clase.id]">
-            <i class="fas fa-check-circle"></i> Inscribirme
-          </ng-container>
-          <ng-container *ngIf="inscripcionesEnCurso[clase.id]">
-            <i class="fas fa-spinner fa-spin"></i> Procesando...
-          </ng-container>
+          <div class="info-line">
+            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+            <span>{{ clase.fecha }} a las {{ clase.hora }}</span>
+          </div>
+          
+          <div class="info-line">
+            <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
+            <span>Profesor: <strong>{{ clase.monitor }}</strong></span>
+          </div>
+          
+          <div class="info-line urgencia" [class.lleno]="(clase.alumnos?.length || 0) >= clase.maxAlumnos">
+            <i class="fas fa-users" aria-hidden="true"></i>
+            <span>Quedan <strong>{{ clase.maxAlumnos - (clase.alumnos?.length || 0) }}</strong> de {{ clase.maxAlumnos }} plazas</span>
+          </div>
+        </div>
 
-        </button>
+        <div class="card-footer">
+          @if (!isInscrito(clase) && (clase.alumnos?.length || 0) < clase.maxAlumnos) {
+            <button class="btn-neon" 
+                    (click)="inscribirse(clase)" 
+                    [disabled]="inscripcionesEnCurso().has(clase.id)">
+              @if (!inscripcionesEnCurso().has(clase.id)) {
+                <i class="fas fa-check-circle" aria-hidden="true"></i> Inscribirme
+              } @else {
+                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Procesando...
+              }
+            </button>
+          }
 
-        <button class="btn-apuntado" *ngIf="clase.status === 'INSCRITO'" disabled>
-          Apuntado ✅
-        </button>
+          @if (isInscrito(clase)) {
+            <button class="btn-success" disabled>
+              <i class="fas fa-check-circle" aria-hidden="true"></i> Apuntado
+            </button>
+          }
 
-        <button class="btn-lleno" *ngIf="clase.status !== 'INSCRITO' && clase.alumnos.length >= clase.maxAlumnos" disabled>
-          Clase Llena
-        </button>
+          @if (!isInscrito(clase) && (clase.alumnos?.length || 0) >= clase.maxAlumnos) {
+            <button class="btn-disabled" disabled>
+              <i class="fas fa-ban" aria-hidden="true"></i> Clase Llena
+            </button>
+          }
+        </div>
+
       </div>
-
-    </div>
+    }
   </div>
 </div>

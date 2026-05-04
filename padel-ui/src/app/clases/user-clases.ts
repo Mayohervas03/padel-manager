@@ -1,59 +1,72 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../auth/auth.service';
+import { API_BASE_URL } from '../shared/api.config';
+import type { Clase } from '../shared/models';
 
 @Component({
   selector: 'app-user-clases',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './user-clases.html',
-  styleUrls: ['./user-clases.scss']
+  styleUrls: ['./user-clases.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserClasesComponent implements OnInit {
-  clasesDisponibles: any[] = [];
-  inscripcionesEnCurso: { [key: number]: boolean } = {}; // Para el spinner
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = inject(API_BASE_URL);
 
-  constructor(private http: HttpClient, private authService: AuthService, private cdr: ChangeDetectorRef) {}
+  readonly clasesDisponibles = signal<Clase[]>([]);
+  readonly inscripcionesEnCurso = signal<Set<number>>(new Set());
+  readonly isLoading = signal(true);
 
   ngOnInit() {
     this.cargarClases();
   }
 
   cargarClases() {
-    this.http.get<any[]>('http://localhost:8080/api/clases/disponibles', {
-      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-    }).subscribe({
+    this.isLoading.set(true);
+    this.http.get<Clase[]>(`${this.apiUrl}/clases/disponibles`).subscribe({
       next: (data) => {
-        this.clasesDisponibles = data;
-        this.cdr.detectChanges();
+        this.clasesDisponibles.set(data);
+        this.isLoading.set(false);
       },
-      error: (err) => console.error('Error cargando academia', err)
+      error: (err) => {
+        console.error('Error cargando academia', err);
+        this.isLoading.set(false);
+      }
     });
   }
 
-  isInscrito(clase: any): boolean {
-    return clase.status === 'INSCRITO';
+  isInscrito(clase: Clase): boolean {
+    return (clase as unknown as Record<string, unknown>)['status'] === 'INSCRITO';
   }
 
-  inscribirse(clase: any) {
-    this.inscripcionesEnCurso[clase.id] = true;
+  inscribirse(clase: Clase) {
+    this.inscripcionesEnCurso.update(set => {
+      const newSet = new Set(set);
+      newSet.add(clase.id);
+      return newSet;
+    });
     
-    this.http.post(`http://localhost:8080/api/clases/${clase.id}/inscribir`, {}, {
-      responseType: 'text',
-      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
-    }).subscribe({
-      next: (msg) => {
-        this.inscripcionesEnCurso[clase.id] = false;
-        clase.status = 'INSCRITO';
-        if (!clase.alumnos) clase.alumnos = [];
-        clase.alumnos.push({}); // Optimistic update
-        this.cdr.detectChanges();
+    // Usamos responseType: 'text' para evitar parsear JSON en respuestas vacías
+    this.http.post(`${this.apiUrl}/clases/${clase.id}/inscribir`, {}, { responseType: 'text' }).subscribe({
+      next: () => {
+        this.inscripcionesEnCurso.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(clase.id);
+          return newSet;
+        });
+        this.cargarClases();
       },
       error: (err) => {
-        this.inscripcionesEnCurso[clase.id] = false;
-        alert('No se pudo completar la inscripción: ' + (err.error || err.message));
-        this.cargarClases(); // Refresh to get valid state
+        this.inscripcionesEnCurso.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(clase.id);
+          return newSet;
+        });
+        // El interceptor normaliza el error
+        alert('No se pudo completar la inscripcion: ' + (err.error || err.message));
       }
     });
   }

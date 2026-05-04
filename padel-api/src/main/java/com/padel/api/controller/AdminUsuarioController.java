@@ -1,8 +1,8 @@
 package com.padel.api.controller;
 
 import com.padel.api.model.Usuario;
-import com.padel.api.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.padel.api.service.UsuarioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,40 +10,32 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/usuarios")
-@CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminUsuarioController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     @GetMapping
     public ResponseEntity<?> listarTodos() {
-        return ResponseEntity.ok(usuarioRepository.findAll());
+        return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable("id") Long id) {
-        return usuarioRepository.findById(id)
-                .map(user -> ResponseEntity.ok(user))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     @GetMapping({"/search", "/buscar"})
-    public ResponseEntity<?> buscarPorEmail(@RequestParam("email") String email) {
-        return usuarioRepository.findByEmail(email)
-                .map(user -> ResponseEntity.ok(user))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body((Usuario)null));
+    public ResponseEntity<Usuario> buscarPorEmail(@RequestParam("email") String email) {
+        return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
     }
 
     @PutMapping("/{id}/rol")
-    public ResponseEntity<?> cambiarRol(@PathVariable("id") Long id, @RequestBody String nuevoRol) {
-        return usuarioRepository.findById(id)
-                .map(user -> {
-                    user.setRol(nuevoRol.replace("\"", "")); // Limpiar comillas si vienen del body string
-                    usuarioRepository.save(user);
-                    return ResponseEntity.ok(user);
-                })
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<Usuario> cambiarRol(@PathVariable("id") Long id, @RequestBody String nuevoRol) {
+        Usuario usuario = usuarioService.buscarPorId(id);
+        usuario.setRol(nuevoRol.replace("\"", ""));
+        // Nota: deberia ir a un metodo especifico en el servicio
+        return ResponseEntity.ok(usuario);
     }
 }

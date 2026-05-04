@@ -1,10 +1,13 @@
 package com.padel.api.security;
 
+import com.padel.api.model.Usuario;
+import com.padel.api.repository.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -15,64 +18,70 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
-    
-    @Autowired
-    private com.padel.api.repository.UsuarioRepository usuarioRepository;
+    private final JwtUtil jwtUtil;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
+        final String requestURI = request.getRequestURI();
         String email = null;
         String jwt = null;
 
-        // Extraer el token del header (formato: "Bearer {token}")
+        log.debug("JwtFilter - Procesando peticion: {} {}", request.getMethod(), requestURI);
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
+            log.debug("JwtFilter - Token encontrado para {}", requestURI);
             try {
                 email = jwtUtil.extractEmail(jwt);
+                log.debug("JwtFilter - Email extraido del token: {}", email);
             } catch (Exception e) {
-                // Token inválido o expirado
+                log.warn("JwtFilter - Error extrayendo email del token: {}", e.getMessage());
             }
+        } else {
+            log.debug("JwtFilter - No se encontro header Authorization para {}", requestURI);
         }
 
-        // Si hay email y el contexto no está autenticado
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            
-            // Validamos que el token pertenezca al usuario
             if (jwtUtil.validateToken(jwt, email)) {
-                
-                java.util.Optional<com.padel.api.model.Usuario> optionalUser = usuarioRepository.findByEmail(email);
-                
+                log.debug("JwtFilter - Token valido para: {}", email);
+                Optional<Usuario> optionalUser = usuarioRepository.findByEmail(email);
+
                 if (optionalUser.isPresent()) {
-                    com.padel.api.model.Usuario dbUser = optionalUser.get();
+                    Usuario dbUser = optionalUser.get();
                     String rol = dbUser.getRol() != null ? dbUser.getRol() : "USER";
-                    
-                    // Creamos un UserDetails oficial inyectando el prefijo esperado por @PreAuthorize
+                    log.debug("JwtFilter - Usuario encontrado: {} con rol: {}", dbUser.getEmail(), rol);
+
                     UserDetails userDetails = new User(
-                        dbUser.getEmail(), 
-                        "", 
+                        dbUser.getEmail(),
+                        "",
                         Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + rol))
                     );
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
-                    
+
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    // Registramos al usuario en el contexto de seguridad
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    log.debug("JwtFilter - Autenticacion establecida para: {}", email);
+                } else {
+                    log.warn("JwtFilter - Usuario no encontrado en BD: {}", email);
                 }
+            } else {
+                log.warn("JwtFilter - Token invalido para: {}", email);
             }
         }
-        
-        // Continuamos con la cadena de filtros
+
         filterChain.doFilter(request, response);
     }
 }

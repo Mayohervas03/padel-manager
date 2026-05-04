@@ -1,31 +1,32 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { API_BASE_URL } from '../shared/api.config';
+import type { AuthResponse, LoginRequest, RegisterRequest, PasswordChangeRequest, PerfilDTO } from '../shared/models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly apiUrl = inject(API_BASE_URL);
 
-  private apiUrl = 'http://localhost:8080/api/auth';
-  private usuariosUrl = 'http://localhost:8080/api/usuarios';
-  private tokenKey = 'padel_token';
-  private roleKey = 'padel_role';
-  
-  private nombreSubject = new BehaviorSubject<string | null>(localStorage.getItem('padel_nombre'));
-  nombre$ = this.nombreSubject.asObservable();
+  private readonly tokenKey = 'padel_token';
+  private readonly roleKey = 'padel_role';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  private readonly nombreSubject = new BehaviorSubject<string | null>(localStorage.getItem('padel_nombre'));
+  readonly nombre$: Observable<string | null> = this.nombreSubject.asObservable();
 
-  register(userData: any) {
-    return this.http.post(`${this.apiUrl}/register`, userData, { responseType: 'text' });
+  register(userData: RegisterRequest) {
+    return this.http.post(`${this.apiUrl}/auth/register`, userData, { responseType: 'text' });
   }
 
-  login(credentials: any) {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+  login(credentials: LoginRequest) {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
       tap(response => {
-        if (response && response.token) {
+        if (response?.token) {
           this.setToken(response.token);
           if (response.rol) {
             localStorage.setItem(this.roleKey, response.rol);
@@ -47,8 +48,37 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  /**
+   * Decodifica el payload de un token JWT y devuelve el objeto.
+   */
+  private decodeToken(token: string): any {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decoded);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * Verifica si el token actual ha expirado.
+   * Devuelve true si el token existe y NO ha expirado.
+   */
+  isTokenValid(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+
+    const decoded = this.decodeToken(token);
+    if (!decoded || !decoded.exp) return false;
+
+    // exp está en segundos, Date.now() en milisegundos
+    const now = Math.floor(Date.now() / 1000);
+    return decoded.exp > now;
+  }
+
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return this.isTokenValid();
   }
 
   getRole(): string | null {
@@ -64,19 +94,22 @@ export class AuthService {
     localStorage.removeItem(this.roleKey);
     localStorage.removeItem('padel_nombre');
     this.nombreSubject.next(null);
-    this.router.navigate(['/login']);
   }
 
-  getPerfil() {
-    return this.http.get<any>(`${this.usuariosUrl}/me`, {
-      headers: { Authorization: `Bearer ${this.getToken()}` }
-    });
+  /**
+   * Cierra sesión y redirige al login con un mensaje opcional.
+   */
+  logoutAndRedirect(message?: string): void {
+    this.logout();
+    const queryParams = message ? { message } : undefined;
+    this.router.navigate(['/login'], { queryParams });
   }
 
-  cambiarPassword(data: any) {
-    return this.http.put(`${this.usuariosUrl}/password`, data, { 
-      responseType: 'text',
-      headers: { Authorization: `Bearer ${this.getToken()}` }
-    });
+  getPerfil(): Observable<PerfilDTO> {
+    return this.http.get<PerfilDTO>(`${this.apiUrl}/usuarios/me`);
+  }
+
+  cambiarPassword(data: PasswordChangeRequest) {
+    return this.http.put(`${this.apiUrl}/usuarios/password`, data, { responseType: 'text' });
   }
 }

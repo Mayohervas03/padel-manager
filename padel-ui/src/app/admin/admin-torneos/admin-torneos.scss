@@ -1,0 +1,31 @@
+.admin-torneos-container {
+  padding: 20px;
+}
+
+.bg-marino {
+  background-color: #0b132b !important;
+}
+
+.text-neon {
+  color: #ccff00;
+}
+
+.btn-neon {
+  background-color: #ccff00;
+  color: #0b132b;
+  border: none;
+  font-weight: bold;
+  &:hover {
+    background-color: lighten(#ccff00, 10%);
+  }
+}
+
+.card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.table th {
+  background-color: #0b132b;
+  color: white;
+}

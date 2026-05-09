@@ -1,0 +1,23 @@
+@if (dialogService.isVisible()) {
+  <div class="confirm-dialog-overlay" (click)="dialogService.onCancel()">
+    <div class="confirm-dialog" (click)="$event.stopPropagation()">
+      <div class="confirm-dialog-header">
+        <i class="fas {{ dialogService.dialogData().icon }}"></i>
+        <h3>{{ dialogService.dialogData().title }}</h3>
+      </div>
+      <div class="confirm-dialog-body">
+        <p>{{ dialogService.dialogData().message }}</p>
+      </div>
+      <div class="confirm-dialog-footer">
+        <button class="btn btn-secondary" (click)="dialogService.onCancel()">
+          {{ dialogService.dialogData().cancelText }}
+        </button>
+        <button 
+          class="btn {{ dialogService.dialogData().confirmButtonClass }}" 
+          (click)="dialogService.onConfirm()">
+          {{ dialogService.dialogData().confirmText }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

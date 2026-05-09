@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { NotificationService } from '../shared/notification.service';
+import { TorneoService } from '../torneos/torneo.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { API_BASE_URL } from '../shared/api.config';
-import type { PerfilDTO, Reserva, Clase, PasswordChangeRequest } from '../shared/models';
+import type { PerfilDTO, Reserva, Clase, PasswordChangeRequest, InscripcionTorneoPerfil } from '../shared/models';
 
 @Component({
   selector: 'app-perfil',
@@ -21,11 +23,14 @@ export class PerfilComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
+  private readonly notificationService = inject(NotificationService);
+  private readonly torneoService = inject(TorneoService);
 
   readonly perfil = signal<PerfilDTO | null>(null);
   readonly reservas = signal<Reserva[]>([]);
   readonly clases = signal<Clase[]>([]);
-  
+  readonly inscripcionesTorneo = signal<InscripcionTorneoPerfil[]>([]);
+
   readonly showPasswordForm = signal(false);
   readonly passwordData = signal<PasswordChangeRequest>({ oldPassword: '', newPassword: '' });
   readonly mensajeExito = signal('');
@@ -44,15 +49,17 @@ export class PerfilComponent implements OnInit {
     const perfil$ = this.authService.getPerfil().pipe(catchError(() => of(null)));
     const reservas$ = this.http.get<Reserva[]>(`${this.apiUrl}/reservas`).pipe(catchError(() => of(null)));
     const clases$ = this.http.get<Clase[]>(`${this.apiUrl}/clases/mis-clases`).pipe(catchError(() => of(null)));
+    const torneos$ = this.torneoService.getMisInscripciones().pipe(catchError(() => of(null)));
 
-    forkJoin([perfil$, reservas$, clases$]).subscribe({
-      next: ([perfilData, reservasData, clasesData]) => {
-        if (perfilData === null || reservasData === null || clasesData === null) {
+    forkJoin([perfil$, reservas$, clases$, torneos$]).subscribe({
+      next: ([perfilData, reservasData, clasesData, torneosData]) => {
+        if (perfilData === null || reservasData === null || clasesData === null || torneosData === null) {
           this.hayError.set(true);
         } else {
           this.perfil.set(perfilData);
           this.reservas.set(reservasData);
           this.clases.set(clasesData);
+          this.inscripcionesTorneo.set(torneosData);
         }
         this.isLoading.set(false);
       },
@@ -105,7 +112,21 @@ export class PerfilComponent implements OnInit {
           this.cargarDatos();
         },
         error: (err) => {
-          alert(err.error || 'No se pudo cancelar la reserva. Verifica la antelacion (24h).');
+          this.notificationService.error(err.error || 'No se pudo cancelar la reserva. Verifica la antelacion (24h).');
+        }
+      });
+    }
+  }
+
+  cancelarInscripcionTorneo(id: number) {
+    if (confirm('¿Estas seguro de que deseas cancelar tu inscripcion a este torneo?')) {
+      this.torneoService.cancelarInscripcion(id).subscribe({
+        next: () => {
+          this.cargarDatos();
+          this.notificationService.success('Inscripcion cancelada correctamente');
+        },
+        error: (err) => {
+          this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');
         }
       });
     }

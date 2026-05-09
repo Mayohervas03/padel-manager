@@ -17,4 +17,6 @@ public interface PistaRepository extends JpaRepository<Pista, Long> {
     @Query("SELECT p FROM Pista p LEFT JOIN Reserva r ON r.pista.id = p.id AND r.fecha = :fecha AND r.hora = :hora WHERE r.id IS NULL AND p.activo = true")
     List<Pista> findDisponibles(@Param("fecha") LocalDate fecha, @Param("hora") LocalTime hora);
 
+    long countByActivoTrue();
+
 }

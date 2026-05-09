@@ -15,6 +15,7 @@ export class AuthService {
 
   private readonly tokenKey = 'padel_token';
   private readonly roleKey = 'padel_role';
+  private readonly userIdKey = 'padel_user_id';
 
   private readonly nombreSubject = new BehaviorSubject<string | null>(localStorage.getItem('padel_nombre'));
   readonly nombre$: Observable<string | null> = this.nombreSubject.asObservable();
@@ -34,6 +35,9 @@ export class AuthService {
           if (response.nombre) {
             localStorage.setItem('padel_nombre', response.nombre);
             this.nombreSubject.next(response.nombre);
+          }
+          if (response.userId) {
+            localStorage.setItem(this.userIdKey, response.userId.toString());
           }
         }
       })
@@ -89,9 +93,15 @@ export class AuthService {
     return this.getRole() === 'ADMIN';
   }
 
+  getCurrentUserId(): number | null {
+    const id = localStorage.getItem(this.userIdKey);
+    return id ? Number(id) : null;
+  }
+
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.roleKey);
+    localStorage.removeItem(this.userIdKey);
     localStorage.removeItem('padel_nombre');
     this.nombreSubject.next(null);
   }

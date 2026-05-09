@@ -1,129 +1,123 @@
-.admin-view {
+@use '../styles/admin-theme' as *;
+
+.admin-clases {
+  max-width: 1200px;
+  margin: 0 auto;
   animation: fadeIn 0.4s ease-out;
 }
 
-.view-header {
-  margin-bottom: 20px;
-  h2 { font-family: 'Oswald', sans-serif; color: #002b55; margin: 0; }
-}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-xl;
+  flex-wrap: wrap;
+  gap: $space-md;
 
-.card {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  margin-bottom: 20px;
-  border: 1px solid #eee;
-}
-
-.inline-form {
-  form {
+  h1 {
+    font-family: $font-heading;
+    color: $text-primary;
+    margin: 0;
+    font-size: 1.5rem;
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    gap: $space-md;
 
-    .form-row {
-      display: flex;
-      gap: 15px;
-      align-items: flex-end;
-      flex-wrap: wrap;
-
-      input, select {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-family: inherit;
-        flex: 1;
-        min-width: 150px;
-      }
-
-      .input-group {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-width: 120px;
-        label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #555; }
-      }
-
-      .btn-create {
-        background: #ccff00;
-        color: #002b55;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.2s;
-        height: 40px;
-        font-family: 'Oswald', sans-serif;
-        letter-spacing: 1px;
-
-        &:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(204,255,0,0.4); }
-      }
+    i {
+      color: $neon-green;
     }
   }
 }
 
-.table-container {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  overflow: hidden;
+.main-info {
+  font-weight: 600;
+  font-size: 1rem;
+  color: $text-primary;
+}
 
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
+.sub-info {
+  font-size: 0.85rem;
+  color: $text-muted;
+  margin-top: 3px;
+}
 
-    th, td { padding: 15px 20px; text-align: left; }
-    th { background: #002b55; color: white; font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
-    tr { border-bottom: 1px solid #eee; }
-    tr:last-child { border-bottom: none; }
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 
-    .main-info { font-weight: bold; font-size: 1.05rem; color: #333; }
-    .sub-info { font-size: 0.85rem; color: #777; margin-top: 3px; }
-
-    .badge {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      color: white;
-      text-transform: uppercase;
-      &.iniciacion { background-color: #28a745; }
-      &.intermedio { background-color: #0088cc; }
-      &.avanzado { background-color: #e63946; }
-    }
-
-    .ocupacion { font-size: 0.9rem; margin-bottom: 5px; color: #333; }
-    .alumnos-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-top: 5px;
-
-      .alumno-tag {
-        background: #f1f3f5;
-        color: #495057;
-        padding: 3px 6px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        border: 1px solid #dee2e6;
-      }
-    }
-
-    .btn-delete {
-      background: none;
-      border: none;
-      color: #ff4d4d;
-      cursor: pointer;
-      font-size: 1.2rem;
-      transition: transform 0.2s;
-      &:hover { transform: scale(1.2); }
-    }
+  &.badge-iniciacion {
+    background: rgba(168, 230, 207, 0.15);
+    color: #A8E6CF;
+    border: 1px solid rgba(168, 230, 207, 0.3);
   }
+
+  &.badge-intermedio {
+    background: rgba(0, 212, 255, 0.15);
+    color: $neon-cyan;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+  }
+
+  &.badge-avanzado {
+    background: rgba(255, 107, 107, 0.15);
+    color: $coral;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+  }
+}
+
+.alumnos-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+
+  .alumno-tag {
+    background: rgba(255, 255, 255, 0.05);
+    color: $text-secondary;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    border: 1px solid $border-glass;
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 60px;
+  color: $text-muted;
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(204, 255, 0, 0.1);
+    border-top-color: $neon-green;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $space-md;
+
+    h1 {
+      font-size: 1.2rem;
+    }
+  }
 }

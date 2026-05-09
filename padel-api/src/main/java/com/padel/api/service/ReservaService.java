@@ -4,6 +4,7 @@ import com.padel.api.dto.ReservaRequest;
 import com.padel.api.exception.BusinessException;
 import com.padel.api.exception.ResourceNotFoundException;
 import com.padel.api.exception.UnauthorizedException;
+import com.padel.api.model.EstadoReserva;
 import com.padel.api.model.Reserva;
 import com.padel.api.model.Usuario;
 import com.padel.api.repository.ClaseRepository;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -29,12 +31,14 @@ public class ReservaService {
     private final PistaRepository pistaRepository;
     private final ClaseRepository claseRepository;
 
+    private static final List<EstadoReserva> ESTADOS_ACTIVOS = Arrays.asList(EstadoReserva.PENDIENTE, EstadoReserva.CONFIRMADA);
+
     public List<Reserva> listarReservasUsuario(String email) {
         Usuario usuario = getUsuarioByEmail(email);
         if ("ADMIN".equals(usuario.getRol())) {
-            return reservaRepository.findAll();
+            return reservaRepository.findByFechaGreaterThanEqual(LocalDate.now());
         }
-        return reservaRepository.findByUsuarioEmail(email);
+        return reservaRepository.findByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(email, ESTADOS_ACTIVOS, LocalDate.now());
     }
 
     @Transactional
@@ -42,22 +46,32 @@ public class ReservaService {
         Usuario usuario = getUsuarioByEmail(email);
 
         validarReglasNegocio(request);
+        validarSlotHorario(request.getHora());
+        validarLimiteReservasActivas(email);
 
-        boolean ocupada = reservaRepository.existsByPistaIdAndFechaAndHora(
-                request.getPistaId(), request.getFecha(), request.getHora());
         boolean ocupadaPorClase = claseRepository.existsByPistaIdAndFechaAndHora(
                 request.getPistaId(), request.getFecha(), request.getHora());
 
-        if (ocupada || ocupadaPorClase) {
-            throw new BusinessException("Esa pista ya esta reservada o tiene una clase programada a esa hora.");
+        if (ocupadaPorClase) {
+            throw new BusinessException("Esa pista ya tiene una clase programada a esa hora.");
+        }
+
+        var pista = pistaRepository.findById(request.getPistaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Pista no encontrada"));
+
+        // Verificar que no existe una reserva activa en ese slot
+        List<Reserva> existentes = reservaRepository.findByPistaIdAndFechaAndHoraAndEstadoIn(
+                request.getPistaId(), request.getFecha(), request.getHora(), ESTADOS_ACTIVOS);
+        if (!existentes.isEmpty()) {
+            throw new BusinessException("Esa pista ya esta reservada a esa hora. Por favor, elige otro horario.");
         }
 
         Reserva reserva = new Reserva();
         reserva.setUsuario(usuario);
-        reserva.setPista(pistaRepository.findById(request.getPistaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Pista no encontrada")));
+        reserva.setPista(pista);
         reserva.setFecha(request.getFecha());
         reserva.setHora(request.getHora());
+        reserva.setPrecioPagado(pista.getPrecio());
 
         return reservaRepository.save(reserva);
     }
@@ -70,7 +84,11 @@ public class ReservaService {
         Usuario usuario = getUsuarioByEmail(email);
 
         if (!reserva.getUsuario().getEmail().equals(email) && !"ADMIN".equals(usuario.getRol())) {
-            throw new UnauthorizedException("No tienes permisos para borrar esta reserva.");
+            throw new UnauthorizedException("No tienes permisos para cancelar esta reserva.");
+        }
+
+        if (reserva.getEstado() == EstadoReserva.CANCELADA) {
+            throw new BusinessException("Esta reserva ya esta cancelada.");
         }
 
         LocalDateTime fechaHoraReserva = LocalDateTime.of(reserva.getFecha(), reserva.getHora());
@@ -80,7 +98,8 @@ public class ReservaService {
             throw new BusinessException("No se puede cancelar con menos de 24h de antelacion.");
         }
 
-        reservaRepository.deleteById(id);
+        reserva.setEstado(EstadoReserva.CANCELADA);
+        reservaRepository.save(reserva);
     }
 
     private void validarReglasNegocio(ReservaRequest request) {
@@ -94,6 +113,29 @@ public class ReservaService {
 
         if (request.getFecha().isEqual(LocalDate.now()) && !request.getHora().isAfter(LocalTime.now())) {
             throw new BusinessException("Esa hora ya ha pasado en el dia de hoy.");
+        }
+    }
+
+    private void validarSlotHorario(LocalTime hora) {
+        int minutos = hora.getHour() * 60 + hora.getMinute();
+        int apertura = 9 * 60;   // 09:00
+        int cierre = 23 * 60;    // 23:00
+        int slot = 90;           // 1h 30min
+
+        if (minutos < apertura || minutos > cierre) {
+            throw new BusinessException("El horario debe estar entre 09:00 y 23:00.");
+        }
+
+        int offset = minutos - apertura;
+        if (offset % slot != 0) {
+            throw new BusinessException("Los horarios disponibles son: 09:00, 10:30, 12:00, 13:30, 15:00, 16:30, 18:00, 19:30, 21:00.");
+        }
+    }
+
+    private void validarLimiteReservasActivas(String email) {
+        long activas = reservaRepository.countByUsuarioEmailAndEstadoIn(email, ESTADOS_ACTIVOS);
+        if (activas >= 3) {
+            throw new BusinessException("Ya tienes 3 reservas activas. Cancela una para hacer una nueva.");
         }
     }
 

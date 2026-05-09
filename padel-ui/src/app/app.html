@@ -27,6 +27,7 @@
         <a routerLink="/reservas" routerLinkActive="active" class="nav-item">Reservas</a>
         <a routerLink="/clases" routerLinkActive="active" class="nav-item">Academia</a>
         <a routerLink="/torneos" routerLinkActive="active" class="nav-item">Torneos</a>
+        <a routerLink="/tienda" routerLinkActive="active" class="nav-item">Tienda</a>
       }
       @if (authService.isAdmin()) {
         <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item nav-admin">Admin</a>
@@ -65,6 +66,7 @@
         <a routerLink="/reservas" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-calendar-check"></i> Reservas</a>
         <a routerLink="/clases" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-graduation-cap"></i> Academia</a>
         <a routerLink="/torneos" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-trophy"></i> Torneos</a>
+        <a routerLink="/tienda" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-shopping-bag"></i> Tienda</a>
         <a routerLink="/perfil" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-user"></i> Mi Perfil</a>
       }
       @if (authService.isAdmin()) {
@@ -81,3 +83,5 @@
 </header>
 
 <router-outlet></router-outlet>
+
+<app-toast-container />

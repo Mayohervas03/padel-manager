@@ -1,6 +1,7 @@
 package com.padel.api.dto;
 
 import lombok.Data;
+import com.padel.api.model.EstadoInscripcion;
 import com.padel.api.model.InscripcionTorneo;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ public class InscripcionTorneoDto {
     private String categoria;
     private boolean pagado;
     private LocalDate fechaInscripcion;
+    private EstadoInscripcion estado;
 
     public static InscripcionTorneoDto fromEntity(InscripcionTorneo inscripcion) {
         InscripcionTorneoDto dto = new InscripcionTorneoDto();
@@ -26,6 +28,7 @@ public class InscripcionTorneoDto {
         dto.setCategoria(inscripcion.getCategoria());
         dto.setPagado(inscripcion.isPagado());
         dto.setFechaInscripcion(inscripcion.getFechaInscripcion());
+        dto.setEstado(inscripcion.getEstado());
         return dto;
     }
 }

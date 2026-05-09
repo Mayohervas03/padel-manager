@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../shared/api.config';
+import { NotificationService } from '../shared/notification.service';
 import type { Pista } from '../shared/models';
 
 interface Dia {
@@ -23,6 +24,7 @@ interface Dia {
 export class ReservasComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
+  private readonly notificationService = inject(NotificationService);
 
   readonly diasDisponibles = signal<Dia[]>([]);
   readonly horasDisponibles = signal<readonly string[]>([
@@ -108,12 +110,12 @@ export class ReservasComponent implements OnInit {
 
     this.http.post(`${this.apiUrl}/reservas`, reservaData).subscribe({
       next: () => {
-        alert('Reserva confirmada con éxito!');
+        this.notificationService.success('Reserva confirmada con éxito!');
         this.resetearFlujo();
       },
       error: (err) => {
         // El interceptor ya normaliza el error para que err.error sea un string
-        alert(err.error || 'Ocurrió un error inesperado.');
+        this.notificationService.error(err.error || 'Ocurrió un error inesperado.');
       }
     }).add(() => {
       this.cargando.set(false);

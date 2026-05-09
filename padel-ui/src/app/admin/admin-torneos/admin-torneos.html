@@ -1,101 +1,159 @@
-<div class="admin-torneos-container">
-  <div class="header d-flex justify-content-between align-items-center mb-4">
-    <h2>Gestión de Torneos</h2>
-    <button class="btn btn-primary btn-neon" (click)="toggleFormulario()">
-      <i class="fas" [class.fa-times]="mostrarFormulario()" [class.fa-plus]="!mostrarFormulario()"></i>
-      {{ mostrarFormulario() ? 'Cancelar' : 'Nuevo Torneo' }}
-    </button>
+<div class="admin-torneos">
+  <div class="page-header">
+    <h1><i class="fas fa-trophy"></i> Gestión de Torneos</h1>
+    <div class="header-actions">
+      <button class="btn-export" (click)="exportarCSV()" title="Exportar a CSV" aria-label="Exportar torneos a CSV">
+        <i class="fas fa-file-csv"></i> Exportar
+      </button>
+      <button class="btn-neon" (click)="abrirCrearModal()">
+        <i class="fas fa-plus"></i> Nuevo Torneo
+      </button>
+    </div>
   </div>
 
-  @if (mostrarFormulario()) {
-    <div class="card form-card mb-4">
-      <div class="card-body">
-        <h3 class="card-title text-neon">{{ nuevoTorneo.id ? 'Editar Torneo' : 'Crear Torneo' }}</h3>
-        <form (ngSubmit)="guardarTorneo()">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Título</label>
-              <input type="text" class="form-control" name="titulo" [(ngModel)]="nuevoTorneo.titulo">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Imagen URL</label>
-              <input type="url" class="form-control" name="imagenUrl" [(ngModel)]="nuevoTorneo.imagenUrl">
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Descripción</label>
-            <textarea class="form-control" name="descripcion" [(ngModel)]="nuevoTorneo.descripcion" rows="3"></textarea>
-          </div>
-          <div class="row">
-            <div class="col-md-3 mb-3">
-              <label class="form-label">Fecha Inicio</label>
-              <input type="date" class="form-control" name="fechaInicio" [(ngModel)]="nuevoTorneo.fechaInicio">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label">Fecha Fin</label>
-              <input type="date" class="form-control" name="fechaFin" [(ngModel)]="nuevoTorneo.fechaFin">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label">Precio Pareja (€)</label>
-              <input type="number" class="form-control" name="precioPareja" [(ngModel)]="nuevoTorneo.precioPareja">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label class="form-label">Max. Parejas</label>
-              <input type="number" class="form-control" name="maxParejas" [(ngModel)]="nuevoTorneo.maxParejas">
-            </div>
-          </div>
-          <button type="submit" class="btn btn-success"><i class="fas fa-save" aria-hidden="true"></i> Guardar</button>
-        </form>
-      </div>
+  <!-- Filtros -->
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <i class="fas fa-search icon-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="filtroTexto"
+        (ngModelChange)="filtrarTorneos()"
+        placeholder="Buscar por título..."
+        class="search-input"
+        aria-label="Buscar torneos por título"
+      >
     </div>
-  }
+    <div class="filter-group">
+      <label>Estado:</label>
+      <select [(ngModel)]="filtroEstado" (change)="filtrarTorneos()" aria-label="Filtrar por estado">
+        <option value="TODOS">Todos</option>
+        <option value="ABIERTO">Abierto</option>
+        <option value="CERRADO">Cerrado</option>
+        <option value="CANCELADO">Cancelado</option>
+      </select>
+    </div>
+  </div>
 
-  @if (!mostrarFormulario()) {
-    <div class="card table-card">
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <caption class="visually-hidden">Lista de torneos registrados</caption>
-            <thead class="table-dark">
-              <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Fechas</th>
-                <th>Info</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (t of torneos(); track t.id) {
-                <tr>
-                  <td>{{ t.id }}</td>
-                  <td><strong>{{ t.titulo }}</strong></td>
-                  <td>{{ t.fechaInicio | date:'dd/MM/yyyy' }} - {{ t.fechaFin | date:'dd/MM/yyyy' }}</td>
-                  <td>
-                    Max: {{ t.maxParejas }} parejas<br>
-                    <span class="text-success">{{ t.precioPareja | currency:'EUR':'symbol' }}</span>
-                  </td>
-                  <td>
-                    <a class="btn btn-sm btn-info me-2 text-white" [routerLink]="['/admin/torneos', t.id]" title="Gestionar Parejas">
-                      <i class="fas fa-users me-1" aria-hidden="true"></i> Gestionar Parejas
-                    </a>
-                    <button class="btn btn-sm btn-warning me-2" (click)="editarTorneo(t)" title="Editar">
-                      <i class="fas fa-edit" aria-hidden="true"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" (click)="borrarTorneo(t.id)" title="Borrar">
-                      <i class="fas fa-trash" aria-hidden="true"></i>
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="5" class="text-center py-4 text-muted">No hay torneos creados. Crea el primero.</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+  <!-- Tabla -->
+  <div class="admin-table-container">
+    <div class="table-responsive">
+      <table class="admin-table">
+        <caption class="visually-hidden">Lista de torneos registrados</caption>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Fechas</th>
+            <th>Estado</th>
+            <th>Ocupación</th>
+            <th>Info</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of torneosPaginados(); track t.id) {
+            <tr>
+              <td>{{ t.id }}</td>
+              <td><strong>{{ t.titulo }}</strong></td>
+              <td>{{ t.fechaInicio | date:'dd/MM/yyyy' }} - {{ t.fechaFin | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <button
+                  class="estado-badge"
+                  [class.abierto]="t.estado === 'ABIERTO'"
+                  [class.cerrado]="t.estado === 'CERRADO'"
+                  [class.cancelado]="t.estado === 'CANCELADO'"
+                  (click)="cambiarEstado(t)"
+                  title="Cambiar estado"
+                  [attr.aria-label]="'Cambiar estado de ' + t.titulo">
+                  {{ t.estado }}
+                </button>
+              </td>
+              <td>
+                <div class="ocupacion-cell">
+                  <div class="ocupacion-barra">
+                    <div class="ocupacion-progreso"
+                         [style.width.%]="((t.inscripcionesCount || 0) / t.maxParejas) * 100"
+                         [class.ocupacion-lleno]="(t.inscripcionesCount || 0) >= t.maxParejas"
+                         [class.ocupacion-medio]="(t.inscripcionesCount || 0) >= t.maxParejas * 0.5 && (t.inscripcionesCount || 0) < t.maxParejas"
+                         [class.ocupacion-bajo]="(t.inscripcionesCount || 0) < t.maxParejas * 0.5">
+                    </div>
+                  </div>
+                  <span class="ocupacion-texto">{{ t.inscripcionesCount || 0 }}/{{ t.maxParejas }} parejas</span>
+                </div>
+              </td>
+              <td>
+                Max: {{ t.maxParejas }} parejas<br>
+                <span style="color: #CCFF00; font-weight: 600;">{{ t.precioPareja | currency:'EUR':'symbol' }}</span>
+              </td>
+              <td class="actions-cell text-center">
+                <a class="btn-neon-small" [routerLink]="['/admin/torneos', t.id]">
+                  <i class="fas fa-users"></i> Gestionar
+                </a>
+                <button class="btn-icon btn-edit" (click)="abrirEditarModal(t)" title="Editar" aria-label="Editar torneo {{ t.titulo }}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon btn-delete" (click)="borrarTorneo(t.id)" title="Borrar" aria-label="Borrar torneo {{ t.titulo }}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-row">No hay torneos que coincidan con los filtros.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  @if (torneosFiltrados().length > 0) {
+    <div class="pagination-bar">
+      <div class="pagination-info">
+        Mostrando <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> de <strong>{{ infoPaginacion().total }}</strong> torneos
+      </div>
+
+      <div class="pagination-controls">
+        <button
+          class="pagination-btn"
+          [disabled]="paginaActual() === 1"
+          (click)="cambiarPagina(paginaActual() - 1)"
+          aria-label="Página anterior"
+        >
+          <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <span class="pagination-page">Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+
+        <button
+          class="pagination-btn"
+          [disabled]="paginaActual() === totalPaginas()"
+          (click)="cambiarPagina(paginaActual() + 1)"
+          aria-label="Página siguiente"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="pagination-size">
+        <label for="itemsPorPagina">Mostrar:</label>
+        <select id="itemsPorPagina" [(ngModel)]="itemsPorPagina" (change)="cambiarItemsPorPagina(itemsPorPagina())" aria-label="Torneos por página">
+          @for (opt of opcionesItemsPorPagina; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
       </div>
     </div>
   }
 </div>
+
+<!-- Modal formulario -->
+@if (torneoEditando(); as torneo) {
+  <app-torneo-form-dialog
+    [torneo]="torneo"
+    (guardar)="guardarTorneo($event)"
+    (cerrar)="cerrarModal()"
+  />
+}

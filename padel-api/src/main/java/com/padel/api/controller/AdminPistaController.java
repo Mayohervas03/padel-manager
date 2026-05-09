@@ -24,12 +24,23 @@ public class AdminPistaController {
 
     @PostMapping
     public Pista crearPista(@RequestBody Pista pista) {
-        pista.setActivo(true);
         return pistaService.crearPista(new com.padel.api.dto.PistaRequest() {{
             setNombre(pista.getNombre());
             setTipo(pista.getTipo());
             setUbicacion(pista.getUbicacion());
             setPrecio(pista.getPrecio());
+            setActivo(pista.getActivo() != null ? pista.getActivo() : true);
+        }});
+    }
+
+    @PutMapping("/{id}")
+    public Pista actualizarPista(@PathVariable Long id, @RequestBody Pista pista) {
+        return pistaService.actualizarPista(id, new com.padel.api.dto.PistaRequest() {{
+            setNombre(pista.getNombre());
+            setTipo(pista.getTipo());
+            setUbicacion(pista.getUbicacion());
+            setPrecio(pista.getPrecio());
+            setActivo(pista.getActivo());
         }});
     }
 

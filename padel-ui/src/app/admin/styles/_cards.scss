@@ -1,0 +1,147 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+// =====================================================
+// ADMIN CARDS
+// =====================================================
+
+// Main card
+.admin-card {
+  @include glassmorphism;
+  border-radius: $radius-xl;
+  padding: $space-xl;
+  @include hover-lift;
+}
+
+// Stat card (for dashboards)
+.stat-card {
+  @include glassmorphism;
+  border-radius: $radius-xl;
+  padding: $space-xl;
+  @include hover-lift;
+
+  .stat-header {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    margin-bottom: $space-lg;
+
+    i {
+      font-size: 1.5rem;
+      width: 48px;
+      height: 48px;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.icon-cyan {
+        background: $neon-cyan-dim;
+        color: $neon-cyan;
+      }
+
+      &.icon-green {
+        background: $neon-green-dim;
+        color: $neon-green;
+      }
+
+      &.icon-coral {
+        background: $coral-dim;
+        color: $coral;
+      }
+    }
+
+    h3 {
+      font-family: $font-heading;
+      font-size: 1rem;
+      color: $text-primary;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+
+  .stat-value {
+    font-family: $font-heading;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $neon-green;
+    margin: 0;
+  }
+
+  .stat-label {
+    color: $text-muted;
+    font-size: 0.85rem;
+    margin-top: $space-xs;
+  }
+}
+
+// Page header card
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-xl;
+
+  h1 {
+    font-family: $font-heading;
+    font-size: 1.5rem;
+    color: $text-primary;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+
+    i {
+      color: $neon-green;
+    }
+  }
+}
+
+// Empty state
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: $space-2xl;
+  color: $text-muted;
+
+  i {
+    font-size: 4rem;
+    margin-bottom: $space-lg;
+    display: block;
+    opacity: 0.3;
+  }
+
+  h3 {
+    font-family: $font-heading;
+    color: $text-primary;
+    margin: 0 0 $space-sm;
+    font-size: 1.2rem;
+  }
+
+  p {
+    margin: 0 0 $space-lg;
+    font-size: 0.95rem;
+  }
+}
+
+// Loading state
+.loading-state {
+  text-align: center;
+  padding: $space-2xl;
+  color: $text-muted;
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(204, 255, 0, 0.1);
+    border-top-color: $neon-green;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto $space-md;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

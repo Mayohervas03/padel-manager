@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../shared/api.config';
-import type { Torneo, InscripcionTorneo, InscripcionTorneoRequest } from '../shared/models';
+import type { Torneo, InscripcionTorneo, InscripcionTorneoPerfil, InscripcionTorneoRequest } from '../shared/models';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +39,14 @@ export class TorneoService {
     return this.http.post(`${this.apiUrl}/torneos/${torneoId}/inscribirse`, data, { responseType: 'text' });
   }
 
+  getMisInscripciones(): Observable<InscripcionTorneoPerfil[]> {
+    return this.http.get<InscripcionTorneoPerfil[]>(`${this.apiUrl}/torneos/mis-inscripciones`);
+  }
+
+  cancelarInscripcion(inscripcionId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/torneos/mis-inscripciones/${inscripcionId}`);
+  }
+
   marcarPagado(inscripcionId: number, pagado: boolean): Observable<InscripcionTorneo> {
     return this.http.put<InscripcionTorneo>(`${this.apiUrl}/torneos/inscripciones/${inscripcionId}/pagado?pagado=${pagado}`, {});
   }
@@ -54,5 +62,9 @@ export class TorneoService {
 
   patchPagoAdmin(inscripcionId: number, pagado: boolean): Observable<InscripcionTorneo> {
     return this.http.patch<InscripcionTorneo>(`${this.apiUrl}/admin/inscripciones/${inscripcionId}/pago?pagado=${pagado}`, {});
+  }
+
+  cambiarEstadoAdmin(id: number, estado: string): Observable<Torneo> {
+    return this.http.patch<Torneo>(`${this.apiUrl}/admin/torneos/${id}/estado?estado=${estado}`, {});
   }
 }

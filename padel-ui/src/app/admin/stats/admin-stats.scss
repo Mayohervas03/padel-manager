@@ -1,29 +1,129 @@
+@use '../styles/admin-theme' as *;
+
 .admin-view {
   animation: fadeIn 0.4s ease-out;
 }
 
 .view-header {
-  margin-bottom: 2rem;
+  margin-bottom: $space-xl;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-md;
+
   h2 {
-    font-family: 'Oswald', sans-serif;
-    color: #333;
+    font-family: $font-heading;
+    color: $text-primary;
     margin: 0;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+
+    i {
+      color: $neon-green;
+    }
+  }
+
+  .date-filters {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+
+    label {
+      color: $text-secondary;
+      font-size: 0.9rem;
+    }
+
+    input[type="date"] {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: $radius-md;
+      color: $text-primary;
+      padding: $space-sm $space-md;
+      font-family: inherit;
+
+      &::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+// KPI Grid
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: $space-md;
+  margin-bottom: $space-xl;
+}
+
+.kpi-card {
+  @include glassmorphism;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-glow;
+  }
+
+  .kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+
+    &.kpi-icon-partidos { background: rgba(204, 255, 0, 0.15); color: $neon-green; }
+    &.kpi-icon-ingresos { background: rgba(0, 212, 255, 0.15); color: $neon-cyan; }
+    &.kpi-icon-promedio { background: rgba(0, 78, 146, 0.3); color: #00a8ff; }
+    &.kpi-icon-top { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+    &.kpi-icon-hora { background: rgba(255, 107, 107, 0.15); color: $coral; }
+  }
+
+  .kpi-data {
+    display: flex;
+    flex-direction: column;
+
+    .kpi-value {
+      font-family: $font-heading;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: $text-primary;
+      line-height: 1.2;
+    }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
   }
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: $space-lg;
 
   .stat-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    padding: 20px;
-    border: 1px solid #eee;
+    @include glassmorphism;
+    border-radius: $radius-xl;
+    padding: $space-xl;
     display: flex;
     flex-direction: column;
+    @include hover-lift;
 
     &.full-width {
       grid-column: 1 / -1;
@@ -33,12 +133,15 @@
     }
 
     h3 {
-      font-family: 'Oswald', sans-serif;
-      color: #002b55;
+      font-family: $font-heading;
+      color: $text-primary;
       margin-top: 0;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #f1f1f1;
+      margin-bottom: $space-lg;
+      padding-bottom: $space-md;
+      border-bottom: 1px solid $border-glass;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .chart-container {
@@ -47,12 +150,51 @@
       height: 280px;
       flex-grow: 1;
     }
+
+    .chart-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 280px;
+      color: $text-muted;
+      font-size: 0.9rem;
+    }
   }
 }
 
 @media (max-width: 900px) {
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kpi-card {
+    padding: $space-md;
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .kpi-data {
+      .kpi-value {
+        font-size: 1.1rem;
+      }
+
+      .kpi-label {
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .view-header h2 {
+    font-size: 1.2rem;
   }
 }
 

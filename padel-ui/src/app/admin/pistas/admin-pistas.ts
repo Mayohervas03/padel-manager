@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../../shared/api.config';
+import { NotificationService } from '../../shared/notification.service';
 import type { Pista } from '../../shared/models';
 
 @Component({
@@ -10,53 +11,118 @@ import type { Pista } from '../../shared/models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admin-pistas.html',
-  styleUrls: ['../dashboard/admin-dashboard.scss'],
+  styleUrl: './admin-pistas.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminPistasComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
+  private readonly notificationService = inject(NotificationService);
 
   readonly pistas = signal<Pista[]>([]);
-  
-  nuevaPista: Omit<Pista, 'id'> = {
-    nombre: '', tipo: 'Cristal', ubicacion: 'Indoor', precio: 10, activo: true
-  };
+  readonly mostrarFormulario = signal(false);
+  readonly isLoading = signal(true);
+
+  pistaEditando: Partial<Pista> = this.resetPista();
 
   ngOnInit() {
     this.cargarPistas();
   }
 
   cargarPistas() {
+    this.isLoading.set(true);
     this.http.get<Pista[]>(`${this.apiUrl}/admin/pistas`).subscribe({
-      next: (data) => this.pistas.set(data),
-      error: (err) => console.error('Error cargando pistas', err)
+      next: (data) => {
+        this.pistas.set(data);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
     });
   }
 
-  crearPista() {
-    if (!this.nuevaPista.nombre) return;
-    
-    this.http.post<Pista>(`${this.apiUrl}/admin/pistas`, this.nuevaPista).subscribe({
+  resetPista(): Partial<Pista> {
+    return {
+      nombre: '',
+      tipo: 'Cristal',
+      ubicacion: 'Indoor',
+      precio: 10,
+      activo: true
+    };
+  }
+
+  toggleFormulario() {
+    this.mostrarFormulario.update(v => !v);
+    this.pistaEditando = this.resetPista();
+  }
+
+  editarPista(pista: Pista) {
+    this.pistaEditando = { ...pista };
+    this.mostrarFormulario.set(true);
+  }
+
+  guardarPista() {
+    const p = this.pistaEditando;
+    if (!p.nombre) {
+      this.notificationService.error('El nombre es obligatorio');
+      return;
+    }
+
+    const payload = {
+      nombre: p.nombre,
+      tipo: p.tipo || 'Cristal',
+      ubicacion: p.ubicacion || 'Indoor',
+      precio: p.precio || 0,
+      activo: p.activo ?? true
+    };
+
+    if (p.id) {
+      this.http.put<Pista>(`${this.apiUrl}/admin/pistas/${p.id}`, payload).subscribe({
+        next: () => {
+          this.notificationService.success('Pista actualizada');
+          this.toggleFormulario();
+          this.cargarPistas();
+        },
+        error: (err) => this.notificationService.error(err.error || 'Error al actualizar')
+      });
+    } else {
+      this.http.post<Pista>(`${this.apiUrl}/admin/pistas`, payload).subscribe({
+        next: () => {
+          this.notificationService.success('Pista creada');
+          this.toggleFormulario();
+          this.cargarPistas();
+        },
+        error: (err) => this.notificationService.error(err.error || 'Error al crear')
+      });
+    }
+  }
+
+  toggleEstado(pista: Pista) {
+    const nuevoEstado = !pista.activo;
+    const payload = {
+      nombre: pista.nombre,
+      tipo: pista.tipo,
+      ubicacion: pista.ubicacion,
+      precio: pista.precio,
+      activo: nuevoEstado
+    };
+
+    this.http.put<Pista>(`${this.apiUrl}/admin/pistas/${pista.id}`, payload).subscribe({
       next: () => {
+        this.notificationService.success(`Pista ${nuevoEstado ? 'activada' : 'desactivada'}`);
         this.cargarPistas();
-        this.nuevaPista = { nombre: '', tipo: 'Cristal', ubicacion: 'Indoor', precio: 10, activo: true };
       },
-      error: (err) => {
-        // El interceptor normaliza el error
-        alert('Error creando pista: ' + (err.error || err.message));
-      }
+      error: (err) => this.notificationService.error(err.error || 'Error al cambiar estado')
     });
   }
 
   borrarPista(id: number) {
-    if (confirm('PELIGRO: Borrar la pista eliminará TAMBIÉN todas las reservas asociadas a la misma. ¿Deseas continuar?')) {
-      // Usamos responseType: 'text' para manejar respuestas vacías o texto plano
+    if (confirm('PELIGRO: Borrar la pista eliminará TAMBIÉN todas las reservas asociadas. ¿Deseas continuar?')) {
       this.http.delete(`${this.apiUrl}/admin/pistas/${id}`, { responseType: 'text' }).subscribe({
-        next: () => this.cargarPistas(),
-        error: (err) => {
-          alert('Error borrando pista: ' + (err.error || err.message));
-        }
+        next: () => {
+          this.notificationService.success('Pista eliminada');
+          this.cargarPistas();
+        },
+        error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
       });
     }
   }

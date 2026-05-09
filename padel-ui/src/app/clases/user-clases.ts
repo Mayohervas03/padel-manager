@@ -2,6 +2,7 @@ import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@ang
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../shared/api.config';
+import { NotificationService } from '../shared/notification.service';
 import type { Clase } from '../shared/models';
 
 @Component({
@@ -15,6 +16,7 @@ import type { Clase } from '../shared/models';
 export class UserClasesComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
+  private readonly notificationService = inject(NotificationService);
 
   readonly clasesDisponibles = signal<Clase[]>([]);
   readonly inscripcionesEnCurso = signal<Set<number>>(new Set());
@@ -66,7 +68,7 @@ export class UserClasesComponent implements OnInit {
           return newSet;
         });
         // El interceptor normaliza el error
-        alert('No se pudo completar la inscripcion: ' + (err.error || err.message));
+        this.notificationService.error('No se pudo completar la inscripcion: ' + (err.error || err.message));
       }
     });
   }

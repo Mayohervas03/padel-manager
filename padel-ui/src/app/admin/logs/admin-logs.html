@@ -1,0 +1,92 @@
+<div class="admin-logs">
+  <div class="page-header">
+    <h1><i class="fas fa-history"></i> Historial de Actividad</h1>
+    <div class="header-actions">
+      <div class="search-wrap">
+        <i class="fas fa-search icon-search"></i>
+        <input 
+          type="text" 
+          [(ngModel)]="filtro" 
+          (ngModelChange)="filtrarLogs()"
+          placeholder="Buscar en el historial..."
+          aria-label="Buscar en historial"
+        >
+      </div>
+      <button class="btn-danger-glass" (click)="clearLogs()" [disabled]="isLoading()" title="Borrar historial" aria-label="Borrar historial">
+        <i class="fas fa-trash"></i> Limpiar
+      </button>
+    </div>
+  </div>
+
+  <div class="logs-container">
+    @if (isLoading()) {
+      <div class="empty-state">
+        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+        <p>Cargando historial...</p>
+      </div>
+    } @else if (logsFiltrados().length > 0) {
+      <table class="logs-table">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Acción</th>
+            <th>Entidad</th>
+            <th>Detalles</th>
+            <th>Usuario</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logsPaginados(); track log.id) {
+            <tr class="log-row">
+              <td class="log-time">{{ formatFecha(log.timestamp) }}</td>
+              <td>
+                <span class="action-badge" [class]="getActionColor(log.action)">
+                  <i class="fas" [class]="getActionIcon(log.action)"></i>
+                  {{ log.action }}
+                </span>
+              </td>
+              <td><span class="entity-badge">{{ log.entity }}</span></td>
+              <td class="log-details">{{ log.details }}</td>
+              <td><span class="user-badge"><i class="fas fa-user"></i> {{ log.usuario }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Paginación -->
+      <div class="pagination-bar">
+        <div class="pagination-info">
+          Mostrando <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> de <strong>{{ infoPaginacion().total }}</strong> registros
+        </div>
+        
+        <div class="pagination-controls">
+          <button 
+            class="pagination-btn" 
+            [disabled]="paginaActual() === 1"
+            (click)="cambiarPagina(paginaActual() - 1)"
+            aria-label="Página anterior"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <span class="pagination-page">Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+          
+          <button 
+            class="pagination-btn" 
+            [disabled]="paginaActual() === totalPaginas()"
+            (click)="cambiarPagina(paginaActual() + 1)"
+            aria-label="Página siguiente"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <i class="fas fa-clipboard-list" style="font-size: 3rem; margin-bottom: 16px; display: block; opacity: 0.3;"></i>
+        <p>No hay registros de actividad.</p>
+        <p class="empty-hint">Las acciones realizadas en el panel se registrarán automáticamente aquí.</p>
+      </div>
+    }
+  </div>
+</div>

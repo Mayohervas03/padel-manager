@@ -19,4 +19,6 @@ public class PistaRequest {
     @NotNull(message = "El precio es obligatorio")
     @Positive(message = "El precio debe ser positivo")
     private Double precio;
+
+    private Boolean activo;
 }

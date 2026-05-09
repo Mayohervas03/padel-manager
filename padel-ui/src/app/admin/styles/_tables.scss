@@ -1,0 +1,122 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+// =====================================================
+// ADMIN TABLES
+// =====================================================
+
+.admin-table-container {
+  @include glassmorphism;
+  border-radius: $radius-xl;
+  overflow: hidden;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 14px $space-md;
+    text-align: left;
+    border-bottom: 1px solid $border-glass;
+  }
+
+  th {
+    font-family: $font-heading;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: $text-muted;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  td {
+    font-size: 0.9rem;
+    color: $text-secondary;
+  }
+
+  tbody tr {
+    transition: background $transition-fast;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  // Status Badges in tables
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: $radius-sm;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.activo,
+    &.pagado {
+      background: rgba(74, 222, 128, 0.1);
+      color: #4ADE80;
+      border: 1px solid rgba(74, 222, 128, 0.2);
+    }
+
+    &.inactivo,
+    &.pendiente {
+      background: rgba(255, 193, 7, 0.1);
+      color: #FFC107;
+      border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+
+    &.cancelado {
+      background: rgba(255, 107, 107, 0.1);
+      color: $coral;
+      border: 1px solid rgba(255, 107, 107, 0.2);
+    }
+  }
+
+  // Action buttons cell
+  .actions-cell {
+    display: flex;
+    gap: 8px;
+  }
+
+  // Empty state
+  .empty-row td {
+    text-align: center;
+    padding: $space-2xl;
+    color: $text-muted;
+  }
+}
+
+// Responsive table wrapper
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  @include scrollbar-dark;
+}
+
+// Mobile table adjustments
+@media (max-width: 768px) {
+  .admin-table {
+    th, td {
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 0.7rem;
+    }
+
+    .actions-cell {
+      gap: 6px;
+    }
+  }
+
+  .admin-table-container {
+    border-radius: $radius-lg;
+    margin: 0 -#{$space-md};
+    width: calc(100% + #{$space-md * 2});
+  }
+}

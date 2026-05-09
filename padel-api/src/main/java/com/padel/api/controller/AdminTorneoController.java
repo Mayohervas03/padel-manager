@@ -1,6 +1,7 @@
 package com.padel.api.controller;
 
 import com.padel.api.dto.InscripcionTorneoDto;
+import com.padel.api.model.EstadoTorneo;
 import com.padel.api.model.Torneo;
 import com.padel.api.service.TorneoService;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,11 @@ public class AdminTorneoController {
     public ResponseEntity<InscripcionTorneoDto> updatePago(@PathVariable Long id, @RequestParam boolean pagado) {
         logSecurityInfo();
         return ResponseEntity.ok(torneoService.marcarPagado(id, pagado));
+    }
+
+    @PatchMapping("/torneos/{id}/estado")
+    public ResponseEntity<Torneo> cambiarEstado(@PathVariable Long id, @RequestParam EstadoTorneo estado) {
+        logSecurityInfo();
+        return ResponseEntity.ok(torneoService.cambiarEstado(id, estado));
     }
 }

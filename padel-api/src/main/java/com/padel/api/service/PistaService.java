@@ -45,6 +45,9 @@ public class PistaService {
         pista.setTipo(request.getTipo());
         pista.setUbicacion(request.getUbicacion());
         pista.setPrecio(request.getPrecio());
+        if (request.getActivo() != null) {
+            pista.setActivo(request.getActivo());
+        }
         return pistaRepository.save(pista);
     }
 

@@ -55,6 +55,30 @@ public class ClaseService {
     }
 
     @Transactional
+    public Clase actualizarClase(Long id, ClaseRequest request) {
+        Clase clase = buscarPorId(id);
+        
+        // Solo validar disponibilidad si cambia la pista, fecha u hora
+        if (!clase.getPista().getId().equals(request.getPistaId()) ||
+            !clase.getFecha().equals(request.getFecha()) ||
+            !clase.getHora().equals(request.getHora())) {
+            validarDisponibilidad(request.getPistaId(), request.getFecha(), request.getHora());
+        }
+
+        clase.setTitulo(request.getTitulo());
+        clase.setMonitor(request.getMonitor());
+        clase.setNivel(NivelClase.valueOf(request.getNivel()));
+        clase.setPrecio(request.getPrecio());
+        clase.setMaxAlumnos(request.getMaxAlumnos());
+        clase.setFecha(request.getFecha());
+        clase.setHora(request.getHora());
+        clase.setPista(pistaRepository.findById(request.getPistaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Pista no encontrada")));
+
+        return claseRepository.save(clase);
+    }
+
+    @Transactional
     public void eliminarClase(Long id) {
         if (!claseRepository.existsById(id)) {
             throw new ResourceNotFoundException("Clase no encontrada");
@@ -96,7 +120,7 @@ public class ClaseService {
     public List<Clase> obtenerMisClases(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        return claseRepository.findByAlumnosId(usuario.getId());
+        return claseRepository.findByAlumnosIdAndFechaGreaterThanEqual(usuario.getId(), java.time.LocalDate.now());
     }
 
     private void validarDisponibilidad(Long pistaId, LocalDate fecha, java.time.LocalTime hora) {

@@ -41,7 +41,7 @@ public class AuthService {
             throw new BusinessException("Credenciales invalidas");
         }
 
-        String token = jwtUtil.generateToken(usuario.getEmail());
-        return new AuthResponse(token, usuario.getEmail(), usuario.getRol(), usuario.getNombre());
+        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getId());
+        return new AuthResponse(token, usuario.getEmail(), usuario.getRol(), usuario.getNombre(), usuario.getId());
     }
 }

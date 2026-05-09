@@ -56,10 +56,23 @@ public class TorneoController {
         return ResponseEntity.ok(torneoService.getInscripciones(id));
     }
 
+    @GetMapping("/mis-inscripciones")
+    public ResponseEntity<?> getMisInscripciones() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(torneoService.getMisInscripciones(email));
+    }
+
     @PostMapping("/{id}/inscribirse")
-    public ResponseEntity<Void> inscribirse(@PathVariable Long id, @RequestBody InscripcionTorneoRequest request) {
+    public ResponseEntity<Void> inscribirse(@PathVariable Long id, @Valid @RequestBody InscripcionTorneoRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         torneoService.inscribirse(id, email, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/mis-inscripciones/{inscripcionId}")
+    public ResponseEntity<Void> cancelarInscripcion(@PathVariable Long inscripcionId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        torneoService.cancelarInscripcion(inscripcionId, email);
         return ResponseEntity.ok().build();
     }
 

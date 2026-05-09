@@ -1,0 +1,181 @@
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ProductoService } from './producto.service';
+import { CarritoService } from './carrito.service';
+import { PedidoService } from './pedido.service';
+import { NotificationService } from '../shared/notification.service';
+import type { Producto, CategoriaProducto, CarritoItem } from '../shared/models';
+
+type Ordenamiento = 'nombre' | 'precio-asc' | 'precio-desc' | 'stock';
+
+@Component({
+  selector: 'app-tienda',
+  standalone: true,
+  imports: [CommonModule, FormsModule, CurrencyPipe],
+  templateUrl: './tienda.html',
+  styleUrl: './tienda.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class TiendaComponent implements OnInit {
+  private readonly productoService = inject(ProductoService);
+  private readonly carritoService = inject(CarritoService);
+  private readonly pedidoService = inject(PedidoService);
+  private readonly notificationService = inject(NotificationService);
+
+  readonly productos = signal<Producto[]>([]);
+  readonly categoriaSeleccionada = signal<CategoriaProducto | 'TODAS'>('TODAS');
+  readonly terminoBusqueda = signal('');
+  readonly ordenamiento = signal<Ordenamiento>('nombre');
+  readonly isLoading = signal(true);
+  readonly carritoVisible = signal(false);
+  readonly carritoItems = signal<CarritoItem[]>([]);
+  readonly carritoTotal = signal(0);
+  readonly productoAgregado = signal<number | null>(null);
+
+  readonly categorias: { value: CategoriaProducto | 'TODAS'; label: string }[] = [
+    { value: 'TODAS', label: 'Todos' },
+    { value: 'PALAS', label: 'Palas' },
+    { value: 'ROPA', label: 'Ropa' },
+    { value: 'ACCESORIOS', label: 'Accesorios' }
+  ];
+
+  readonly ordenamientos: { value: Ordenamiento; label: string }[] = [
+    { value: 'nombre', label: 'Nombre' },
+    { value: 'precio-asc', label: 'Precio: Menor a Mayor' },
+    { value: 'precio-desc', label: 'Precio: Mayor a Menor' },
+    { value: 'stock', label: 'Stock' }
+  ];
+
+  readonly productosFiltrados = computed(() => {
+    let resultado = [...this.productos()];
+
+    // Filtrar por categoría
+    if (this.categoriaSeleccionada() !== 'TODAS') {
+      resultado = resultado.filter(p => p.categoria === this.categoriaSeleccionada());
+    }
+
+    // Filtrar por búsqueda
+    const termino = this.terminoBusqueda().toLowerCase().trim();
+    if (termino) {
+      resultado = resultado.filter(p =>
+        p.nombre.toLowerCase().includes(termino) ||
+        p.descripcion.toLowerCase().includes(termino)
+      );
+    }
+
+    // Ordenar
+    switch (this.ordenamiento()) {
+      case 'nombre':
+        resultado.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        break;
+      case 'precio-asc':
+        resultado.sort((a, b) => a.precio - b.precio);
+        break;
+      case 'precio-desc':
+        resultado.sort((a, b) => b.precio - a.precio);
+        break;
+      case 'stock':
+        resultado.sort((a, b) => b.stock - a.stock);
+        break;
+    }
+
+    return resultado;
+  });
+
+  ngOnInit() {
+    this.cargarProductos();
+    this.cargarCarrito();
+  }
+
+  cargarProductos() {
+    this.isLoading.set(true);
+    this.productoService.getProductos().subscribe({
+      next: (datos) => {
+        this.productos.set(datos);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
+
+  filtrarPorCategoria(categoria: CategoriaProducto | 'TODAS') {
+    this.categoriaSeleccionada.set(categoria);
+  }
+
+  onBusquedaChange(valor: string) {
+    this.terminoBusqueda.set(valor);
+  }
+
+  onOrdenamientoChange(valor: Ordenamiento) {
+    this.ordenamiento.set(valor);
+  }
+
+  agregarAlCarrito(producto: Producto) {
+    if (producto.stock <= 0) {
+      this.notificationService.error('Producto sin stock');
+      return;
+    }
+
+    this.productoAgregado.set(producto.id);
+    setTimeout(() => this.productoAgregado.set(null), 1500);
+
+    this.carritoService.agregarAlCarrito(producto.id, 1).subscribe({
+      next: () => {
+        this.notificationService.success(`${producto.nombre} añadido al carrito`);
+        this.cargarCarrito();
+      },
+      error: (err) => {
+        this.notificationService.error(err.error || 'Error al añadir al carrito');
+      }
+    });
+  }
+
+  cargarCarrito() {
+    this.carritoService.getCarrito().subscribe(items => {
+      this.carritoItems.set(items);
+      const total = items.reduce((sum, item) => sum + (item.producto.precio * item.cantidad), 0);
+      this.carritoTotal.set(total);
+    });
+  }
+
+  actualizarCantidadItem(itemId: number, cantidad: number) {
+    if (cantidad <= 0) {
+      this.eliminarItem(itemId);
+      return;
+    }
+    this.carritoService.actualizarCantidad(itemId, cantidad).subscribe({
+      next: () => this.cargarCarrito(),
+      error: (err) => this.notificationService.error(err.error || 'Error al actualizar cantidad')
+    });
+  }
+
+  eliminarItem(itemId: number) {
+    this.carritoService.eliminarItem(itemId).subscribe({
+      next: () => {
+        this.cargarCarrito();
+        this.notificationService.info('Producto eliminado del carrito');
+      },
+      error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
+    });
+  }
+
+  checkout() {
+    this.pedidoService.checkout().subscribe({
+      next: (pedido) => {
+        this.notificationService.success(`Pedido #${pedido.id} realizado con éxito. Total: ${pedido.total.toFixed(2)}€`);
+        this.carritoItems.set([]);
+        this.carritoTotal.set(0);
+        this.carritoVisible.set(false);
+        this.cargarProductos();
+      },
+      error: (err) => {
+        this.notificationService.error(err.error || 'Error al procesar el pedido');
+      }
+    });
+  }
+
+  toggleCarrito() {
+    this.carritoVisible.update(v => !v);
+  }
+}

@@ -3,6 +3,7 @@ package com.padel.api.service;
 import com.padel.api.dto.ReservaManualRequest;
 import com.padel.api.exception.BusinessException;
 import com.padel.api.exception.ResourceNotFoundException;
+import com.padel.api.model.EstadoReserva;
 import com.padel.api.model.Pista;
 import com.padel.api.model.Reserva;
 import com.padel.api.model.Usuario;
@@ -11,6 +12,7 @@ import com.padel.api.repository.PistaRepository;
 import com.padel.api.repository.ReservaRepository;
 import com.padel.api.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +33,7 @@ public class AdminReservaService {
     private final ClaseRepository claseRepository;
 
     public List<Map<String, Object>> listarAgendaPorFecha(LocalDate fecha) {
-        List<Reserva> reservas = reservaRepository.findByFecha(fecha);
+        List<Reserva> reservas = reservaRepository.findByFechaAndEstadoNot(fecha, EstadoReserva.CANCELADA);
         List<com.padel.api.model.Clase> clases = claseRepository.findByFecha(fecha);
 
         List<Map<String, Object>> agenda = new ArrayList<>();
@@ -78,10 +80,10 @@ public class AdminReservaService {
 
     @Transactional
     public void borrarReservaAdmin(Long id) {
-        if (!reservaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Reserva no encontrada");
-        }
-        reservaRepository.deleteById(id);
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada"));
+        reserva.setEstado(EstadoReserva.CANCELADA);
+        reservaRepository.save(reserva);
     }
 
     @Transactional
@@ -89,11 +91,11 @@ public class AdminReservaService {
         LocalDate fecha = LocalDate.parse(request.getFecha());
         LocalTime hora = LocalTime.parse(request.getHora());
 
-        boolean ocupada = reservaRepository.existsByPistaIdAndFechaAndHora(request.getPistaId(), fecha, hora);
-        boolean ocupadaPorClase = claseRepository.existsByPistaIdAndFechaAndHora(request.getPistaId(), fecha, hora);
+        validarSlotHorario(hora);
 
-        if (ocupada || ocupadaPorClase) {
-            throw new BusinessException("Pista ocupada. Debe anularse la reserva o clase previa desde la Agenda.");
+        boolean ocupadaPorClase = claseRepository.existsByPistaIdAndFechaAndHora(request.getPistaId(), fecha, hora);
+        if (ocupadaPorClase) {
+            throw new BusinessException("Pista ocupada por una clase. Debe anularse la clase previa desde la Agenda.");
         }
 
         Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
@@ -106,7 +108,21 @@ public class AdminReservaService {
         reserva.setPista(pista);
         reserva.setFecha(fecha);
         reserva.setHora(hora);
+        reserva.setPrecioPagado(pista.getPrecio());
 
-        return reservaRepository.save(reserva);
+        try {
+            return reservaRepository.save(reserva);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("Esa pista ya esta reservada a esa hora.");
+        }
+    }
+
+    private void validarSlotHorario(LocalTime hora) {
+        int minutos = hora.getHour() * 60 + hora.getMinute();
+        int apertura = 9 * 60;
+        int slot = 90;
+        if ((minutos - apertura) % slot != 0) {
+            throw new BusinessException("Los horarios disponibles son: 09:00, 10:30, 12:00, 13:30, 15:00, 16:30, 18:00, 19:30, 21:00.");
+        }
     }
 }

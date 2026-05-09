@@ -1,9 +1,12 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../../shared/api.config';
-import type { AgendaItem } from '../../shared/models';
+import { NotificationService } from '../../shared/notification.service';
+import { ActivityLogService } from '../../shared/activity-log.service';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
+import type { AgendaItem, DashboardStats } from '../../shared/models';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -16,12 +19,46 @@ import type { AgendaItem } from '../../shared/models';
 export class AdminDashboardComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
+  private readonly notificationService = inject(NotificationService);
+  private readonly activityLog = inject(ActivityLogService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly fechaActual = signal(new Date().toISOString().split('T')[0]);
   readonly reservas = signal<AgendaItem[]>([]);
+  readonly pistasActivas = signal<number>(0);
+  readonly filtroTipo = signal<'TODOS' | 'RESERVA' | 'CLASE'>('TODOS');
+  readonly filtroPista = signal<string>('TODAS');
+  readonly isLoading = signal<number | null>(null); // ID de elemento en proceso de anulación
+
+  readonly pistasDisponibles = computed(() => {
+    const pistas = new Set(this.reservas().map(r => r.pista?.nombre).filter(Boolean));
+    return ['TODAS', ...Array.from(pistas)];
+  });
+
+  readonly reservasFiltradas = computed(() => {
+    return this.reservas().filter(r => {
+      const matchTipo = this.filtroTipo() === 'TODOS' || r.tipo === this.filtroTipo();
+      const matchPista = this.filtroPista() === 'TODAS' || r.pista?.nombre === this.filtroPista();
+      return matchTipo && matchPista;
+    });
+  });
+
+  readonly kpis = computed(() => {
+    const items = this.reservas();
+    const reservasCount = items.filter(i => i.tipo === 'RESERVA').length;
+    const clasesCount = items.filter(i => i.tipo === 'CLASE').length;
+    const pistasUnicas = new Set(items.map(i => i.pista?.nombre).filter(Boolean)).size;
+    const totalItems = items.length;
+    const pistasActivas = this.pistasActivas();
+    // Capacidad real: pistas activas * 10 slots diarios (aprox 9h-21h con slots de 90min)
+    const capacidadTotal = pistasActivas > 0 ? pistasActivas * 10 : 1;
+    const ocupacionPct = totalItems > 0 ? Math.round((totalItems / capacidadTotal) * 100) : 0;
+    return { reservasCount, clasesCount, pistasUnicas, totalItems, ocupacionPct, pistasActivas };
+  });
 
   ngOnInit() {
     this.cargarReservas();
+    this.cargarPistasActivas();
   }
 
   cargarReservas() {
@@ -32,8 +69,23 @@ export class AdminDashboardComponent implements OnInit {
       });
   }
 
+  cargarPistasActivas() {
+    this.http.get<DashboardStats>(`${this.apiUrl}/dashboard`).subscribe({
+      next: (data) => this.pistasActivas.set(data.pistasActivas || 0),
+      error: (err) => console.error('Error cargando pistas activas', err)
+    });
+  }
+
   onFechaChange() {
     this.cargarReservas();
+  }
+
+  setFiltroTipo(tipo: 'TODOS' | 'RESERVA' | 'CLASE') {
+    this.filtroTipo.set(tipo);
+  }
+
+  setFiltroPista(pista: string) {
+    this.filtroPista.set(pista);
   }
 
   calcularHoraFin(horaStr: string): string {
@@ -48,18 +100,32 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   anularElemento(item: AgendaItem) {
-    if (confirm(`¿Estás seguro de que deseas anular esta ${item.tipo}? Esta acción no se puede deshacer.`)) {
+    if (this.isLoading() === item.id) return;
+
+    this.confirmDialog.confirm({
+      title: `Anular ${item.tipo}`,
+      message: `¿Estás seguro de que deseas anular esta ${item.tipo}? Esta acción no se puede deshacer.`,
+      confirmText: 'Anular',
+      cancelText: 'Cancelar',
+      confirmButtonClass: 'btn-danger'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.isLoading.set(item.id);
       const url = item.tipo === 'CLASE' 
           ? `${this.apiUrl}/admin/clases/${item.id}`
           : `${this.apiUrl}/admin/reservas/${item.id}`;
           
       this.http.delete(url).subscribe({
-        next: () => this.cargarReservas(),
+        next: () => {
+          this.activityLog.log('ANULAR', item.tipo, `Anulada ${item.tipo} #${item.id} - ${item.usuario.nombre}`, item.id);
+          this.isLoading.set(null);
+          this.cargarReservas();
+        },
         error: (err) => {
-          // El interceptor normaliza el error
-          alert('Hubo un error al anular: ' + (err.error || err.message));
+          this.isLoading.set(null);
+          this.notificationService.error('Hubo un error al anular: ' + (err.error || err.message));
         }
       });
-    }
+    });
   }
 }

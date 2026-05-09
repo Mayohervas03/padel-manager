@@ -39,4 +39,8 @@ public class InscripcionTorneo {
 
     @Column(nullable = false)
     private LocalDate fechaInscripcion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoInscripcion estado = EstadoInscripcion.ACTIVA;
 }

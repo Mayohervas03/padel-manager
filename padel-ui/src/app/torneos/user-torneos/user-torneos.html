@@ -34,14 +34,38 @@
           <div class="precio-badge">{{ torneo.precioPareja | currency:'EUR':'symbol' }}/pareja</div>
         </div>
         <div class="card-body">
-          <h3 class="card-title">{{ torneo.titulo }}</h3>
+          <div class="card-header-row">
+            <h3 class="card-title">{{ torneo.titulo }}</h3>
+            @if (torneo.yaInscrito) {
+              <span class="badge-inscrito"><i class="fas fa-check-circle"></i> Ya inscrito</span>
+            }
+          </div>
           <p class="card-text">{{ torneo.descripcion }}</p>
           <ul class="meta-list">
             <li><i class="fas fa-calendar-alt" aria-hidden="true"></i> {{ torneo.fechaInicio | date:'dd/MM/yyyy' }} - {{ torneo.fechaFin | date:'dd/MM/yyyy' }}</li>
-            <li><i class="fas fa-users" aria-hidden="true"></i> Límite: {{ torneo.maxParejas }} parejas</li>
+            <li><i class="fas fa-users" aria-hidden="true"></i> 
+              @if (getPlazasDisponibles(torneo) > 0) {
+                <span class="plazas-disponibles">{{ getPlazasDisponibles(torneo) }} plazas disponibles</span>
+              } @else {
+                <span class="plazas-lleno">Completo</span>
+              }
+            </li>
+            @if (torneo.fechaCierreInscripcion) {
+              <li><i class="fas fa-clock" aria-hidden="true"></i> Cierre inscripciones: {{ torneo.fechaCierreInscripcion | date:'dd/MM/yyyy' }}</li>
+            }
           </ul>
-          <button class="btn-neon w-100" (click)="abrirModal(torneo)">
-            <i class="fas fa-trophy" aria-hidden="true"></i> Inscribirse
+          <button 
+            class="btn-neon w-100" 
+            (click)="abrirModal(torneo)"
+            [disabled]="torneo.yaInscrito || getPlazasDisponibles(torneo) === 0"
+            [class.btn-disabled]="torneo.yaInscrito || getPlazasDisponibles(torneo) === 0">
+            @if (torneo.yaInscrito) {
+              <i class="fas fa-check" aria-hidden="true"></i> Inscrito
+            } @else if (getPlazasDisponibles(torneo) === 0) {
+              <i class="fas fa-times" aria-hidden="true"></i> Completo
+            } @else {
+              <i class="fas fa-trophy" aria-hidden="true"></i> Inscribirse
+            }
           </button>
         </div>
       </div>
@@ -82,11 +106,11 @@
               <h5>{{ torneoSeleccionado()?.titulo }}</h5>
               <div class="form-group">
                 <label>Nombre del Compañero/a</label>
-                <input type="text" class="form-control" name="nombreCompanero" [(ngModel)]="requestInscripcion().nombreCompanero" placeholder="Ej: Fernando Belasteguín" required>
+                <input type="text" class="form-control" name="nombreCompanero" [(ngModel)]="nombreCompanero" placeholder="Ej: Fernando Belasteguín" required>
               </div>
               <div class="form-group">
                 <label>Categoría</label>
-                <select class="form-select" name="categoria" [(ngModel)]="requestInscripcion().categoria" required>
+                <select class="form-select" name="categoria" [(ngModel)]="categoria" required>
                   <option value="" disabled selected>-- Elige una categoría --</option>
                   @for (cat of categorias; track cat) {
                     <option [value]="cat">{{ cat }}</option>

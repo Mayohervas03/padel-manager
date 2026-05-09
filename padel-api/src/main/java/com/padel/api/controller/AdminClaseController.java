@@ -29,6 +29,11 @@ public class AdminClaseController {
         return ResponseEntity.ok(claseService.crearClase(request));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Clase> actualizarClase(@PathVariable("id") Long id, @Valid @RequestBody ClaseRequest request) {
+        return ResponseEntity.ok(claseService.actualizarClase(id, request));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarClase(@PathVariable("id") Long id) {
         claseService.eliminarClase(id);

@@ -20,9 +20,10 @@ public class DashboardService {
     public DashboardDTO getDashboardStats() {
         long totalUsuarios = usuarioRepository.count();
         long totalPistas = pistaRepository.count();
+        long pistasActivas = pistaRepository.countByActivoTrue();
         long reservasTotales = reservaRepository.count();
         long reservasHoy = reservaRepository.countByFecha(LocalDate.now());
 
-        return new DashboardDTO(totalUsuarios, totalPistas, reservasTotales, reservasHoy);
+        return new DashboardDTO(totalUsuarios, totalPistas, pistasActivas, reservasTotales, reservasHoy);
     }
 }

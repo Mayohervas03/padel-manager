@@ -19,6 +19,7 @@ export interface AuthResponse {
   readonly email: string;
   readonly rol: string;
   readonly nombre: string;
+  readonly userId?: number;
 }
 
 export interface LoginRequest {
@@ -69,6 +70,8 @@ export interface AgendaItem {
   readonly hora: string;
 }
 
+export type EstadoTorneo = 'ABIERTO' | 'CERRADO' | 'CANCELADO';
+
 export interface Torneo {
   readonly id: number;
   titulo: string;
@@ -78,6 +81,10 @@ export interface Torneo {
   precioPareja: number;
   maxParejas: number;
   imagenUrl?: string;
+  estado: EstadoTorneo;
+  fechaCierreInscripcion?: string;
+  inscripcionesCount?: number;
+  yaInscrito?: boolean;
 }
 
 export interface InscripcionTorneo {
@@ -88,6 +95,21 @@ export interface InscripcionTorneo {
   nombreCompanero: string;
   categoria: string;
   pagado: boolean;
+  readonly fechaInscripcion: string;
+}
+
+export interface InscripcionTorneoPerfil {
+  readonly id: number;
+  readonly torneoId: number;
+  readonly torneoTitulo: string;
+  readonly torneoDescripcion: string;
+  readonly torneoFechaInicio: string;
+  readonly torneoFechaFin: string;
+  readonly torneoPrecioPareja: number;
+  readonly torneoImagenUrl?: string;
+  readonly nombreCompanero: string;
+  readonly categoria: string;
+  readonly pagado: boolean;
   readonly fechaInscripcion: string;
 }
 
@@ -114,6 +136,7 @@ export interface Clase {
 export interface DashboardStats {
   readonly totalUsuarios: number;
   readonly totalPistas: number;
+  readonly pistasActivas: number;
   readonly reservasTotales: number;
   readonly reservasHoy: number;
 }
@@ -129,4 +152,42 @@ export interface IngresoStats {
 
 export interface HorasStats {
   readonly [hora: string]: number;
+}
+
+// =====================================================
+// TIENDA / SHOP MODELS
+// =====================================================
+
+export type CategoriaProducto = 'PALAS' | 'ROPA' | 'ACCESORIOS';
+
+export interface Producto {
+  readonly id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  stock: number;
+  categoria: CategoriaProducto;
+  imagenUrl?: string;
+  activo: boolean;
+}
+
+export interface CarritoItem {
+  readonly id: number;
+  producto: Producto;
+  cantidad: number;
+}
+
+export interface PedidoItem {
+  readonly id: number;
+  producto: Producto;
+  cantidad: number;
+  precioUnitario: number;
+}
+
+export interface Pedido {
+  readonly id: number;
+  fecha: string;
+  estado: 'PENDIENTE' | 'COMPLETADO' | 'CANCELADO';
+  total: number;
+  items: PedidoItem[];
 }

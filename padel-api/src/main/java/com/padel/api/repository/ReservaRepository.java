@@ -1,5 +1,6 @@
 package com.padel.api.repository;
 
+import com.padel.api.model.EstadoReserva;
 import com.padel.api.model.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +19,17 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     long countByFecha(LocalDate fecha);
     List<Reserva> findByUsuarioEmail(String email);
 
+    List<Reserva> findByUsuarioEmailAndFechaGreaterThanEqual(String email, LocalDate fecha);
+
+    List<Reserva> findByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(String email, List<EstadoReserva> estados, LocalDate fecha);
+
+    List<Reserva> findByPistaIdAndFechaAndHoraAndEstadoIn(Long pistaId, LocalDate fecha, LocalTime hora, List<EstadoReserva> estados);
+
+    long countByUsuarioEmailAndEstadoIn(String email, List<EstadoReserva> estados);
+
     List<Reserva> findByFecha(LocalDate fecha);
+    List<Reserva> findByFechaAndEstadoNot(LocalDate fecha, EstadoReserva estado);
+    List<Reserva> findByFechaGreaterThanEqual(LocalDate fecha);
 
     @Query("SELECT p FROM Pista p WHERE p.activo = true AND NOT EXISTS (SELECT r FROM Reserva r WHERE r.pista.id = p.id AND r.fecha = :fecha AND r.hora = :hora)")
     List<Pista> findDisponibles(@Param("fecha") LocalDate fecha, @Param("hora") LocalTime hora);
@@ -31,7 +42,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     @Query("DELETE FROM Reserva r WHERE r.pista.id = :pistaId")
     void deleteByPistaId(@Param("pistaId") Long pistaId);
 
-    // Estadísticas
+    // Estadísticas sin filtro de fecha
     @Query("SELECT r.pista.nombre, COUNT(r) FROM Reserva r GROUP BY r.pista.nombre")
     List<Object[]> getOcupacionPistas();
 
@@ -40,4 +51,14 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     @Query("SELECT r.hora, COUNT(r) FROM Reserva r GROUP BY r.hora")
     List<Object[]> getOcupacionHoras();
+
+    // Estadísticas con filtro de fecha
+    @Query("SELECT r.pista.nombre, COUNT(r) FROM Reserva r WHERE r.fecha >= :desde AND r.fecha <= :hasta GROUP BY r.pista.nombre")
+    List<Object[]> getOcupacionPistasBetween(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
+
+    @Query("SELECT r.fecha, SUM(p.precio) FROM Reserva r JOIN r.pista p WHERE r.fecha >= :desde AND r.fecha <= :hasta GROUP BY r.fecha ORDER BY r.fecha ASC")
+    List<Object[]> getIngresosDiasBetween(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
+
+    @Query("SELECT r.hora, COUNT(r) FROM Reserva r WHERE r.fecha >= :desde AND r.fecha <= :hasta GROUP BY r.hora")
+    List<Object[]> getOcupacionHorasBetween(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 }

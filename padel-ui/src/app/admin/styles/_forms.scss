@@ -1,0 +1,183 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+// =====================================================
+// ADMIN FORMS
+// =====================================================
+
+// Form Panel (collapsible form container)
+.form-panel {
+  @include glassmorphism;
+  border-radius: $radius-xl;
+  padding: $space-xl;
+  margin-bottom: $space-xl;
+
+  h3 {
+    font-family: $font-heading;
+    font-size: 1.2rem;
+    color: $text-primary;
+    margin: 0 0 $space-lg;
+  }
+}
+
+// Form Grid
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $space-md;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &.form-full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 0.75rem;
+    color: $text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  input, select, textarea {
+    padding: 10px 14px;
+    border-radius: $radius-md;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $border-glass;
+    color: $text-primary;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all $transition-base;
+
+    &:focus {
+      @include focus-glow;
+    }
+
+    &::placeholder {
+      color: $text-muted;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    font-family: $font-body;
+    min-height: 80px;
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%235C6B8A'%3E%3Cpath d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+
+    option {
+      background: $admin-bg;
+      color: $text-primary;
+    }
+  }
+}
+
+// Checkbox label
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  cursor: pointer;
+  color: $text-secondary;
+  font-size: 0.9rem;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: $neon-green;
+    cursor: pointer;
+  }
+}
+
+// Form Actions
+.form-actions {
+  display: flex;
+  gap: $space-md;
+  margin-top: $space-lg;
+}
+
+// Mobile adjustments
+@media (max-width: 768px) {
+  .form-panel {
+    padding: $space-lg;
+    border-radius: $radius-lg;
+
+    h3 {
+      font-size: 1rem;
+    }
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: $space-sm;
+  }
+
+  .form-group {
+    input, select, textarea {
+      padding: 12px 14px;
+      font-size: 16px; // Prevenir zoom en iOS
+    }
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: $space-sm;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Search input
+.search-wrapper {
+  position: relative;
+  max-width: 400px;
+
+  i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $text-muted;
+    font-size: 0.9rem;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 40px 12px 42px;
+    border-radius: $radius-lg;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $border-glass;
+    color: $text-primary;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all $transition-base;
+
+    &:focus {
+      @include focus-glow;
+    }
+
+    &::placeholder {
+      color: $text-muted;
+    }
+  }
+}

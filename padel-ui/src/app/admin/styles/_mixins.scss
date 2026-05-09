@@ -1,0 +1,85 @@
+@use './variables' as *;
+
+// =====================================================
+// ADMIN MIXINS
+// =====================================================
+
+@mixin glassmorphism {
+  background: $admin-card;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid $border-glass;
+  box-shadow: $shadow-card;
+}
+
+@mixin glassmorphism-hover {
+  @include glassmorphism;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $admin-card-hover;
+    border-color: $border-glass-hover;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@mixin neon-border {
+  border: 1px solid rgba(204, 255, 0, 0.2);
+  box-shadow: 0 0 15px rgba(204, 255, 0, 0.05), inset 0 0 15px rgba(204, 255, 0, 0.02);
+}
+
+@mixin hover-lift {
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@mixin focus-glow($color: $neon-green) {
+  outline: none;
+  border-color: rgba($color, 0.3);
+  box-shadow: 0 0 15px rgba($color, 0.1);
+}
+
+@mixin scrollbar-dark {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+@mixin admin-page-container {
+  min-height: 100vh;
+  background: $admin-bg;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(204, 255, 0, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.02) 0%, transparent 50%);
+  padding: 90px $space-lg $space-xl;
+  position: relative;
+}
+
+@mixin skeleton-loading {
+  background: rgba(255, 255, 255, 0.05);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}

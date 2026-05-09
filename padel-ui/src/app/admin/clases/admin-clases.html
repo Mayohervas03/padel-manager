@@ -1,94 +1,137 @@
-<div class="admin-view">
-  <div class="view-header">
-    <h2>Academia Élite: Planificador</h2>
+<div class="admin-clases">
+  <div class="page-header">
+    <h1><i class="fas fa-graduation-cap"></i> Gestión de Clases</h1>
+    <button class="btn-neon" (click)="toggleFormulario()">
+      <i class="fas" [class.fa-times]="mostrarFormulario()" [class.fa-plus]="!mostrarFormulario()"></i>
+      {{ mostrarFormulario() ? 'Cancelar' : 'Nueva Clase' }}
+    </button>
   </div>
 
-  <div class="card inline-form">
-    <form (ngSubmit)="crearClase()">
-      <div class="form-row">
-        <input type="text" placeholder="Título (Ej. Masterclass Volea)" [(ngModel)]="nuevaClase.titulo" name="titulo" required>
-        <input type="text" placeholder="Monitor" [(ngModel)]="nuevaClase.monitor" name="monitor" required>
-        
-        <select [(ngModel)]="nuevaClase.nivel" name="nivel">
-          <option value="INICIACION">Iniciación</option>
-          <option value="INTERMEDIO">Intermedio</option>
-          <option value="AVANZADO">Avanzado</option>
-        </select>
-        
-        <select [(ngModel)]="nuevaClase.pistaId" name="pista" required>
-          <option [ngValue]="null" disabled selected>-- Elige Pista --</option>
-          @for (p of pistas(); track p.id) {
-            <option [ngValue]="p.id">{{ p.nombre }}</option>
-          }
-        </select>
-      </div>
-      <div class="form-row">
-        <div class="input-group">
-          <label>Fecha</label>
-          <input type="date" [(ngModel)]="nuevaClase.fecha" name="fecha" required>
+  @if (mostrarFormulario()) {
+    <div class="form-panel">
+      <h3>{{ claseEditando.id ? 'Editar Clase' : 'Nueva Clase' }}</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Título *</label>
+          <input type="text" [(ngModel)]="claseEditando.titulo" placeholder="Ej. Masterclass Volea">
         </div>
-        <div class="input-group">
-          <label>Hora</label>
-          <input type="time" [(ngModel)]="nuevaClase.hora" name="hora" required>
+
+        <div class="form-group">
+          <label>Monitor *</label>
+          <input type="text" [(ngModel)]="claseEditando.monitor" placeholder="Nombre del monitor">
         </div>
-        <div class="input-group">
+
+        <div class="form-group">
+          <label>Nivel *</label>
+          <select [(ngModel)]="claseEditando.nivel">
+            <option value="INICIACION">Iniciación</option>
+            <option value="INTERMEDIO">Intermedio</option>
+            <option value="AVANZADO">Avanzado</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Pista *</label>
+          <select [(ngModel)]="claseEditando.pistaId">
+            <option [ngValue]="null" disabled>-- Selecciona Pista --</option>
+            @for (p of pistas(); track p.id) {
+              <option [ngValue]="p.id">{{ p.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Fecha *</label>
+          <input type="date" [(ngModel)]="claseEditando.fecha">
+        </div>
+
+        <div class="form-group">
+          <label>Hora *</label>
+          <input type="time" [(ngModel)]="claseEditando.hora">
+        </div>
+
+        <div class="form-group">
           <label>Máx Alumnos</label>
-          <input type="number" [(ngModel)]="nuevaClase.maxAlumnos" name="maxAlumnos" required>
+          <input type="number" [(ngModel)]="claseEditando.maxAlumnos" placeholder="4">
         </div>
-        <div class="input-group">
-          <label>Precio (€)</label>
-          <input type="number" step="0.01" [(ngModel)]="nuevaClase.precio" name="precio" required>
-        </div>
-        <button type="submit" class="btn-create"><i class="fas fa-plus" aria-hidden="true"></i> CREAR CLASE</button>
-      </div>
-    </form>
-  </div>
 
-  <div class="table-container">
-    <table class="data-table">
-      <caption class="visually-hidden">Lista de clases programadas</caption>
-      <thead>
-        <tr>
-          <th>Clase</th>
-          <th>Detalles</th>
-          <th>Horario</th>
-          <th>Ocupación y Alumnos</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (clase of clases(); track clase.id) {
-          <tr>
-            <td>
-              <div class="main-info">{{ clase.titulo }}</div>
-              <div class="sub-info"><i class="fas fa-user-circle" aria-hidden="true"></i> {{ clase.monitor }}</div>
-            </td>
-            <td>
-              <span class="badge" [class]="clase.nivel.toLowerCase()">{{ clase.nivel }}</span>
-              <div class="sub-info">{{ clase.precio }}€</div>
-            </td>
-            <td>
-              <div>{{ clase.fecha }}</div>
-              <div class="sub-info">{{ clase.hora }} | {{ clase.pista?.nombre }}</div>
-            </td>
-            <td>
-              <div class="ocupacion">
-                <strong>{{ clase.alumnos?.length || 0 }} / {{ clase.maxAlumnos }}</strong> inscritos
-              </div>
-              @if (clase.alumnos && clase.alumnos.length > 0) {
-                <div class="alumnos-list">
-                  @for (alumno of clase.alumnos; track alumno.id) {
-                    <span class="alumno-tag">{{ alumno.nombre }}</span>
+        <div class="form-group">
+          <label>Precio (€)</label>
+          <input type="number" step="0.01" [(ngModel)]="claseEditando.precio" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-neon" (click)="guardarClase()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+        <button class="btn-glass" (click)="toggleFormulario()">Cancelar</button>
+      </div>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Cargando clases...</p>
+    </div>
+  } @else {
+    <div class="admin-table-container">
+      <div class="table-responsive">
+        <table class="admin-table">
+          <caption class="visually-hidden">Lista de clases programadas</caption>
+          <thead>
+            <tr>
+              <th>Clase</th>
+              <th>Detalles</th>
+              <th>Horario</th>
+              <th>Ocupación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (clase of clases(); track clase.id) {
+              <tr>
+                <td>
+                  <div class="main-info">{{ clase.titulo }}</div>
+                  <div class="sub-info"><i class="fas fa-user-circle"></i> {{ clase.monitor }}</div>
+                </td>
+                <td>
+                  <span class="badge" [class]="'badge-' + clase.nivel.toLowerCase()">{{ clase.nivel }}</span>
+                  <div class="sub-info">{{ clase.precio }}€</div>
+                </td>
+                <td>
+                  <div>{{ clase.fecha }}</div>
+                  <div class="sub-info">{{ clase.hora }} | {{ clase.pista.nombre }}</div>
+                </td>
+                <td>
+                  <strong>{{ clase.alumnos?.length || 0 }} / {{ clase.maxAlumnos }}</strong> inscritos
+                  @if (clase.alumnos && clase.alumnos.length > 0) {
+                    <div class="alumnos-list">
+                      @for (alumno of clase.alumnos; track alumno.id) {
+                        <span class="alumno-tag">{{ alumno.nombre }}</span>
+                      }
+                    </div>
                   }
-                </div>
-              }
-            </td>
-            <td>
-              <button class="btn-delete" (click)="eliminarClase(clase.id)"><i class="fas fa-trash" aria-hidden="true"></i></button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+                </td>
+                <td class="actions-cell">
+                  <button class="btn-icon btn-edit" (click)="editarClase(clase)" title="Editar" aria-label="Editar clase {{ clase.titulo }}">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-icon btn-delete" (click)="eliminarClase(clase.id)" title="Eliminar" aria-label="Eliminar clase {{ clase.titulo }}">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="empty-row">No hay clases programadas. Crea la primera.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
 </div>

@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
+import com.padel.api.model.EstadoTorneo;
+
 import java.time.LocalDate;
 
 @Data
@@ -29,4 +31,8 @@ public class TorneoRequest {
     private Integer maxParejas;
 
     private String imagenUrl;
+
+    private EstadoTorneo estado;
+
+    private LocalDate fechaCierreInscripcion;
 }

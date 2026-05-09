@@ -1,120 +1,302 @@
+@use '../styles/admin-theme' as *;
+
 .admin-dashboard {
-  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: calc(100vh - 120px);
 
   .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: $space-xl;
+    flex-wrap: wrap;
+    gap: $space-md;
 
     h2 {
-      font-family: 'Oswald', sans-serif;
-      color: #004e92;
-      font-size: 2rem;
+      font-family: $font-heading;
+      color: $text-primary;
+      font-size: 1.5rem;
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: $space-md;
+
+      i {
+        color: $neon-green;
+      }
     }
 
     .date-selector {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: $space-md;
 
       label {
         font-weight: 500;
-        color: #333;
+        color: $text-secondary;
+        font-size: 0.9rem;
       }
 
       input[type="date"] {
-        padding: 0.5rem 1rem;
-        border: 1px solid #ced4da;
-        border-radius: 6px;
-        font-size: 1rem;
+        padding: 10px 14px;
+        border-radius: $radius-md;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid $border-glass;
+        color: $text-primary;
+        font-size: 0.9rem;
         outline: none;
+        transition: all $transition-base;
 
         &:focus {
-          border-color: #004e92;
-          box-shadow: 0 0 0 2px rgba(0, 78, 146, 0.2);
+          @include focus-glow;
         }
       }
     }
   }
 
-  .table-container {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    overflow: hidden;
+  // KPI Grid
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: $space-md;
+    margin-bottom: $space-xl;
+  }
 
-    .reservas-table {
-      width: 100%;
-      border-collapse: collapse;
+  .kpi-card {
+    @include glassmorphism;
+    border-radius: $radius-lg;
+    padding: $space-lg;
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    transition: all $transition-base;
 
-      th, td {
-        padding: 1rem 1.5rem;
-        text-align: left;
-        border-bottom: 1px solid #eee;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-glow;
+    }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+
+      &.kpi-icon-total { background: rgba(0, 212, 255, 0.15); color: $neon-cyan; }
+      &.kpi-icon-reserva { background: rgba(204, 255, 0, 0.15); color: $neon-green; }
+      &.kpi-icon-clase { background: rgba(0, 78, 146, 0.3); color: #00a8ff; }
+      &.kpi-icon-pista { background: rgba(136, 146, 176, 0.15); color: $text-secondary; }
+      &.kpi-icon-ocupacion { background: rgba(255, 107, 107, 0.15); color: $coral; }
+    }
+
+    .kpi-data {
+      display: flex;
+      flex-direction: column;
+
+      .kpi-value {
+        font-family: $font-heading;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: $text-primary;
+        line-height: 1.2;
       }
 
-      th {
-        background-color: #004e92;
-        color: white;
-        font-family: 'Oswald', sans-serif;
-        font-weight: 500;
-        letter-spacing: 0.5px;
+      .kpi-label {
+        font-size: 0.75rem;
+        color: $text-muted;
         text-transform: uppercase;
-        font-size: 0.95rem;
+        letter-spacing: 1px;
       }
+    }
+  }
 
-      tbody tr {
-        transition: background-color 0.2s;
+  // Filters Bar
+  .filters-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-xl;
+    margin-bottom: $space-lg;
+    padding: $space-md $space-lg;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: $radius-md;
+    border: 1px solid $border-glass;
 
-        &:hover {
-          background-color: #f8f9fa;
-        }
-      }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: $space-md;
 
-      .jugador-info {
-        display: flex;
-        flex-direction: column;
-
-        .j-nombre {
-          font-weight: 600;
-          color: #333;
-        }
-
-        .j-email {
-          font-size: 0.85rem;
-          color: #6c757d;
-        }
-      }
-
-      .btn-danger {
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
+      label {
+        font-size: 0.8rem;
+        color: $text-muted;
+        text-transform: uppercase;
+        letter-spacing: 1px;
         font-weight: 600;
+      }
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: $space-sm;
+
+      .filter-pill {
+        padding: 8px 16px;
+        border-radius: $radius-sm;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid $border-glass;
+        color: $text-secondary;
+        font-size: 0.85rem;
+        font-family: $font-body;
         cursor: pointer;
-        transition: background-color 0.2s;
+        transition: all $transition-fast;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        i {
+          font-size: 0.75rem;
+        }
 
         &:hover {
-          background-color: #c82333;
+          background: rgba(255, 255, 255, 0.08);
+          color: $text-primary;
+        }
+
+        &.active {
+          background: rgba(204, 255, 0, 0.15);
+          border-color: rgba(204, 255, 0, 0.3);
+          color: $neon-green;
+          font-weight: 600;
         }
       }
     }
 
-    .empty-state {
-      padding: 3rem;
-      text-align: center;
-      color: #6c757d;
-      font-size: 1.1rem;
-      background-color: #f8f9fa;
+    .filter-select {
+      padding: 8px 14px;
+      border-radius: $radius-sm;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid $border-glass;
+      color: $text-primary;
+      font-size: 0.85rem;
+      outline: none;
+      min-width: 160px;
+
+      option {
+        background: $admin-bg;
+        color: $text-primary;
+      }
+    }
+  }
+
+  .table-container {
+    @include glassmorphism;
+    border-radius: $radius-xl;
+    overflow: hidden;
+  }
+
+  .reservas-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 14px $space-lg;
+      text-align: left;
+      border-bottom: 1px solid $border-glass;
+    }
+
+    th {
+      font-family: $font-heading;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: $text-muted;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    td {
+      font-size: 0.9rem;
+      color: $text-secondary;
+    }
+
+    tbody tr {
+      transition: background $transition-fast;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      &.is-clase {
+        td {
+          color: $neon-cyan;
+        }
+      }
+    }
+
+    .tipo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: $radius-sm;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.tipo-reserva {
+        background: rgba(204, 255, 0, 0.1);
+        color: $neon-green;
+      }
+
+      &.tipo-clase {
+        background: rgba(0, 212, 255, 0.1);
+        color: $neon-cyan;
+      }
+
+      i {
+        font-size: 0.7rem;
+      }
+    }
+
+    .jugador-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .j-nombre {
+        font-weight: 600;
+        color: $text-primary;
+      }
+
+      .j-email {
+        font-size: 0.8rem;
+        color: $text-muted;
+      }
+    }
+  }
+
+  .empty-state {
+    padding: $space-2xl;
+    text-align: center;
+    color: $text-muted;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard {
+    .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filters-bar {
+      flex-direction: column;
+      gap: $space-md;
     }
   }
 }

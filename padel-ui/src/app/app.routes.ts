@@ -17,8 +17,10 @@ export const routes: Routes = [
       { path: 'clases', loadComponent: () => import('./admin/clases/admin-clases').then(m => m.AdminClasesComponent) },
       { path: 'torneos', loadComponent: () => import('./admin/admin-torneos/admin-torneos').then(m => m.AdminTorneosComponent) },
       { path: 'torneos/:id', loadComponent: () => import('./admin/admin-torneos/admin-torneo-detalle/admin-torneo-detalle').then(m => m.AdminTorneoDetalleComponent) },
+      { path: 'productos', loadComponent: () => import('./admin/productos/admin-productos').then(m => m.AdminProductosComponent) },
       { path: 'stats', loadComponent: () => import('./admin/stats/admin-stats').then(m => m.AdminStatsComponent) },
       { path: 'manual', loadComponent: () => import('./admin/manual/admin-manual').then(m => m.AdminManualComponent) },
+      { path: 'logs', loadComponent: () => import('./admin/logs/admin-logs').then(m => m.AdminLogsComponent) },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
@@ -29,6 +31,7 @@ export const routes: Routes = [
   { path: 'reservas', loadComponent: () => import('./reservas/reservas').then(m => m.ReservasComponent), canActivate: [authGuard] },
   { path: 'clases', loadComponent: () => import('./clases/user-clases').then(m => m.UserClasesComponent), canActivate: [authGuard] },
   { path: 'torneos', loadComponent: () => import('./torneos/user-torneos/user-torneos').then(m => m.UserTorneosComponent), canActivate: [authGuard] },
+  { path: 'tienda', loadComponent: () => import('./shop/tienda').then(m => m.TiendaComponent), canActivate: [authGuard] },
   { path: 'perfil', loadComponent: () => import('./perfil/perfil').then(m => m.PerfilComponent), canActivate: [authGuard] },
   { path: '', canActivate: [rootGuard], children: [] },
   { path: '**', redirectTo: '' }

@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { NotificationService } from './notification.service';
 
 /**
  * Interceptor global de errores HTTP.
@@ -25,6 +26,7 @@ import { AuthService } from '../auth/auth.service';
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const notificationService = inject(NotificationService);
   const router = inject(Router);
 
   return next(req).pipe(
@@ -69,6 +71,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (error.statusText) {
         errorMessage = error.statusText;
       }
+
+      // Mostramos toast de error para feedback visual global
+      notificationService.error(errorMessage, 5000);
 
       // Creamos un objeto de error estandarizado
       const standardizedError = {

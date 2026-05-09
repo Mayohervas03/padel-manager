@@ -1,15 +1,21 @@
 <div class="admin-view">
   <div class="view-header">
-    <h2>Gestión de la Comunidad</h2>
-    <div class="search-wrap">
-      <input 
-        type="text" 
-        [(ngModel)]="filtro" 
-        (ngModelChange)="filtrarUsuarios()" 
-        placeholder="Buscar por nombre o email..." 
-        class="search-input"
-      >
-      <span class="icon-search" aria-hidden="true">🔍</span>
+    <h2><i class="fas fa-users"></i> Gestión de la Comunidad</h2>
+    <div class="header-actions">
+      <div class="search-wrap">
+        <i class="fas fa-search icon-search"></i>
+        <input 
+          type="text" 
+          [(ngModel)]="filtro" 
+          (ngModelChange)="filtrarUsuarios()" 
+          placeholder="Buscar por nombre o email..." 
+          class="search-input"
+          aria-label="Buscar usuarios por nombre o email"
+        >
+      </div>
+      <button class="btn-export" (click)="exportarCSV()" title="Exportar a CSV" aria-label="Exportar usuarios a CSV">
+        <i class="fas fa-file-csv"></i> Exportar
+      </button>
     </div>
   </div>
 
@@ -26,7 +32,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (user of usuariosFiltrados(); track user.id) {
+        @for (user of usuariosPaginados(); track user.id) {
           <tr>
             <td>#{{ user.id }}</td>
             <td><strong>{{ user.nombre }}</strong></td>
@@ -37,11 +43,14 @@
               </span>
             </td>
             <td class="text-center actions-cell">
-              <button class="btn-action btn-role" (click)="cambiarRol(user)" title="Cambiar Rol">
-                🔄 Cambiar Rol
+              <button class="btn-icon btn-edit" (click)="abrirEditarModal(user)" title="Editar Usuario" aria-label="Editar usuario {{ user.nombre }}">
+                <i class="fas fa-pen"></i>
               </button>
-              <button class="btn-action btn-call" (click)="reservaManual(user.id)" title="Reserva Manual">
-                ☎️ Reserva
+              <button class="btn-icon btn-success" (click)="reservaManual(user.id)" title="Reserva Manual" aria-label="Crear reserva manual para {{ user.nombre }}">
+                <i class="fas fa-phone"></i>
+              </button>
+              <button class="btn-icon btn-delete" (click)="eliminarUsuario(user)" title="Eliminar Usuario" aria-label="Eliminar usuario {{ user.nombre }}">
+                <i class="fas fa-trash"></i>
               </button>
             </td>
           </tr>
@@ -55,4 +64,53 @@
       </div>
     }
   </div>
+
+  <!-- Paginación -->
+  @if (usuariosFiltrados().length > 0) {
+    <div class="pagination-bar">
+      <div class="pagination-info">
+        Mostrando <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> de <strong>{{ infoPaginacion().total }}</strong> usuarios
+      </div>
+      
+      <div class="pagination-controls">
+        <button 
+          class="pagination-btn" 
+          [disabled]="paginaActual() === 1"
+          (click)="cambiarPagina(paginaActual() - 1)"
+          aria-label="Página anterior"
+        >
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <span class="pagination-page">Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+        
+        <button 
+          class="pagination-btn" 
+          [disabled]="paginaActual() === totalPaginas()"
+          (click)="cambiarPagina(paginaActual() + 1)"
+          aria-label="Página siguiente"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="pagination-size">
+        <label for="itemsPorPagina">Mostrar:</label>
+        <select id="itemsPorPagina" [(ngModel)]="itemsPorPagina" (change)="cambiarItemsPorPagina(itemsPorPagina())" aria-label="Usuarios por página">
+          @for (opt of opcionesItemsPorPagina; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  }
 </div>
+
+<!-- Modal editar usuario -->
+@if (usuarioEditando(); as usuario) {
+  <app-editar-usuario-dialog
+    [usuario]="usuario"
+    (guardar)="guardarEdicion($event)"
+    (cerrar)="cerrarEditarModal()"
+  />
+}

@@ -16,8 +16,10 @@ public class EstadisticasService {
 
     private final ReservaRepository reservaRepository;
 
-    public Map<String, Long> getOcupacion() {
-        List<Object[]> results = reservaRepository.getOcupacionPistas();
+    public Map<String, Long> getOcupacion(LocalDate desde, LocalDate hasta) {
+        List<Object[]> results = (desde != null && hasta != null)
+                ? reservaRepository.getOcupacionPistasBetween(desde, hasta)
+                : reservaRepository.getOcupacionPistas();
         Map<String, Long> ocupacion = new HashMap<>();
         for (Object[] row : results) {
             String pista = (String) row[0];
@@ -27,9 +29,14 @@ public class EstadisticasService {
         return ocupacion;
     }
 
-    public List<Map<String, Object>> getIngresos() {
-        LocalDate limite = LocalDate.now().minusDays(30);
-        List<Object[]> results = reservaRepository.getIngresosDias(limite);
+    public List<Map<String, Object>> getIngresos(LocalDate desde, LocalDate hasta) {
+        List<Object[]> results;
+        if (desde != null && hasta != null) {
+            results = reservaRepository.getIngresosDiasBetween(desde, hasta);
+        } else {
+            LocalDate limite = LocalDate.now().minusDays(30);
+            results = reservaRepository.getIngresosDias(limite);
+        }
 
         List<Map<String, Object>> ingresos = new ArrayList<>();
         for (Object[] row : results) {
@@ -41,8 +48,10 @@ public class EstadisticasService {
         return ingresos;
     }
 
-    public Map<String, Long> getHoras() {
-        List<Object[]> results = reservaRepository.getOcupacionHoras();
+    public Map<String, Long> getHoras(LocalDate desde, LocalDate hasta) {
+        List<Object[]> results = (desde != null && hasta != null)
+                ? reservaRepository.getOcupacionHorasBetween(desde, hasta)
+                : reservaRepository.getOcupacionHoras();
         Map<String, Long> horas = new HashMap<>();
         for (Object[] row : results) {
             String hora = row[0].toString();

@@ -1,0 +1,51 @@
+// =====================================================
+// ADMIN DESIGN SYSTEM - ÉLITE PADEL
+// Variables compartidas para todo el panel admin
+// =====================================================
+
+// Backgrounds
+$admin-bg: #0A192F;
+$admin-card: rgba(17, 34, 64, 0.7);
+$admin-card-hover: rgba(17, 34, 64, 0.9);
+
+// Neon Accents
+$neon-green: #CCFF00;
+$neon-green-dim: rgba(204, 255, 0, 0.15);
+$neon-cyan: #00D4FF;
+$neon-cyan-dim: rgba(0, 212, 255, 0.15);
+$coral: #FF6B6B;
+$coral-dim: rgba(255, 107, 107, 0.15);
+
+// Text Colors
+$text-primary: #E6F1FF;
+$text-secondary: #8892B0;
+$text-muted: #5C6B8A;
+
+// Borders & Glass
+$border-glass: rgba(255, 255, 255, 0.08);
+$border-glass-hover: rgba(255, 255, 255, 0.15);
+$shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+$shadow-glow: 0 0 30px rgba(204, 255, 0, 0.1);
+
+// Spacing Scale
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+$space-2xl: 40px;
+
+// Border Radius
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 14px;
+$radius-xl: 20px;
+
+// Typography
+$font-heading: 'Oswald', sans-serif;
+$font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+// Transitions
+$transition-fast: 0.2s ease;
+$transition-base: 0.3s ease;
+$transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);

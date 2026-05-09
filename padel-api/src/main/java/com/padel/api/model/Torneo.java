@@ -39,4 +39,13 @@ public class Torneo {
     private Integer maxParejas;
 
     private String imagenUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoTorneo estado = EstadoTorneo.ABIERTO;
+
+    private LocalDate fechaCierreInscripcion;
+
+    @Transient
+    private Integer inscripcionesCount;
 }

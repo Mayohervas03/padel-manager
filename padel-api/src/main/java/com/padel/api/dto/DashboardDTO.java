@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class DashboardDTO {
     private long totalUsuarios;
     private long totalPistas;
+    private long pistasActivas;
     private long reservasTotales;
     private long reservasHoy;
 }

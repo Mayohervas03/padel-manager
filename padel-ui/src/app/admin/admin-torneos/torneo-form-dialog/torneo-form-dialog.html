@@ -1,0 +1,70 @@
+@if (torneo(); as t) {
+  <div class="dialog-overlay" (click)="onCerrar()">
+    <div class="dialog-box" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <i class="fas fa-trophy"></i>
+        <h3>{{ t.id ? 'Editar Torneo' : 'Crear Torneo' }}</h3>
+      </div>
+
+      <div class="dialog-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="tf-titulo">Título *</label>
+            <input id="tf-titulo" type="text" [(ngModel)]="titulo" placeholder="Título del torneo" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label for="tf-imagen">Imagen URL</label>
+            <input id="tf-imagen" type="url" [(ngModel)]="imagenUrl" placeholder="https://..." class="form-input" />
+          </div>
+
+          <div class="form-group form-full">
+            <label for="tf-desc">Descripción</label>
+            <textarea id="tf-desc" [(ngModel)]="descripcion" rows="3" placeholder="Descripción del torneo" class="form-input"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="tf-inicio">Fecha Inicio *</label>
+            <input id="tf-inicio" type="date" [(ngModel)]="fechaInicio" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label for="tf-fin">Fecha Fin *</label>
+            <input id="tf-fin" type="date" [(ngModel)]="fechaFin" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label for="tf-precio">Precio Pareja (€) *</label>
+            <input id="tf-precio" type="number" [(ngModel)]="precioPareja" min="0" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label for="tf-max">Max. Parejas *</label>
+            <input id="tf-max" type="number" [(ngModel)]="maxParejas" min="1" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label for="tf-estado">Estado</label>
+            <select id="tf-estado" [(ngModel)]="estado" class="form-input">
+              <option value="ABIERTO">Abierto</option>
+              <option value="CERRADO">Cerrado</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tf-cierre">Fecha Cierre Inscripciones</label>
+            <input id="tf-cierre" type="date" [(ngModel)]="fechaCierreInscripcion" class="form-input" />
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn btn-secondary" (click)="onCerrar()">Cancelar</button>
+        <button class="btn btn-primary" (click)="onGuardar()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+}

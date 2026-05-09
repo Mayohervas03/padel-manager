@@ -41,6 +41,13 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 
+    public List<Usuario> buscarPorNombreOEmail(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return List.of();
+        }
+        return usuarioRepository.buscarPorNombreOEmail(query.trim());
+    }
+
     @Transactional
     public Usuario actualizarUsuario(Long id, UsuarioUpdateRequest request) {
         Usuario usuario = buscarPorId(id);

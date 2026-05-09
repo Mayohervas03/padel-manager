@@ -14,4 +14,6 @@ public interface ClaseRepository extends JpaRepository<Clase, Long> {
     List<Clase> findByFecha(LocalDate fecha);
     List<Clase> findByFechaGreaterThanEqualOrderByFechaAscHoraAsc(LocalDate fecha);
     List<Clase> findByAlumnosId(Long usuarioId);
+
+    List<Clase> findByAlumnosIdAndFechaGreaterThanEqual(Long usuarioId, LocalDate fecha);
 }

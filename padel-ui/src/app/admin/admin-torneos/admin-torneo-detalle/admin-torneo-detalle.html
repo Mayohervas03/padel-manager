@@ -1,34 +1,53 @@
 @if (torneo()) {
-  <div class="admin-detalle-wrapper">
-    <!-- Header Elite -->
-    <div class="admin-header bg-marino text-white px-4 py-3 d-flex justify-content-between align-items-center">
-      <div>
-        <a routerLink="/admin/torneos" class="btn btn-outline-light btn-sm me-3">
+  <div class="admin-torneo-detalle">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs" aria-label="Navegación">
+      <a [routerLink]="['/admin/dashboard']" class="breadcrumb-link">
+        <i class="fas fa-home" aria-hidden="true"></i> Inicio
+      </a>
+      <span class="breadcrumb-separator">
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </span>
+      <a [routerLink]="['/admin/torneos']" class="breadcrumb-link">
+        Torneos
+      </a>
+      <span class="breadcrumb-separator">
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </span>
+      <span class="breadcrumb-current" aria-current="page">
+        {{ torneo()?.titulo }}
+      </span>
+    </nav>
+
+    <!-- Header -->
+    <div class="page-header-bar">
+      <div class="header-left">
+        <a [routerLink]="['/admin/torneos']" class="btn-glass btn-sm" aria-label="Volver a la lista de torneos">
           <i class="fas fa-arrow-left" aria-hidden="true"></i> Volver
         </a>
-        <h2 class="d-inline-block mb-0 font-oswald text-uppercase">
-          <i class="fas fa-trophy text-neon me-2" aria-hidden="true"></i> {{ torneo()?.titulo }}
-        </h2>
+        <h1>
+          <i class="fas fa-trophy" aria-hidden="true"></i> {{ torneo()?.titulo }}
+        </h1>
       </div>
-      <div class="stats-header d-none d-md-flex gap-4">
-        <div class="stat-item text-center">
-          <div class="small text-neon text-uppercase">Inscritos</div>
-          <div class="h4 mb-0">{{ inscripciones().length }} / {{ torneo()?.maxParejas }}</div>
+      <div class="header-stats">
+        <div class="stat-box">
+          <div class="stat-label">Inscritos</div>
+          <div class="stat-value">{{ inscripciones().length }} / {{ torneo()?.maxParejas }}</div>
         </div>
-        <div class="stat-item text-center">
-          <div class="small text-neon text-uppercase">Recaudación</div>
-          <div class="h4 mb-0 text-success">{{ (inscripciones().length * (torneo()?.precioPareja ?? 0)) | currency:'EUR' }}</div>
+        <div class="stat-box">
+          <div class="stat-label">Recaudación</div>
+          <div class="stat-value neon">{{ recaudacion() | currency:'EUR' }}</div>
         </div>
       </div>
     </div>
 
-    <div class="container-fluid p-4">
+    <div class="detalle-content">
       <!-- Filtros Pills -->
-      <div class="filters-container mb-4 d-flex align-items-center flex-wrap gap-2">
-        <span class="text-marino fw-bold me-2"><i class="fas fa-filter" aria-hidden="true"></i> Filtrar Categoría:</span>
+      <div class="filters-bar">
+        <span class="filters-label"><i class="fas fa-filter" aria-hidden="true"></i> Filtrar Categoría:</span>
         @for (cat of categorias(); track cat) {
           <button 
-            class="btn btn-pill" 
+            class="filter-pill" 
             [class.active]="categoriaSeleccionada() === cat"
             (click)="filtrarPorCategoria(cat)">
             {{ cat }}
@@ -36,64 +55,58 @@
         }
       </div>
 
-      <!-- Tabla Elite -->
-      <div class="card shadow-sm border-0 overflow-hidden">
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <caption class="visually-hidden">Inscripciones al torneo {{ torneo()?.titulo }}</caption>
-              <thead class="bg-light border-bottom">
-                <tr>
-                  <th class="ps-4 py-3 text-marino text-uppercase small fw-bold">Pareja</th>
-                  <th class="py-3 text-marino text-uppercase small fw-bold">Categoría</th>
-                  <th class="py-3 text-marino text-uppercase small fw-bold">Fecha Inscripción</th>
-                  <th class="py-3 text-marino text-uppercase small fw-bold text-center">Estado Pago</th>
-                  <th class="pe-4 py-3 text-marino text-uppercase small fw-bold text-end">Acciones</th>
+      <!-- Tabla -->
+      <div class="admin-table-container">
+        <div class="table-responsive">
+          <table class="admin-table">
+            <caption class="visually-hidden">Inscripciones al torneo {{ torneo()?.titulo }}</caption>
+            <thead>
+              <tr>
+                <th>Pareja</th>
+                <th>Categoría</th>
+                <th>Fecha Inscripción</th>
+                <th class="text-center">Estado Pago</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (insc of inscripcionesFiltradas(); track insc.id) {
+                <tr class="fade-in-row">
+                  <td>
+                    <div class="pareja-info">
+                      <div class="avatar-circle">{{ insc.usuarioNombre.substring(0,1) }}</div>
+                      <div class="pareja-text">
+                        <div class="nombre">{{ insc.usuarioNombre }}</div>
+                        <div class="comp">compañero/a: <strong>{{ insc.nombreCompanero }}</strong></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="categoria-badge">{{ insc.categoria }}</span>
+                  </td>
+                  <td>{{ insc.fechaInscripcion | date:'dd/MM/yyyy' }}</td>
+                  <td class="text-center">
+                    <div class="payment-toggle" (click)="togglePago(insc)" [title]="insc.pagado ? 'Marcar como pendiente' : 'Marcar como pagado'" [attr.aria-label]="insc.pagado ? 'Marcar pago de ' + insc.usuarioNombre + ' como pendiente' : 'Marcar pago de ' + insc.usuarioNombre + ' como pagado'" role="button" tabindex="0">
+                      <i class="fas fa-2x"
+                         [class.fa-check-circle]="insc.pagado" [class.text-success]="insc.pagado"
+                         [class.fa-clock]="!insc.pagado" [class.text-muted]="!insc.pagado" [class.opacity-50]="!insc.pagado"
+                         aria-hidden="true"></i>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <span class="text-muted" style="font-size: 0.8rem;">—</span>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                @for (insc of inscripcionesFiltradas(); track insc.id) {
-                  <tr class="fade-in-row">
-                    <td class="ps-4 py-3">
-                      <div class="d-flex align-items-center">
-                        <div class="avatar-circle me-3">{{ insc.usuarioNombre.substring(0,1) }}</div>
-                        <div>
-                          <div class="fw-bold text-marino">{{ insc.usuarioNombre }}</div>
-                          <div class="text-muted small">compañero/a: <strong>{{ insc.nombreCompanero }}</strong></div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="py-3">
-                      <span class="badge badge-elite">{{ insc.categoria }}</span>
-                    </td>
-                    <td class="py-3 text-muted">
-                      {{ insc.fechaInscripcion | date:'dd/MM/yyyy' }}
-                    </td>
-                    <td class="py-3 text-center">
-                      <div class="payment-toggle" (click)="togglePago(insc)" [title]="insc.pagado ? 'Marcar como pendiente' : 'Marcar como pagado'">
-                        <i class="fas fa-2x cursor-pointer transition-all" 
-                           [class.fa-check-circle]="insc.pagado" [class.text-success]="insc.pagado"
-                           [class.fa-clock]="!insc.pagado" [class.text-muted]="!insc.pagado" [class.opacity-50]="!insc.pagado"
-                           aria-hidden="true"></i>
-                      </div>
-                    </td>
-                    <td class="pe-4 py-3 text-end">
-                      <button class="btn btn-sm btn-outline-marino" disabled>
-                        <i class="fas fa-envelope me-1" aria-hidden="true"></i> Contactar
-                      </button>
-                    </td>
-                  </tr>
-                } @empty {
-                  <tr>
-                    <td colspan="5" class="text-center py-5 text-muted">
-                      <i class="fas fa-users-slash fa-3x mb-3 opacity-25" aria-hidden="true"></i>
-                      <p class="h5">No hay parejas en esta categoría.</p>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="empty-row">
+                    <i class="fas fa-users-slash fa-3x mb-3 opacity-25" aria-hidden="true"></i>
+                    <p>No hay parejas en esta categoría.</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

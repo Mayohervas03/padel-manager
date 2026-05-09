@@ -1,80 +1,122 @@
-<div class="admin-dashboard">
-  <div class="dashboard-header">
-    <h2>Gestión de Pistas</h2>
+<div class="admin-pistas">
+  <div class="page-header">
+    <h1><i class="fas fa-table-tennis"></i> Gestión de Pistas</h1>
+    <button class="btn-neon" (click)="toggleFormulario()">
+      <i class="fas" [class.fa-times]="mostrarFormulario()" [class.fa-plus]="!mostrarFormulario()"></i>
+      {{ mostrarFormulario() ? 'Cancelar' : 'Nueva Pista' }}
+    </button>
   </div>
 
-  <div class="table-container" style="margin-bottom: 2rem;">
-    <div style="padding: 1.5rem; background: #f8f9fa; border-bottom: 1px solid #eee;">
-      <h3 style="margin-top:0; font-family: 'Oswald', sans-serif;">Añadir Nueva Pista</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: flex-end;">
-        <div>
-          <label style="display: block; margin-bottom: 8px;">Nombre:</label>
-          <input type="text" [(ngModel)]="nuevaPista.nombre" placeholder="Pista 3 (Cristal)" class="form-control" style="width:100%; padding: 0.5rem; border:1px solid #ccc; border-radius:4px;">
+  @if (mostrarFormulario()) {
+    <div class="form-panel">
+      <h3>{{ pistaEditando.id ? 'Editar Pista' : 'Nueva Pista' }}</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" [(ngModel)]="pistaEditando.nombre" placeholder="Pista 3 (Cristal)">
         </div>
-        <div>
-          <label style="display: block; margin-bottom: 8px;">Tipo:</label>
-          <select [(ngModel)]="nuevaPista.tipo" class="form-control" style="width:100%; padding: 0.5rem; border:1px solid #ccc; border-radius:4px;">
+
+        <div class="form-group">
+          <label>Tipo</label>
+          <select [(ngModel)]="pistaEditando.tipo">
             <option value="Cristal">Cristal</option>
             <option value="Muro">Muro</option>
           </select>
         </div>
-        <div>
-          <label style="display: block; margin-bottom: 8px;">Ubicación:</label>
-          <select [(ngModel)]="nuevaPista.ubicacion" class="form-control" style="width:100%; padding: 0.5rem; border:1px solid #ccc; border-radius:4px;">
+
+        <div class="form-group">
+          <label>Ubicación</label>
+          <select [(ngModel)]="pistaEditando.ubicacion">
             <option value="Indoor">Indoor</option>
             <option value="Outdoor">Outdoor</option>
           </select>
         </div>
-        <div>
-          <label style="display: block; margin-bottom: 8px;">Precio (€):</label>
-          <input type="number" [(ngModel)]="nuevaPista.precio" class="form-control" style="width:100%; padding: 0.5rem; border:1px solid #ccc; border-radius:4px;">
+
+        <div class="form-group">
+          <label>Precio (€)</label>
+          <input type="number" [(ngModel)]="pistaEditando.precio">
         </div>
-        <div>
-          <button type="button" class="btn" style="background:#004e92; color:white; border:none; padding: 0.6rem 1.5rem; border-radius:4px; font-weight:bold; cursor:pointer;" (click)="crearPista()">Añadir</button>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="pistaEditando.activo">
+            Activa
+          </label>
         </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-neon" (click)="guardarPista()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+        <button class="btn-glass" (click)="toggleFormulario()">Cancelar</button>
       </div>
     </div>
+  }
 
-    @if (pistas().length > 0) {
-      <table class="reservas-table">
-        <caption class="visually-hidden">Lista de pistas registradas</caption>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Ubicación</th>
-            <th>Precio</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (pista of pistas(); track pista.id) {
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Cargando pistas...</p>
+    </div>
+  } @else {
+    <div class="admin-table-container">
+      <div class="table-responsive">
+        <table class="admin-table">
+          <caption class="visually-hidden">Lista de pistas registradas</caption>
+          <thead>
             <tr>
-              <td>#{{ pista.id }}</td>
-              <td><b>{{ pista.nombre }}</b></td>
-              <td>{{ pista.tipo }}</td>
-              <td>{{ pista.ubicacion }}</td>
-              <td>{{ pista.precio }} €</td>
-              <td>
-                @if (pista.activo) {
-                  <span style="color:green; font-weight:bold;">Activa</span>
-                } @else {
-                  <span style="color:red; font-weight:bold;">Inactiva</span>
-                }
-              </td>
-              <td>
-                <button class="btn btn-danger" (click)="borrarPista(pista.id)">Eliminar</button>
-              </td>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Ubicación</th>
+              <th>Precio</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    } @else {
-      <div class="empty-state">
-        <p>No hay pistas creadas.</p>
+          </thead>
+          <tbody>
+            @for (pista of pistas(); track pista.id) {
+              <tr>
+                <td>#{{ pista.id }}</td>
+                <td><strong>{{ pista.nombre }}</strong></td>
+                <td>{{ pista.tipo }}</td>
+                <td>{{ pista.ubicacion }}</td>
+                <td>{{ pista.precio }} €</td>
+                <td>
+                  @if (pista.activo) {
+                    <span class="status-badge activo"><i class="fas fa-check"></i> Activa</span>
+                  } @else {
+                    <span class="status-badge inactivo"><i class="fas fa-times"></i> Inactiva</span>
+                  }
+                </td>
+                <td class="actions-cell">
+                  <button 
+                    class="btn-icon btn-toggle" 
+                    [class.active]="pista.activo"
+                    (click)="toggleEstado(pista)" 
+                    [title]="pista.activo ? 'Desactivar' : 'Activar'"
+                    [attr.aria-label]="(pista.activo ? 'Desactivar' : 'Activar') + ' pista ' + pista.nombre"
+                  >
+                    <i class="fas" [class.fa-toggle-on]="pista.activo" [class.fa-toggle-off]="!pista.activo"></i>
+                  </button>
+                  <button class="btn-icon btn-edit" (click)="editarPista(pista)" title="Editar" aria-label="Editar pista {{ pista.nombre }}">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-icon btn-delete" (click)="borrarPista(pista.id)" title="Eliminar" aria-label="Eliminar pista {{ pista.nombre }}">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-row">No hay pistas creadas. Crea la primera.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-    }
-  </div>
+    </div>
+  }
 </div>

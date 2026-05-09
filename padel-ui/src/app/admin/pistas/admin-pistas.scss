@@ -1,0 +1,93 @@
+@use '../styles/admin-theme' as *;
+
+.admin-pistas {
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-xl;
+  flex-wrap: wrap;
+  gap: $space-md;
+
+  h1 {
+    font-family: $font-heading;
+    color: $text-primary;
+    margin: 0;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+
+    i {
+      color: $neon-green;
+    }
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 60px;
+  color: $text-muted;
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(204, 255, 0, 0.1);
+    border-top-color: $neon-green;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+
+  i {
+    font-size: 1.2rem;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+
+  &.active {
+    color: $neon-green;
+    background: rgba(204, 255, 0, 0.1);
+    border-color: rgba(204, 255, 0, 0.3);
+
+    &:hover {
+      background: rgba(204, 255, 0, 0.2);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $space-md;
+
+    h1 {
+      font-size: 1.2rem;
+    }
+  }
+}

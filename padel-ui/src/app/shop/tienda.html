@@ -1,0 +1,227 @@
+<div class="tienda-container">
+  <!-- HEADER -->
+  <header class="tienda-header">
+    <div class="header-content">
+      <div class="header-title">
+        <i class="fas fa-shopping-bag"></i>
+        <div>
+          <h1>Tienda Élite</h1>
+          <p>Equípate como un profesional</p>
+        </div>
+      </div>
+
+      <button class="carrito-btn" (click)="toggleCarrito()">
+        <i class="fas fa-shopping-cart"></i>
+        @if (carritoItems().length > 0) {
+          <span class="carrito-badge">
+            {{ carritoItems().reduce((sum, item) => sum + item.cantidad, 0) }}
+          </span>
+        }
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTROLES: Búsqueda + Filtros + Ordenamiento -->
+  <div class="controles-container">
+    <!-- Buscador -->
+    <div class="buscador-wrapper">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        class="buscador-input"
+        placeholder="Buscar productos..."
+        [ngModel]="terminoBusqueda()"
+        (ngModelChange)="onBusquedaChange($event)"
+      >
+      @if (terminoBusqueda()) {
+        <button class="btn-limpiar" (click)="onBusquedaChange('')">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+
+    <!-- Filtros de categoría -->
+    <nav class="filtros-nav">
+      @for (cat of categorias; track cat.value) {
+        <button
+          class="filtro-btn"
+          [class.active]="categoriaSeleccionada() === cat.value"
+          (click)="filtrarPorCategoria(cat.value)">
+          {{ cat.label }}
+        </button>
+      }
+    </nav>
+
+    <!-- Ordenamiento -->
+    <div class="ordenamiento-wrapper">
+      <i class="fas fa-sort"></i>
+      <select
+        [ngModel]="ordenamiento()"
+        (ngModelChange)="onOrdenamientoChange($event)"
+        class="ordenamiento-select"
+      >
+        @for (ord of ordenamientos; track ord.value) {
+          <option [value]="ord.value">{{ ord.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- RESULTADOS COUNT -->
+  <div class="resultados-info">
+    <span>{{ productosFiltrados().length }} producto{{ productosFiltrados().length === 1 ? '' : 's' }}</span>
+  </div>
+
+  <!-- PRODUCTOS GRID -->
+  @if (isLoading()) {
+    <div class="productos-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="producto-card skeleton">
+          <div class="skeleton-imagen"></div>
+          <div class="skeleton-content">
+            <div class="skeleton-line skeleton-titulo"></div>
+            <div class="skeleton-line skeleton-desc"></div>
+            <div class="skeleton-line skeleton-precio"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="productos-grid">
+      @for (producto of productosFiltrados(); track producto.id) {
+        <article
+          class="producto-card"
+          [class.agregado]="productoAgregado() === producto.id"
+        >
+          <div class="producto-imagen-wrapper">
+            @if (producto.imagenUrl) {
+              <img [src]="producto.imagenUrl" [alt]="producto.nombre" class="producto-imagen">
+            } @else {
+              <div class="producto-imagen-placeholder">
+                <i class="fas fa-image"></i>
+              </div>
+            }
+            <div class="producto-badge" [class]="'badge-' + producto.categoria.toLowerCase()">
+              {{ producto.categoria }}
+            </div>
+
+            @if (producto.stock <= 0) {
+              <div class="sin-stock-overlay">
+                <span>Sin Stock</span>
+              </div>
+            }
+
+            @if (productoAgregado() === producto.id) {
+              <div class="agregado-overlay">
+                <i class="fas fa-check"></i>
+              </div>
+            }
+          </div>
+
+          <div class="producto-info">
+            <h3 class="producto-nombre">{{ producto.nombre }}</h3>
+            <p class="producto-descripcion">{{ producto.descripcion }}</p>
+
+            <div class="producto-footer">
+              <span class="producto-precio">{{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}</span>
+              <span class="producto-stock" [class.bajo]="producto.stock <= 3">
+                {{ producto.stock }} uds.
+              </span>
+            </div>
+
+            <button
+              class="btn-agregar"
+              [disabled]="producto.stock <= 0"
+              (click)="agregarAlCarrito(producto)"
+            >
+              @if (productoAgregado() === producto.id) {
+                <i class="fas fa-check"></i>
+                ¡Agregado!
+              } @else {
+                <i class="fas fa-cart-plus"></i>
+                Añadir
+              }
+            </button>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state">
+          <i class="fas fa-search"></i>
+          <h3>No se encontraron productos</h3>
+          <p>Intenta con otros términos de búsqueda o categorías</p>
+          <button class="btn-neon-small" (click)="onBusquedaChange(''); filtrarPorCategoria('TODAS')">
+            Ver todos los productos
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- CARRITO SIDEBAR -->
+@if (carritoVisible()) {
+  <div class="carrito-overlay" (click)="toggleCarrito()"></div>
+
+  <aside class="carrito-sidebar">
+    <div class="carrito-header">
+      <h2>
+        <i class="fas fa-shopping-cart"></i>
+        Tu Carrito
+      </h2>
+      <button class="btn-cerrar" (click)="toggleCarrito()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="carrito-items">
+      @if (carritoItems().length > 0) {
+        @for (item of carritoItems(); track item.id) {
+          <div class="carrito-item">
+            <div class="item-imagen">
+              @if (item.producto.imagenUrl) {
+                <img [src]="item.producto.imagenUrl" [alt]="item.producto.nombre">
+              } @else {
+                <i class="fas fa-image"></i>
+              }
+            </div>
+
+            <div class="item-detalle">
+              <span class="item-nombre">{{ item.producto.nombre }}</span>
+              <span class="item-precio-unitario">{{ item.producto.precio | currency:'EUR':'symbol':'1.2-2' }} / ud.</span>
+            </div>
+
+            <div class="item-acciones">
+              <div class="cantidad-control">
+                <button class="btn-cantidad" (click)="actualizarCantidadItem(item.id, item.cantidad - 1)">-</button>
+                <span class="item-cantidad">{{ item.cantidad }}</span>
+                <button class="btn-cantidad" (click)="actualizarCantidadItem(item.id, item.cantidad + 1)">+</button>
+              </div>
+              <button class="btn-eliminar" (click)="eliminarItem(item.id)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="carrito-vacio">
+          <i class="fas fa-shopping-basket"></i>
+          <p>Tu carrito está vacío</p>
+          <button class="btn-neon-small" (click)="toggleCarrito()">Seguir comprando</button>
+        </div>
+      }
+    </div>
+
+    @if (carritoItems().length > 0) {
+      <div class="carrito-footer">
+        <div class="carrito-total">
+          <span>Total:</span>
+          <strong>{{ carritoTotal() | currency:'EUR':'symbol':'1.2-2' }}</strong>
+        </div>
+        <button class="btn-checkout" (click)="checkout()">
+          <i class="fas fa-credit-card"></i>
+          Finalizar Pedido
+        </button>
+      </div>
+    }
+  </aside>
+}

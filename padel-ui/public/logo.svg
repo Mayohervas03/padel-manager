@@ -1,0 +1,15 @@
+<svg width="680" height="680" viewBox="0 0 680 680" role="img" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="ballClipFavicon">
+      <circle cx="340" cy="340" r="176"/>
+    </clipPath>
+  </defs>
+  <polygon fill="#CCFF00" points="340,62 572,192 572,488 340,618 108,488 108,192"/>
+  <polygon fill="#0A192F" points="340,92 546,212 546,468 340,588 134,468 134,212"/>
+  <circle fill="#CCFF00" cx="340" cy="340" r="176"/>
+  <g clip-path="url(#ballClipFavicon)">
+    <path fill="none" stroke="#0A192F" stroke-width="18" stroke-linecap="round" d="M 255 164 C 185 230, 185 310, 255 340 C 325 370, 325 450, 255 516" />
+    <path fill="none" stroke="#0A192F" stroke-width="18" stroke-linecap="round" d="M 425 164 C 495 230, 495 310, 425 340 C 355 370, 355 450, 425 516" />
+  </g>
+  <text fill="#0A192F" font-family="Arial Black, sans-serif" font-weight="900" font-size="110px" letter-spacing="-2px" x="340" y="268" text-anchor="middle" dominant-baseline="middle">EP</text>
+</svg>

@@ -1,7 +1,12 @@
 import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import type { Torneo } from '../../../shared/models';
+import type { Torneo, CategoriaTorneo } from '../../../shared/models';
+
+export interface CategoriaFormData {
+  nombre: string;
+  maxParejas: number;
+}
 
 export interface TorneoFormData {
   id?: number;
@@ -10,7 +15,7 @@ export interface TorneoFormData {
   fechaInicio: string;
   fechaFin: string;
   precioPareja: number;
-  maxParejas: number;
+  categorias: CategoriaFormData[];
   imagenUrl: string;
   estado: Torneo['estado'];
   fechaCierreInscripcion: string;
@@ -34,7 +39,7 @@ export class TorneoFormDialogComponent {
   readonly fechaInicio = signal('');
   readonly fechaFin = signal('');
   readonly precioPareja = signal(0);
-  readonly maxParejas = signal(16);
+  readonly categorias = signal<CategoriaFormData[]>([{ nombre: '', maxParejas: 8 }]);
   readonly imagenUrl = signal('');
   readonly estado = signal<Torneo['estado']>('ABIERTO');
   readonly fechaCierreInscripcion = signal('');
@@ -46,10 +51,26 @@ export class TorneoFormDialogComponent {
     this.fechaInicio.set(t.fechaInicio || '');
     this.fechaFin.set(t.fechaFin || '');
     this.precioPareja.set(t.precioPareja ?? 0);
-    this.maxParejas.set(t.maxParejas ?? 16);
+    this.categorias.set(t.categorias?.length > 0 ? t.categorias : [{ nombre: '', maxParejas: 8 }]);
     this.imagenUrl.set(t.imagenUrl || '');
     this.estado.set(t.estado || 'ABIERTO');
     this.fechaCierreInscripcion.set(t.fechaCierreInscripcion || '');
+  }
+
+  agregarCategoria() {
+    this.categorias.update(cats => [...cats, { nombre: '', maxParejas: 8 }]);
+  }
+
+  eliminarCategoria(index: number) {
+    this.categorias.update(cats => cats.filter((_, i) => i !== index));
+  }
+
+  actualizarCategoria(index: number, campo: 'nombre' | 'maxParejas', valor: string | number) {
+    this.categorias.update(cats => {
+      const nuevas = [...cats];
+      nuevas[index] = { ...nuevas[index], [campo]: valor };
+      return nuevas;
+    });
   }
 
   onGuardar() {
@@ -59,7 +80,7 @@ export class TorneoFormDialogComponent {
       fechaInicio: this.fechaInicio(),
       fechaFin: this.fechaFin(),
       precioPareja: this.precioPareja(),
-      maxParejas: this.maxParejas(),
+      categorias: this.categorias(),
       imagenUrl: this.imagenUrl(),
       estado: this.estado(),
       fechaCierreInscripcion: this.fechaCierreInscripcion()

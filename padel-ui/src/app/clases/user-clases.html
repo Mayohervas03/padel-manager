@@ -42,7 +42,7 @@
           
           <div class="info-line">
             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-            <span>{{ clase.fecha }} a las {{ clase.hora }}</span>
+            <span>{{ formatearFecha(clase.fecha) }} a las {{ formatearHora(clase.hora) }}</span>
           </div>
           
           <div class="info-line">
@@ -50,13 +50,33 @@
             <span>Profesor: <strong>{{ clase.monitor }}</strong></span>
           </div>
           
-          <div class="info-line urgencia" [class.lleno]="(clase.alumnos?.length || 0) >= clase.maxAlumnos">
+          <div class="info-line urgencia" 
+               [class.lleno]="(clase.alumnos?.length || 0) >= clase.maxAlumnos"
+               [class.pocas]="plazasRestantes(clase) > 0 && plazasRestantes(clase) <= 2">
             <i class="fas fa-users" aria-hidden="true"></i>
-            <span>Quedan <strong>{{ clase.maxAlumnos - (clase.alumnos?.length || 0) }}</strong> de {{ clase.maxAlumnos }} plazas</span>
+            <span>
+              @if (plazasRestantes(clase) > 0) {
+                Quedan <strong>{{ plazasRestantes(clase) }}</strong> de {{ clase.maxAlumnos }} plazas
+              } @else {
+                <strong>Clase completa</strong>
+              }
+            </span>
           </div>
         </div>
 
         <div class="card-footer">
+          @if (isInscrito(clase)) {
+            <button class="btn-cancel" 
+                    (click)="cancelarInscripcion(clase)"
+                    [disabled]="inscripcionesEnCurso().has(clase.id)">
+              @if (!inscripcionesEnCurso().has(clase.id)) {
+                <i class="fas fa-times-circle" aria-hidden="true"></i> Cancelar inscripcion
+              } @else {
+                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Procesando...
+              }
+            </button>
+          }
+
           @if (!isInscrito(clase) && (clase.alumnos?.length || 0) < clase.maxAlumnos) {
             <button class="btn-neon" 
                     (click)="inscribirse(clase)" 
@@ -66,12 +86,6 @@
               } @else {
                 <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Procesando...
               }
-            </button>
-          }
-
-          @if (isInscrito(clase)) {
-            <button class="btn-success" disabled>
-              <i class="fas fa-check-circle" aria-hidden="true"></i> Apuntado
             </button>
           }
 

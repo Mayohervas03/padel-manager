@@ -74,7 +74,7 @@ class ReservaServiceIntegrationTest {
 
         assertNotNull(reserva.getId());
         assertEquals(30.0, reserva.getPrecioPagado());
-        assertEquals(EstadoReserva.CONFIRMADA, reserva.getEstado());
+        assertEquals(EstadoReserva.PENDIENTE, reserva.getEstado());
         assertNotNull(reserva.getCreatedAt());
     }
 

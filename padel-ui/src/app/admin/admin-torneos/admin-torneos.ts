@@ -103,7 +103,7 @@ export class AdminTorneosComponent implements OnInit {
       fechaInicio: '',
       fechaFin: '',
       precioPareja: 0,
-      maxParejas: 16,
+      categorias: [{ nombre: '', maxParejas: 8 }],
       imagenUrl: '',
       estado: 'ABIERTO',
       fechaCierreInscripcion: ''
@@ -118,7 +118,7 @@ export class AdminTorneosComponent implements OnInit {
       fechaInicio: torneo.fechaInicio,
       fechaFin: torneo.fechaFin,
       precioPareja: torneo.precioPareja,
-      maxParejas: torneo.maxParejas,
+      categorias: torneo.categorias?.map(c => ({ nombre: c.nombre, maxParejas: c.maxParejas })) || [{ nombre: '', maxParejas: 8 }],
       imagenUrl: torneo.imagenUrl || '',
       estado: torneo.estado,
       fechaCierreInscripcion: torneo.fechaCierreInscripcion || ''
@@ -148,15 +148,22 @@ export class AdminTorneosComponent implements OnInit {
       return;
     }
 
-    if ((datos.maxParejas ?? 0) < 1) {
-      this.notificationService.error('El máximo de parejas debe ser al menos 1');
+    if (!datos.categorias || datos.categorias.length === 0) {
+      this.notificationService.error('Debe definir al menos una categoría');
       return;
+    }
+
+    for (const cat of datos.categorias) {
+      if (!cat.nombre || (cat.maxParejas ?? 0) < 1) {
+        this.notificationService.error('Todas las categorías deben tener nombre y al menos 1 pareja');
+        return;
+      }
     }
 
     this.isLoading.set(editando.id ?? -1);
     const operacion = editando.id
-      ? this.torneoService.updateTorneo(editando.id, datos as Omit<Torneo, 'id'>)
-      : this.torneoService.createTorneo(datos as Omit<Torneo, 'id'>);
+      ? this.torneoService.updateTorneo(editando.id, datos as any)
+      : this.torneoService.createTorneo(datos as any);
 
     operacion.subscribe({
       next: () => {
@@ -227,6 +234,10 @@ export class AdminTorneosComponent implements OnInit {
     });
   }
 
+  getTotalPlazas(torneo: Torneo): number {
+    return torneo.categorias?.reduce((sum, cat) => sum + (cat.maxParejas || 0), 0) || 0;
+  }
+
   exportarCSV() {
     const datos = this.torneosFiltrados().map(t => ({
       ID: t.id,
@@ -234,7 +245,7 @@ export class AdminTorneosComponent implements OnInit {
       'Fecha Inicio': t.fechaInicio,
       'Fecha Fin': t.fechaFin,
       'Precio Pareja': t.precioPareja,
-      'Max Parejas': t.maxParejas,
+      'Categorias': t.categorias?.map(c => `${c.nombre} (${c.maxParejas})`).join(', ') || '',
       Estado: t.estado,
       Inscritos: t.inscripcionesCount || 0
     }));

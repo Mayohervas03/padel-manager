@@ -29,7 +29,7 @@ public class PistaController {
     public List<Pista> getPistasDisponibles(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime hora) {
-        return pistaService.listarTodas();
+        return pistaService.listarDisponibles(fecha, hora);
     }
 
     @PostMapping

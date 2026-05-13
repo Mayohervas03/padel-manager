@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ProductoService } from './producto.service';
 import { CarritoService } from './carrito.service';
 import { PedidoService } from './pedido.service';
@@ -12,7 +13,7 @@ type Ordenamiento = 'nombre' | 'precio-asc' | 'precio-desc' | 'stock';
 @Component({
   selector: 'app-tienda',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencyPipe],
+  imports: [CommonModule, FormsModule, CurrencyPipe, RouterLink],
   templateUrl: './tienda.html',
   styleUrl: './tienda.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

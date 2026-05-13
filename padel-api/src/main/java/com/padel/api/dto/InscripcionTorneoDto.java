@@ -13,7 +13,7 @@ public class InscripcionTorneoDto {
     private String usuarioNombre;
     private String usuarioEmail;
     private String nombreCompanero;
-    private String categoria;
+    private CategoriaTorneoDto categoria;
     private boolean pagado;
     private LocalDate fechaInscripcion;
     private EstadoInscripcion estado;
@@ -25,7 +25,7 @@ public class InscripcionTorneoDto {
         dto.setUsuarioNombre(inscripcion.getUser1().getNombre());
         dto.setUsuarioEmail(inscripcion.getUser1().getEmail());
         dto.setNombreCompanero(inscripcion.getNombreCompanero());
-        dto.setCategoria(inscripcion.getCategoria());
+        dto.setCategoria(CategoriaTorneoDto.fromEntity(inscripcion.getCategoriaTorneo()));
         dto.setPagado(inscripcion.isPagado());
         dto.setFechaInscripcion(inscripcion.getFechaInscripcion());
         dto.setEstado(inscripcion.getEstado());

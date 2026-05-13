@@ -70,22 +70,38 @@
           <div class="input-wrap">
             <i class="fas fa-lock input-icon"></i>
             <input 
-              type="password" 
+              [type]="showPassword() ? 'text' : 'password'"
               id="password" 
               name="password" 
               placeholder="••••••••"
               [(ngModel)]="credentials().password" 
               required 
               #password="ngModel">
+            <button type="button" class="toggle-password" (click)="showPassword.set(!showPassword())" tabindex="-1">
+              <i class="fas" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+            </button>
           </div>
           @if (password.invalid && (password.dirty || password.touched)) {
             <span class="error-text">La contraseña es obligatoria.</span>
           }
         </div>
 
-        <button type="submit" class="btn-submit" [disabled]="loginForm.invalid">
-          <span>Entrar</span>
-          <i class="fas fa-arrow-right"></i>
+        <div class="form-group remember-me">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="credentials().rememberMe" name="rememberMe">
+            <span class="checkmark"></span>
+            <span class="label-text">Recordarme (30 días)</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || cargando()">
+          @if (cargando()) {
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Entrando...</span>
+          } @else {
+            <span>Entrar</span>
+            <i class="fas fa-arrow-right"></i>
+          }
         </button>
       </form>
 

@@ -1,5 +1,6 @@
 package com.padel.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,19 +24,24 @@ public class Reserva {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private EstadoReserva estado = EstadoReserva.CONFIRMADA;
+    private EstadoReserva estado = EstadoReserva.PENDIENTE;
 
     private Double precioPagado;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Version
+    private Long version;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonIgnoreProperties({"password", "rol", "reservas", "clases"})
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "pista_id")
+    @JsonIgnoreProperties({"reservas", "clases"})
     private Pista pista;
 
     @PrePersist

@@ -1,7 +1,9 @@
 package com.padel.api.controller;
 
+import com.padel.api.dto.CambioEstadoReservaRequest;
 import com.padel.api.dto.ReservaManualRequest;
 import com.padel.api.service.AdminReservaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +34,15 @@ public class AdminReservaController {
     }
 
     @PostMapping("/manual")
-    public ResponseEntity<?> crearReservaManual(@RequestBody ReservaManualRequest request) {
+    public ResponseEntity<?> crearReservaManual(@Valid @RequestBody ReservaManualRequest request) {
         return ResponseEntity.ok(adminReservaService.crearReservaManual(request));
+    }
+
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstadoReserva(
+            @PathVariable Long id,
+            @Valid @RequestBody CambioEstadoReservaRequest request) {
+        adminReservaService.cambiarEstadoReserva(id, request.getEstado());
+        return ResponseEntity.ok().build();
     }
 }

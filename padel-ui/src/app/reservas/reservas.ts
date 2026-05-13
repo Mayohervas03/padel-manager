@@ -28,13 +28,14 @@ export class ReservasComponent implements OnInit {
 
   readonly diasDisponibles = signal<Dia[]>([]);
   readonly horasDisponibles = signal<readonly string[]>([
-    '09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30', '21:00', '22:30'
+    '09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30', '21:00'
   ]);
   
   readonly fechaSeleccionada = signal<string | null>(null);
   readonly horaSeleccionada = signal<string | null>(null);
   readonly pistaSeleccionada = signal<Pista | null>(null);
   readonly pistasDisponibles = signal<Pista[]>([]);
+  readonly cargandoPistas = signal(false);
   readonly cargando = signal(false);
 
   ngOnInit() {
@@ -82,10 +83,18 @@ export class ReservasComponent implements OnInit {
     const hora = this.horaSeleccionada();
     
     if (fecha && hora) {
+      this.cargandoPistas.set(true);
       const url = `${this.apiUrl}/pistas/disponibles?fecha=${fecha}&hora=${hora}:00`;
       this.http.get<Pista[]>(url).subscribe({
-        next: (data) => this.pistasDisponibles.set(data),
-        error: (err) => console.error('Error obteniendo disponibilidad', err)
+        next: (data) => {
+          this.pistasDisponibles.set(data);
+          this.cargandoPistas.set(false);
+        },
+        error: (err) => {
+          console.error('Error obteniendo disponibilidad', err);
+          this.notificationService.error('No se pudo cargar la disponibilidad de pistas');
+          this.cargandoPistas.set(false);
+        }
       });
     } else {
       this.pistasDisponibles.set([]);

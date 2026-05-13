@@ -28,7 +28,9 @@ export class PerfilComponent implements OnInit {
 
   readonly perfil = signal<PerfilDTO | null>(null);
   readonly reservas = signal<Reserva[]>([]);
+  readonly reservasHistorial = signal<Reserva[]>([]);
   readonly clases = signal<Clase[]>([]);
+  readonly clasesHistorial = signal<Clase[]>([]);
   readonly inscripcionesTorneo = signal<InscripcionTorneoPerfil[]>([]);
 
   readonly showPasswordForm = signal(false);
@@ -37,6 +39,9 @@ export class PerfilComponent implements OnInit {
   readonly mensajeError = signal('');
   readonly isLoading = signal(true);
   readonly hayError = signal(false);
+  readonly tabReservasActiva = signal<'activas' | 'historial'>('activas');
+  readonly tabClasesActiva = signal<'activas' | 'historial'>('activas');
+  readonly cancelandoReservaId = signal<number | null>(null);
 
   ngOnInit() {
     this.cargarDatos();
@@ -48,17 +53,21 @@ export class PerfilComponent implements OnInit {
 
     const perfil$ = this.authService.getPerfil().pipe(catchError(() => of(null)));
     const reservas$ = this.http.get<Reserva[]>(`${this.apiUrl}/reservas`).pipe(catchError(() => of(null)));
+    const reservasHistorial$ = this.http.get<Reserva[]>(`${this.apiUrl}/reservas?historial=true`).pipe(catchError(() => of(null)));
     const clases$ = this.http.get<Clase[]>(`${this.apiUrl}/clases/mis-clases`).pipe(catchError(() => of(null)));
+    const clasesHistorial$ = this.http.get<Clase[]>(`${this.apiUrl}/clases/mis-clases/historial`).pipe(catchError(() => of(null)));
     const torneos$ = this.torneoService.getMisInscripciones().pipe(catchError(() => of(null)));
 
-    forkJoin([perfil$, reservas$, clases$, torneos$]).subscribe({
-      next: ([perfilData, reservasData, clasesData, torneosData]) => {
+    forkJoin([perfil$, reservas$, reservasHistorial$, clases$, clasesHistorial$, torneos$]).subscribe({
+      next: ([perfilData, reservasData, reservasHistorialData, clasesData, clasesHistorialData, torneosData]) => {
         if (perfilData === null || reservasData === null || clasesData === null || torneosData === null) {
           this.hayError.set(true);
         } else {
           this.perfil.set(perfilData);
           this.reservas.set(reservasData);
+          this.reservasHistorial.set(reservasHistorialData || []);
           this.clases.set(clasesData);
+          this.clasesHistorial.set(clasesHistorialData || []);
           this.inscripcionesTorneo.set(torneosData);
         }
         this.isLoading.set(false);
@@ -75,14 +84,15 @@ export class PerfilComponent implements OnInit {
    * Ej: "2026-05-01" -> "Jue, 1 Mayo"
    */
   formatearFecha(fechaStr: string): string {
-    const fecha = new Date(fechaStr + 'T00:00:00');
+    const [year, month, day] = fechaStr.split('-').map(Number);
+    const fecha = new Date(Date.UTC(year, month - 1, day));
     const dias = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     
-    const diaSemana = dias[fecha.getDay()];
-    const diaNum = fecha.getDate();
-    const mes = meses[fecha.getMonth()];
+    const diaSemana = dias[fecha.getUTCDay()];
+    const diaNum = fecha.getUTCDate();
+    const mes = meses[fecha.getUTCMonth()];
     
     return `${diaSemana}, ${diaNum} ${mes}`;
   }
@@ -107,11 +117,15 @@ export class PerfilComponent implements OnInit {
 
   cancelarReserva(id: number) {
     if (confirm('¿Estas seguro de que deseas cancelar esta reserva? REGLA: Minimo 24h de antelacion.')) {
+      this.cancelandoReservaId.set(id);
       this.http.delete(`${this.apiUrl}/reservas/${id}`).subscribe({
         next: () => {
+          this.cancelandoReservaId.set(null);
           this.cargarDatos();
+          this.notificationService.success('Reserva cancelada');
         },
         error: (err) => {
+          this.cancelandoReservaId.set(null);
           this.notificationService.error(err.error || 'No se pudo cancelar la reserva. Verifica la antelacion (24h).');
         }
       });
@@ -124,6 +138,20 @@ export class PerfilComponent implements OnInit {
         next: () => {
           this.cargarDatos();
           this.notificationService.success('Inscripcion cancelada correctamente');
+        },
+        error: (err) => {
+          this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');
+        }
+      });
+    }
+  }
+
+  cancelarInscripcionClase(id: number) {
+    if (confirm('¿Cancelar tu inscripcion a esta clase?')) {
+      this.http.post(`${this.apiUrl}/clases/${id}/cancelar`, {}, { responseType: 'text' }).subscribe({
+        next: () => {
+          this.cargarDatos();
+          this.notificationService.success('Inscripcion a clase cancelada');
         },
         error: (err) => {
           this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');

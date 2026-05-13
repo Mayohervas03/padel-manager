@@ -148,54 +148,125 @@
           </div>
         </div>
 
+        <div class="column-tabs">
+          <button 
+            class="tab-btn" 
+            [class.active]="tabReservasActiva() === 'activas'"
+            (click)="tabReservasActiva.set('activas')"
+          >
+            Activas
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="tabReservasActiva() === 'historial'"
+            (click)="tabReservasActiva.set('historial')"
+          >
+            Historial ({{ reservasHistorial().length }})
+          </button>
+        </div>
+
         <div class="column-content">
-          @if (reservas().length > 0) {
-            <div class="cards-container">
-              @for (r of reservas(); track r.id) {
-                <div class="ticket-card">
-                  <div class="ticket-stub">
-                    <div class="ticket-hole"></div>
-                  </div>
-                  
-                  <div class="ticket-content">
-                    <div class="ticket-header">
-                      <span class="ticket-pista">{{ r.pista?.nombre }}</span>
-                      <span class="ticket-type">{{ r.pista?.tipo }}</span>
+          @if (tabReservasActiva() === 'activas') {
+            @if (reservas().length > 0) {
+              <div class="cards-container">
+                @for (r of reservas(); track r.id) {
+                  <div class="ticket-card">
+                    <div class="ticket-stub">
+                      <div class="ticket-hole"></div>
                     </div>
                     
-                    <div class="ticket-datetime">
-                      <div class="ticket-date">
-                        <i class="fas fa-calendar-day"></i>
-                        <span>{{ formatearFecha(r.fecha) }}</span>
+                    <div class="ticket-content">
+                      <div class="ticket-header">
+                        <span class="ticket-pista">{{ r.pista.nombre }}</span>
+                        <span class="ticket-type">{{ r.pista.tipo }}</span>
                       </div>
-                      <div class="ticket-time">
-                        <i class="fas fa-clock"></i>
-                        <span>{{ formatearHora(r.hora) }}</span>
+                      
+                      <div class="ticket-datetime">
+                        <div class="ticket-date">
+                          <i class="fas fa-calendar-day"></i>
+                          <span>{{ formatearFecha(r.fecha) }}</span>
+                        </div>
+                        <div class="ticket-time">
+                          <i class="fas fa-clock"></i>
+                          <span>{{ formatearHora(r.hora) }}</span>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div class="ticket-footer">
-                      <span class="ticket-ubicacion">
-                        <i class="fas fa-map-marker-alt"></i> {{ r.pista?.ubicacion }}
-                      </span>
-                      <button class="btn-cancel-ticket" (click)="cancelarReserva(r.id)">
-                        <i class="fas fa-times"></i>
-                      </button>
+                      
+                      <div class="ticket-footer">
+                        <span class="ticket-ubicacion">
+                          <i class="fas fa-map-marker-alt"></i> {{ r.pista.ubicacion }}
+                        </span>
+                        <span class="ticket-precio">{{ r.precioPagado }}€</span>
+                        <button class="btn-cancel-ticket"
+                                (click)="cancelarReserva(r.id)"
+                                [disabled]="cancelandoReservaId() === r.id">
+                          @if (cancelandoReservaId() === r.id) {
+                            <i class="fas fa-spinner fa-spin"></i>
+                          } @else {
+                            <i class="fas fa-times"></i>
+                          }
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              }
-            </div>
-          } @else {
-            <div class="empty-state">
-              <div class="empty-icon">
-                <i class="fas fa-table-tennis"></i>
+                }
               </div>
-              <p>Aún no tienes partidos programados</p>
-              <a routerLink="/reservas" class="btn-neon-small">
-                Reservar Ahora
-              </a>
-            </div>
+            } @else {
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-table-tennis"></i>
+                </div>
+                <p>Aún no tienes partidos programados</p>
+                <a routerLink="/reservas" class="btn-neon-small">
+                  Reservar Ahora
+                </a>
+              </div>
+            }
+          } @else {
+            @if (reservasHistorial().length > 0) {
+              <div class="cards-container">
+                @for (r of reservasHistorial(); track r.id) {
+                  <div class="ticket-card ticket-cancelled">
+                    <div class="ticket-stub">
+                      <div class="ticket-hole"></div>
+                    </div>
+                    
+                    <div class="ticket-content">
+                      <div class="ticket-header">
+                        <span class="ticket-pista">{{ r.pista.nombre }}</span>
+                        <span class="ticket-type">{{ r.pista.tipo }}</span>
+                        <span class="status-badge" [class.cancelled]="r.estado === 'CANCELADA'">{{ r.estado }}</span>
+                      </div>
+                      
+                      <div class="ticket-datetime">
+                        <div class="ticket-date">
+                          <i class="fas fa-calendar-day"></i>
+                          <span>{{ formatearFecha(r.fecha) }}</span>
+                        </div>
+                        <div class="ticket-time">
+                          <i class="fas fa-clock"></i>
+                          <span>{{ formatearHora(r.hora) }}</span>
+                        </div>
+                      </div>
+                      
+                      <div class="ticket-footer">
+                        <span class="ticket-ubicacion">
+                          <i class="fas fa-map-marker-alt"></i> {{ r.pista.ubicacion }}
+                        </span>
+                        <span class="ticket-precio">{{ r.precioPagado }}€</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-history"></i>
+                </div>
+                <p>No tienes reservas en el historial</p>
+              </div>
+            }
           }
         </div>
       </div>
@@ -212,59 +283,129 @@
           </div>
         </div>
 
+        <div class="column-tabs">
+          <button 
+            class="tab-btn" 
+            [class.active]="tabClasesActiva() === 'activas'"
+            (click)="tabClasesActiva.set('activas')"
+          >
+            Activas
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="tabClasesActiva() === 'historial'"
+            (click)="tabClasesActiva.set('historial')"
+          >
+            Historial ({{ clasesHistorial().length }})
+          </button>
+        </div>
+
         <div class="column-content">
-          @if (clases().length > 0) {
-            <div class="cards-container">
-              @for (c of clases(); track c.id) {
-                <div class="class-card">
-                  <div class="class-level-badge" [class]="'level-' + c.nivel.toLowerCase()">
-                    {{ c.nivel }}
-                  </div>
-                  
-                  <div class="class-content">
-                    <h3 class="class-title">{{ c.titulo }}</h3>
-                    
-                    <div class="class-monitor">
-                      <i class="fas fa-user-tie"></i>
-                      <span>{{ c.monitor }}</span>
+          @if (tabClasesActiva() === 'activas') {
+            @if (clases().length > 0) {
+              <div class="cards-container">
+                @for (c of clases(); track c.id) {
+                  <div class="class-card">
+                    <div class="class-level-badge" [class]="'level-' + c.nivel.toLowerCase()">
+                      {{ c.nivel }}
                     </div>
                     
-                    <div class="class-datetime">
-                      <div class="class-date">
-                        <i class="fas fa-calendar"></i>
-                        <span>{{ formatearFecha(c.fecha) }}</span>
+                    <div class="class-content">
+                      <h3 class="class-title">{{ c.titulo }}</h3>
+                      
+                      <div class="class-monitor">
+                        <i class="fas fa-user-tie"></i>
+                        <span>{{ c.monitor }}</span>
                       </div>
-                      <div class="class-time">
-                        <i class="fas fa-clock"></i>
-                        <span>{{ formatearHora(c.hora) }}</span>
+                      
+                      <div class="class-datetime">
+                        <div class="class-date">
+                          <i class="fas fa-calendar"></i>
+                          <span>{{ formatearFecha(c.fecha) }}</span>
+                        </div>
+                        <div class="class-time">
+                          <i class="fas fa-clock"></i>
+                          <span>{{ formatearHora(c.hora) }}</span>
+                        </div>
+                      </div>
+                      
+                      <div class="class-footer">
+                        <span class="class-pista">
+                          <i class="fas fa-map-marker-alt"></i> {{ c.pista.nombre }}
+                        </span>
+                        <span class="class-price">{{ c.precio }}€</span>
                       </div>
                     </div>
                     
-                    <div class="class-footer">
-                      <span class="class-pista">
-                        <i class="fas fa-map-marker-alt"></i> {{ c.pista?.nombre }}
-                      </span>
-                      <span class="class-price">{{ c.precio }}€</span>
+                    <div class="class-status">
+                      <button class="btn-cancel-small" (click)="cancelarInscripcionClase(c.id)">
+                        <i class="fas fa-times"></i> Cancelar
+                      </button>
                     </div>
                   </div>
-                  
-                  <div class="class-status">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Confirmado</span>
-                  </div>
-                </div>
-              }
-            </div>
-          } @else {
-            <div class="empty-state">
-              <div class="empty-icon">
-                <i class="fas fa-user-graduate"></i>
+                }
               </div>
-              <p>No tienes clases activas</p>
-              <a routerLink="/clases" class="btn-neon-small">
-                Ver Academia
-              </a>
-            </div>
+            } @else {
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-user-graduate"></i>
+                </div>
+                <p>No tienes clases activas</p>
+                <a routerLink="/clases" class="btn-neon-small">
+                  Ver Academia
+                </a>
+              </div>
+            }
+          } @else {
+            @if (clasesHistorial().length > 0) {
+              <div class="cards-container">
+                @for (c of clasesHistorial(); track c.id) {
+                  <div class="class-card class-cancelled">
+                    <div class="class-level-badge" [class]="'level-' + c.nivel.toLowerCase()">
+                      {{ c.nivel }}
+                    </div>
+                    
+                    <div class="class-content">
+                      <h3 class="class-title">{{ c.titulo }}</h3>
+                      
+                      <div class="class-monitor">
+                        <i class="fas fa-user-tie"></i>
+                        <span>{{ c.monitor }}</span>
+                      </div>
+                      
+                      <div class="class-datetime">
+                        <div class="class-date">
+                          <i class="fas fa-calendar"></i>
+                          <span>{{ formatearFecha(c.fecha) }}</span>
+                        </div>
+                        <div class="class-time">
+                          <i class="fas fa-clock"></i>
+                          <span>{{ formatearHora(c.hora) }}</span>
+                        </div>
+                      </div>
+                      
+                      <div class="class-footer">
+                        <span class="class-pista">
+                          <i class="fas fa-map-marker-alt"></i> {{ c.pista.nombre }}
+                        </span>
+                        <span class="class-price">{{ c.precio }}€</span>
+                      </div>
+                    </div>
+                    
+                    <div class="class-status">
+                      <span class="status-badge" [class.cancelled]="c.estado === 'CANCELADA'">{{ c.estado }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-history"></i>
+                </div>
+                <p>No tienes clases en el historial</p>
+              </div>
+            }
           }
         </div>
       </div>
@@ -307,7 +448,7 @@
                       </div>
                       <div class="torneo-meta-item">
                         <i class="fas fa-layer-group"></i>
-                        <span>Categoría: <strong>{{ t.categoria }}</strong></span>
+                        <span>Categoría: <strong>{{ t.categoria?.nombre }}</strong></span>
                       </div>
                       <div class="torneo-meta-item">
                         <i class="fas fa-calendar-alt"></i>

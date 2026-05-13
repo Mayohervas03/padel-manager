@@ -67,6 +67,34 @@ $border-glass: rgba(255, 255, 255, 0.08);
   }
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-mis-compras {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid $border-glass;
+  color: $text-primary;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(204, 255, 0, 0.1);
+    border-color: rgba(204, 255, 0, 0.3);
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.1);
+    color: $neon-green;
+  }
+}
+
 .carrito-btn {
   position: relative;
   width: 52px;

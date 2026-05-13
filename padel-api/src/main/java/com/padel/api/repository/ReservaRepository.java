@@ -15,11 +15,9 @@ import java.util.List;
 
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
-    boolean existsByPistaIdAndFechaAndHora(Long pistaId, LocalDate fecha, LocalTime hora);
+    boolean existsByPistaIdAndFechaAndHoraAndEstadoIn(Long pistaId, LocalDate fecha, LocalTime hora, List<EstadoReserva> estados);
     long countByFecha(LocalDate fecha);
     List<Reserva> findByUsuarioEmail(String email);
-
-    List<Reserva> findByUsuarioEmailAndFechaGreaterThanEqual(String email, LocalDate fecha);
 
     List<Reserva> findByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(String email, List<EstadoReserva> estados, LocalDate fecha);
 
@@ -27,9 +25,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     long countByUsuarioEmailAndEstadoIn(String email, List<EstadoReserva> estados);
 
-    List<Reserva> findByFecha(LocalDate fecha);
     List<Reserva> findByFechaAndEstadoNot(LocalDate fecha, EstadoReserva estado);
-    List<Reserva> findByFechaGreaterThanEqual(LocalDate fecha);
+    List<Reserva> findByFechaGreaterThanEqualAndEstadoNot(LocalDate fecha, EstadoReserva estado);
+    List<Reserva> findByUsuarioEmailOrderByFechaDescHoraDesc(String email);
+    List<Reserva> findAllByOrderByFechaDescHoraDesc();
 
     @Query("SELECT p FROM Pista p WHERE p.activo = true AND NOT EXISTS (SELECT r FROM Reserva r WHERE r.pista.id = p.id AND r.fecha = :fecha AND r.hora = :hora)")
     List<Pista> findDisponibles(@Param("fecha") LocalDate fecha, @Param("hora") LocalTime hora);
@@ -39,8 +38,11 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM Reserva r WHERE r.pista.id = :pistaId")
-    void deleteByPistaId(@Param("pistaId") Long pistaId);
+    @Query("UPDATE Reserva r SET r.estado = 'CANCELADA' WHERE r.pista.id = :pistaId AND r.estado IN ('PENDIENTE', 'CONFIRMADA')")
+    void cancelarReservasActivasByPistaId(@Param("pistaId") Long pistaId);
+
+    @Query("SELECT COUNT(r) FROM Reserva r WHERE r.pista.id = :pistaId AND r.estado IN ('PENDIENTE', 'CONFIRMADA') AND r.fecha >= CURRENT_DATE")
+    long countReservasActivasFuturasByPistaId(@Param("pistaId") Long pistaId);
 
     // Estadísticas sin filtro de fecha
     @Query("SELECT r.pista.nombre, COUNT(r) FROM Reserva r GROUP BY r.pista.nombre")

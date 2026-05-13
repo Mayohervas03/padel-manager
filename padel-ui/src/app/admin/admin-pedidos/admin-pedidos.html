@@ -1,0 +1,124 @@
+<div class="admin-pedidos-container">
+  <div class="admin-header">
+    <h1>
+      <i class="fas fa-shopping-bag"></i>
+      Gestión de Pedidos
+    </h1>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-bar">
+    <div class="filtro-grupo">
+      <span class="filtro-label">Estado:</span>
+      <div class="filtro-botones">
+        @for (est of estados; track est.value) {
+          <button
+            class="filtro-btn"
+            [class.active]="filtroEstado() === est.value"
+            (click)="filtroEstado.set(est.value)">
+            {{ est.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="buscador-wrapper">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        class="buscador-input"
+        placeholder="Buscar por #pedido o producto..."
+        [ngModel]="filtroBusqueda()"
+        (ngModelChange)="filtroBusqueda.set($event)"
+      >
+      @if (filtroBusqueda()) {
+        <button class="btn-limpiar" (click)="filtroBusqueda.set('')">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Cargando pedidos...</p>
+    </div>
+  } @else if (pedidosFiltrados().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <h3>No hay pedidos</h3>
+      <p>No se encontraron pedidos con los filtros seleccionados</p>
+    </div>
+  } @else {
+    <div class="tabla-wrapper">
+      <table class="pedidos-tabla">
+        <thead>
+          <tr>
+            <th># Pedido</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Productos</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pedido of pedidosFiltrados(); track pedido.id) {
+            <tr>
+              <td class="col-id">#{{ pedido.id }}</td>
+              <td class="col-usuario">
+                <span class="usuario-nombre">{{ pedido.usuarioNombre }}</span>
+                <span class="usuario-email">{{ pedido.usuarioEmail }}</span>
+              </td>
+              <td class="col-fecha">{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="col-productos">
+                <div class="productos-lista">
+                  @for (item of pedido.items; track item.id) {
+                    <span class="producto-tag">
+                      {{ item.cantidad }}x {{ item.producto.nombre }}
+                    </span>
+                  }
+                </div>
+              </td>
+              <td class="col-total">{{ pedido.total | currency:'EUR':'symbol' }}</td>
+              <td class="col-estado">
+                <span class="estado-badge" [class]="getEstadoClass(pedido.estado)">
+                  {{ pedido.estado }}
+                </span>
+              </td>
+              <td class="col-acciones">
+                @if (pedido.estado === 'PENDIENTE') {
+                  <button
+                    class="btn-accion btn-completar"
+                    (click)="cambiarEstado(pedido, 'COMPLETADO')"
+                    title="Marcar como completado">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button
+                    class="btn-accion btn-cancelar"
+                    (click)="cambiarEstado(pedido, 'CANCELADO')"
+                    title="Cancelar pedido">
+                    <i class="fas fa-times"></i>
+                  </button>
+                }
+                @if (pedido.estado === 'CANCELADO') {
+                  <span class="accion-deshabilitada">Cancelado</span>
+                }
+                @if (pedido.estado === 'COMPLETADO') {
+                  <span class="accion-deshabilitada">Completado</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resultados-info">
+      <span>{{ pedidosFiltrados().length }} pedido{{ pedidosFiltrados().length === 1 ? '' : 's' }}</span>
+    </div>
+  }
+</div>

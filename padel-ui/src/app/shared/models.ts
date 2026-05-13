@@ -25,6 +25,7 @@ export interface AuthResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface RegisterRequest {
@@ -51,6 +52,8 @@ export interface Reserva {
   readonly id: number;
   fecha: string;
   hora: string;
+  estado?: string;
+  precioPagado?: number;
   usuario: Usuario;
   pista: Pista;
 }
@@ -62,15 +65,25 @@ export interface ReservaManualRequest {
   hora: string;
 }
 
+export type EstadoReserva = 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA';
+
 export interface AgendaItem {
   readonly id: number;
   readonly tipo: 'CLASE' | 'RESERVA';
   readonly usuario: { nombre: string; email: string };
   readonly pista: { nombre: string };
   readonly hora: string;
+  readonly estado?: EstadoReserva;
 }
 
 export type EstadoTorneo = 'ABIERTO' | 'CERRADO' | 'CANCELADO';
+
+export interface CategoriaTorneo {
+  readonly id: number;
+  nombre: string;
+  maxParejas: number;
+  inscripcionesCount?: number;
+}
 
 export interface Torneo {
   readonly id: number;
@@ -79,10 +92,10 @@ export interface Torneo {
   fechaInicio: string;
   fechaFin: string;
   precioPareja: number;
-  maxParejas: number;
   imagenUrl?: string;
   estado: EstadoTorneo;
   fechaCierreInscripcion?: string;
+  categorias: CategoriaTorneo[];
   inscripcionesCount?: number;
   yaInscrito?: boolean;
 }
@@ -93,7 +106,7 @@ export interface InscripcionTorneo {
   readonly usuarioNombre: string;
   readonly usuarioEmail: string;
   nombreCompanero: string;
-  categoria: string;
+  categoria: CategoriaTorneo;
   pagado: boolean;
   readonly fechaInscripcion: string;
 }
@@ -108,14 +121,14 @@ export interface InscripcionTorneoPerfil {
   readonly torneoPrecioPareja: number;
   readonly torneoImagenUrl?: string;
   readonly nombreCompanero: string;
-  readonly categoria: string;
+  readonly categoria: CategoriaTorneo;
   readonly pagado: boolean;
   readonly fechaInscripcion: string;
 }
 
 export interface InscripcionTorneoRequest {
   nombreCompanero: string;
-  categoria: string;
+  categoriaId: number;
 }
 
 export type NivelClase = 'INICIACION' | 'INTERMEDIO' | 'AVANZADO';
@@ -129,6 +142,7 @@ export interface Clase {
   maxAlumnos: number;
   fecha: string;
   hora: string;
+  estado?: string;
   pista: Pista;
   alumnos?: Usuario[];
 }
@@ -189,5 +203,7 @@ export interface Pedido {
   fecha: string;
   estado: 'PENDIENTE' | 'COMPLETADO' | 'CANCELADO';
   total: number;
+  usuarioNombre: string;
+  usuarioEmail: string;
   items: PedidoItem[];
 }

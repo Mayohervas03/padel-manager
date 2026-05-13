@@ -69,14 +69,21 @@
           </div>
         }
         
-        @if (pistasDisponibles().length === 0) {
+        @if (cargandoPistas()) {
+          <div class="loading-pistas">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Consultando disponibilidad...</span>
+          </div>
+        }
+
+        @if (!cargandoPistas() && pistasDisponibles().length === 0 && fechaSeleccionada() && horaSeleccionada()) {
           <div class="alert-warning">
             <i class="fas fa-exclamation-triangle"></i>
             <span>Lo sentimos, no hay pistas disponibles a esa hora. Prueba con otro horario.</span>
           </div>
         }
 
-        @if (pistasDisponibles().length > 0) {
+        @if (!cargandoPistas() && pistasDisponibles().length > 0) {
           <div class="grid-pistas">
             @for (pista of pistasDisponibles(); track pista.id) {
               <div 
@@ -102,12 +109,23 @@
           </div>
         }
 
-        <!-- Botón Confirmar -->
+        <!-- Resumen de confirmación -->
         @if (pistaSeleccionada()) {
-          <div class="confirm-bar">
-            <button class="btn-neon" (click)="guardarReserva()" [disabled]="cargando()">
-                {{ cargando() ? 'Espera...' : 'Confirmar ' + pistaSeleccionada()?.nombre + ' a las ' + horaSeleccionada() }}
-            </button>
+          <div class="confirm-summary">
+            <h4><i class="fas fa-clipboard-check"></i> Resumen de tu reserva</h4>
+            <div class="summary-line">
+              <span><i class="fas fa-calendar"></i> {{ fechaSeleccionada() | date:'EEEE, d MMMM' }}</span>
+              <span><i class="fas fa-clock"></i> {{ horaSeleccionada() }}</span>
+            </div>
+            <div class="summary-line">
+              <span><i class="fas fa-map-marker-alt"></i> {{ pistaSeleccionada()?.nombre }}</span>
+              <span class="precio-total">{{ pistaSeleccionada()?.precio }}€</span>
+            </div>
+            <div class="confirm-bar">
+              <button class="btn-neon" (click)="guardarReserva()" [disabled]="cargando()">
+                  {{ cargando() ? 'Procesando...' : 'Confirmar Reserva' }}
+              </button>
+            </div>
           </div>
         }
       </div>

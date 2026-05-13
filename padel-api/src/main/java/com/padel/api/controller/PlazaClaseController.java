@@ -33,4 +33,17 @@ public class PlazaClaseController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return ResponseEntity.ok(claseService.obtenerMisClases(email));
     }
+
+    @GetMapping("/mis-clases/historial")
+    public ResponseEntity<List<Clase>> obtenerHistorialClases() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(claseService.obtenerHistorialClases(email));
+    }
+
+    @PostMapping("/{id}/cancelar")
+    public ResponseEntity<Void> cancelarInscripcion(@PathVariable("id") Long id) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        claseService.cancelarInscripcion(id, email);
+        return ResponseEntity.ok().build();
+    }
 }

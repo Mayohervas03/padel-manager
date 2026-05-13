@@ -6,7 +6,7 @@ import { API_BASE_URL } from '../../shared/api.config';
 import { NotificationService } from '../../shared/notification.service';
 import { ActivityLogService } from '../../shared/activity-log.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
-import type { AgendaItem, DashboardStats } from '../../shared/models';
+import type { AgendaItem, DashboardStats, EstadoReserva } from '../../shared/models';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -99,31 +99,72 @@ export class AdminDashboardComponent implements OnInit {
     return `${endH}:${endM}`;
   }
 
-  anularElemento(item: AgendaItem) {
-    if (this.isLoading() === item.id) return;
+  cambiarEstadoReserva(item: AgendaItem, nuevoEstado: EstadoReserva) {
+    if (item.tipo !== 'RESERVA' || this.isLoading() === item.id) return;
+
+    const estadoLabels: Record<EstadoReserva, string> = {
+      PENDIENTE: 'Pendiente',
+      CONFIRMADA: 'Confirmada',
+      CANCELADA: 'Cancelada',
+      COMPLETADA: 'Completada'
+    };
+
+    const accion = nuevoEstado === 'CANCELADA' ? 'Anular' : 'Cambiar estado';
+    const mensaje = nuevoEstado === 'CANCELADA'
+      ? `¿Estás seguro de que deseas anular esta reserva? Esta acción no se puede deshacer.`
+      : `¿Confirmar cambio de estado a "${estadoLabels[nuevoEstado]}"?`;
 
     this.confirmDialog.confirm({
-      title: `Anular ${item.tipo}`,
-      message: `¿Estás seguro de que deseas anular esta ${item.tipo}? Esta acción no se puede deshacer.`,
+      title: `${accion} reserva`,
+      message: mensaje,
+      confirmText: 'Confirmar',
+      cancelText: 'Cancelar',
+      confirmButtonClass: nuevoEstado === 'CANCELADA' ? 'btn-danger' : 'btn-primary'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.isLoading.set(item.id);
+
+      const url = `${this.apiUrl}/admin/reservas/${item.id}/estado`;
+      this.http.put(url, { estado: nuevoEstado }).subscribe({
+        next: () => {
+          const accionLabel = nuevoEstado === 'CANCELADA' ? 'ANULAR' : 'CAMBIAR_ESTADO';
+          this.activityLog.log(accionLabel, 'RESERVA',
+            `Reserva #${item.id} → ${estadoLabels[nuevoEstado]} - ${item.usuario.nombre}`, item.id);
+          this.isLoading.set(null);
+          this.notificationService.success(`Reserva marcada como ${estadoLabels[nuevoEstado]}`);
+          this.cargarReservas();
+        },
+        error: (err) => {
+          this.isLoading.set(null);
+          this.notificationService.error(err);
+        }
+      });
+    });
+  }
+
+  anularElemento(item: AgendaItem) {
+    if (item.tipo !== 'CLASE' || this.isLoading() === item.id) return;
+
+    this.confirmDialog.confirm({
+      title: 'Anular clase',
+      message: '¿Estás seguro de que deseas anular esta clase? Esta acción no se puede deshacer.',
       confirmText: 'Anular',
       cancelText: 'Cancelar',
       confirmButtonClass: 'btn-danger'
     }).subscribe(confirmed => {
       if (!confirmed) return;
       this.isLoading.set(item.id);
-      const url = item.tipo === 'CLASE' 
-          ? `${this.apiUrl}/admin/clases/${item.id}`
-          : `${this.apiUrl}/admin/reservas/${item.id}`;
-          
+      const url = `${this.apiUrl}/admin/clases/${item.id}`;
+
       this.http.delete(url).subscribe({
         next: () => {
-          this.activityLog.log('ANULAR', item.tipo, `Anulada ${item.tipo} #${item.id} - ${item.usuario.nombre}`, item.id);
+          this.activityLog.log('ANULAR', 'CLASE', `Anulada clase #${item.id} - ${item.usuario.nombre}`, item.id);
           this.isLoading.set(null);
           this.cargarReservas();
         },
         error: (err) => {
           this.isLoading.set(null);
-          this.notificationService.error('Hubo un error al anular: ' + (err.error || err.message));
+          this.notificationService.error(err);
         }
       });
     });

@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { extractErrorMessage } from './error-utils';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -34,8 +35,15 @@ export class NotificationService {
     this.add(message, 'success', duration);
   }
 
-  error(message: string, duration?: number): void {
-    this.add(message, 'error', duration);
+  /**
+   * Acepta un string directo o un objeto de error HTTP (err.error, err, etc.).
+   * Normaliza automaticamente los mensajes de validacion del backend.
+   */
+  error(messageOrError: string | any, duration?: number): void {
+    const msg = typeof messageOrError === 'string'
+      ? messageOrError
+      : extractErrorMessage(messageOrError);
+    this.add(msg, 'error', duration);
   }
 
   info(message: string, duration?: number): void {

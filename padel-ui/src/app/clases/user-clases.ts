@@ -19,19 +19,20 @@ export class UserClasesComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
 
   readonly clasesDisponibles = signal<Clase[]>([]);
+  readonly misClasesIds = signal<Set<number>>(new Set());
   readonly inscripcionesEnCurso = signal<Set<number>>(new Set());
   readonly isLoading = signal(true);
 
   ngOnInit() {
-    this.cargarClases();
+    this.cargarDatos();
   }
 
-  cargarClases() {
+  cargarDatos() {
     this.isLoading.set(true);
     this.http.get<Clase[]>(`${this.apiUrl}/clases/disponibles`).subscribe({
       next: (data) => {
         this.clasesDisponibles.set(data);
-        this.isLoading.set(false);
+        this.cargarMisClases();
       },
       error: (err) => {
         console.error('Error cargando academia', err);
@@ -40,8 +41,21 @@ export class UserClasesComponent implements OnInit {
     });
   }
 
+  private cargarMisClases() {
+    this.http.get<Clase[]>(`${this.apiUrl}/clases/mis-clases`).subscribe({
+      next: (misClases) => {
+        const ids = new Set(misClases.map(c => c.id));
+        this.misClasesIds.set(ids);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+      }
+    });
+  }
+
   isInscrito(clase: Clase): boolean {
-    return (clase as unknown as Record<string, unknown>)['status'] === 'INSCRITO';
+    return this.misClasesIds().has(clase.id);
   }
 
   inscribirse(clase: Clase) {
@@ -51,7 +65,6 @@ export class UserClasesComponent implements OnInit {
       return newSet;
     });
     
-    // Usamos responseType: 'text' para evitar parsear JSON en respuestas vacías
     this.http.post(`${this.apiUrl}/clases/${clase.id}/inscribir`, {}, { responseType: 'text' }).subscribe({
       next: () => {
         this.inscripcionesEnCurso.update(set => {
@@ -59,7 +72,13 @@ export class UserClasesComponent implements OnInit {
           newSet.delete(clase.id);
           return newSet;
         });
-        this.cargarClases();
+        this.misClasesIds.update(set => {
+          const newSet = new Set(set);
+          newSet.add(clase.id);
+          return newSet;
+        });
+        this.cargarDatos();
+        this.notificationService.success('Inscripcion completada');
       },
       error: (err) => {
         this.inscripcionesEnCurso.update(set => {
@@ -67,8 +86,58 @@ export class UserClasesComponent implements OnInit {
           newSet.delete(clase.id);
           return newSet;
         });
-        // El interceptor normaliza el error
         this.notificationService.error('No se pudo completar la inscripcion: ' + (err.error || err.message));
+      }
+    });
+  }
+
+  formatearFecha(fechaStr: string): string {
+    const fecha = new Date(fechaStr + 'T00:00:00');
+    const dias = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
+                   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    return `${dias[fecha.getDay()]}, ${fecha.getDate()} ${meses[fecha.getMonth()]}`;
+  }
+
+  formatearHora(horaStr: string): string {
+    return horaStr.substring(0, 5);
+  }
+
+  plazasRestantes(clase: Clase): number {
+    return clase.maxAlumnos - (clase.alumnos?.length || 0);
+  }
+
+  cancelarInscripcion(clase: Clase) {
+    if (!confirm('¿Cancelar tu inscripcion a esta clase?')) return;
+
+    this.inscripcionesEnCurso.update(set => {
+      const newSet = new Set(set);
+      newSet.add(clase.id);
+      return newSet;
+    });
+
+    this.http.post(`${this.apiUrl}/clases/${clase.id}/cancelar`, {}, { responseType: 'text' }).subscribe({
+      next: () => {
+        this.inscripcionesEnCurso.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(clase.id);
+          return newSet;
+        });
+        this.misClasesIds.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(clase.id);
+          return newSet;
+        });
+        this.cargarDatos();
+        this.notificationService.success('Inscripcion cancelada');
+      },
+      error: (err) => {
+        this.inscripcionesEnCurso.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(clase.id);
+          return newSet;
+        });
+        this.notificationService.error('Error: ' + (err.error || err.message));
       }
     });
   }

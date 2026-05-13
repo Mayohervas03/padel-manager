@@ -16,7 +16,7 @@ public class InscripcionTorneoPerfilDto {
     private Double torneoPrecioPareja;
     private String torneoImagenUrl;
     private String nombreCompanero;
-    private String categoria;
+    private CategoriaTorneoDto categoria;
     private boolean pagado;
     private LocalDate fechaInscripcion;
     private String estadoInscripcion;
@@ -32,7 +32,7 @@ public class InscripcionTorneoPerfilDto {
         dto.setTorneoPrecioPareja(inscripcion.getTorneo().getPrecioPareja());
         dto.setTorneoImagenUrl(inscripcion.getTorneo().getImagenUrl());
         dto.setNombreCompanero(inscripcion.getNombreCompanero());
-        dto.setCategoria(inscripcion.getCategoria());
+        dto.setCategoria(CategoriaTorneoDto.fromEntity(inscripcion.getCategoriaTorneo()));
         dto.setPagado(inscripcion.isPagado());
         dto.setFechaInscripcion(inscripcion.getFechaInscripcion());
         dto.setEstadoInscripcion(inscripcion.getEstado().name());

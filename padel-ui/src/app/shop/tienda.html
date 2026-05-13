@@ -10,14 +10,19 @@
         </div>
       </div>
 
-      <button class="carrito-btn" (click)="toggleCarrito()">
-        <i class="fas fa-shopping-cart"></i>
-        @if (carritoItems().length > 0) {
-          <span class="carrito-badge">
-            {{ carritoItems().reduce((sum, item) => sum + item.cantidad, 0) }}
-          </span>
-        }
-      </button>
+      <div class="header-actions">
+        <a routerLink="/mis-compras" class="btn-mis-compras" title="Mis Compras">
+          <i class="fas fa-receipt"></i>
+        </a>
+        <button class="carrito-btn" (click)="toggleCarrito()">
+          <i class="fas fa-shopping-cart"></i>
+          @if (carritoItems().length > 0) {
+            <span class="carrito-badge">
+              {{ carritoItems().reduce((sum, item) => sum + item.cantidad, 0) }}
+            </span>
+          }
+        </button>
+      </div>
     </div>
   </header>
 

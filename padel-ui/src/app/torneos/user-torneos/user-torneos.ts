@@ -3,7 +3,7 @@ import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TorneoService } from '../torneo.service';
 import { NotificationService } from '../../shared/notification.service';
-import type { Torneo } from '../../shared/models';
+import type { Torneo, CategoriaTorneo } from '../../shared/models';
 
 @Component({
   selector: 'app-user-torneos',
@@ -26,9 +26,7 @@ export class UserTorneosComponent implements OnInit {
 
   // Propiedades planas para ngModel
   nombreCompanero = '';
-  categoria = '';
-
-  readonly categorias = ['Oro', 'Plata', 'Bronce', '2ª Categoría', '3ª Categoría', '4ª Categoría'];
+  categoriaId: number | null = null;
 
   ngOnInit() {
     this.cargarTorneos();
@@ -66,7 +64,7 @@ export class UserTorneosComponent implements OnInit {
   abrirModal(torneo: Torneo) {
     this.torneoSeleccionado.set(torneo);
     this.nombreCompanero = '';
-    this.categoria = '';
+    this.categoriaId = null;
     this.modalVisible.set(true);
     this.mensajeExito.set('');
     this.mensajeError.set('');
@@ -78,7 +76,7 @@ export class UserTorneosComponent implements OnInit {
   }
 
   inscribirse() {
-    if (!this.nombreCompanero || !this.categoria) {
+    if (!this.nombreCompanero || !this.categoriaId) {
       this.mensajeError.set('Debes completar todos los campos.');
       return;
     }
@@ -88,7 +86,7 @@ export class UserTorneosComponent implements OnInit {
 
     this.torneoService.inscribirse(torneo.id, {
       nombreCompanero: this.nombreCompanero,
-      categoria: this.categoria
+      categoriaId: this.categoriaId
     }).subscribe({
       next: () => {
         this.mensajeExito.set('Inscripción registrada! Recuerda abonar la cuota en el club para confirmar tu plaza.');
@@ -100,12 +98,22 @@ export class UserTorneosComponent implements OnInit {
       },
       error: (err) => {
         this.mensajeExito.set('');
-        this.mensajeError.set(err.error || 'Ocurrió un error al inscribirse.');
+        this.notificationService.error(err);
       }
     });
   }
 
+  getTotalPlazas(torneo: Torneo): number {
+    return torneo.categorias?.reduce((sum, cat) => sum + (cat.maxParejas || 0), 0) || 0;
+  }
+
   getPlazasDisponibles(torneo: Torneo): number {
-    return torneo.maxParejas - (torneo.inscripcionesCount || 0);
+    return this.getTotalPlazas(torneo) - (torneo.inscripcionesCount || 0);
+  }
+
+  getPlazasDisponiblesCategoria(torneo: Torneo, categoria: CategoriaTorneo): number {
+    // Esto es una aproximación. En realidad necesitaríamos el conteo por categoría del backend.
+    // Por ahora asumimos que las inscripciones están distribuidas equitativamente o usamos el total.
+    return categoria.maxParejas - (categoria.inscripcionesCount || 0);
   }
 }

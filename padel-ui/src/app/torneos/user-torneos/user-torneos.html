@@ -50,6 +50,17 @@
                 <span class="plazas-lleno">Completo</span>
               }
             </li>
+            <!-- Mostrar categorías con plazas -->
+            @if (torneo.categorias && torneo.categorias.length > 0) {
+              <li class="categorias-list">
+                <i class="fas fa-layer-group" aria-hidden="true"></i>
+                @for (cat of torneo.categorias; track cat.id) {
+                  <span class="cat-badge" [class.cat-lleno]="getPlazasDisponiblesCategoria(torneo, cat) === 0">
+                    {{ cat.nombre }} ({{ getPlazasDisponiblesCategoria(torneo, cat) }}/{{ cat.maxParejas }})
+                  </span>
+                }
+              </li>
+            }
             @if (torneo.fechaCierreInscripcion) {
               <li><i class="fas fa-clock" aria-hidden="true"></i> Cierre inscripciones: {{ torneo.fechaCierreInscripcion | date:'dd/MM/yyyy' }}</li>
             }
@@ -110,10 +121,12 @@
               </div>
               <div class="form-group">
                 <label>Categoría</label>
-                <select class="form-select" name="categoria" [(ngModel)]="categoria" required>
-                  <option value="" disabled selected>-- Elige una categoría --</option>
-                  @for (cat of categorias; track cat) {
-                    <option [value]="cat">{{ cat }}</option>
+                <select class="form-select" name="categoriaId" [(ngModel)]="categoriaId" required>
+                  <option [ngValue]="null" disabled selected>-- Elige una categoría --</option>
+                  @for (cat of torneoSeleccionado()?.categorias; track cat.id) {
+                    <option [ngValue]="cat.id" [disabled]="getPlazasDisponiblesCategoria(torneoSeleccionado()!, cat) === 0">
+                      {{ cat.nombre }} ({{ getPlazasDisponiblesCategoria(torneoSeleccionado()!, cat) }}/{{ cat.maxParejas }} plazas)
+                    </option>
                   }
                 </select>
               </div>

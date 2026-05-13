@@ -99,6 +99,7 @@
             <th>Pista</th>
             <th>Hora Inicio</th>
             <th>Hora Fin</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -121,9 +122,38 @@
               <td>{{ reserva.hora }}</td>
               <td>{{ calcularHoraFin(reserva.hora) }}</td>
               <td>
-                <button class="btn-danger-glass" (click)="anularElemento(reserva)" aria-label="Anular {{ reserva.tipo | lowercase }}">
-                  <i class="fas fa-times"></i> Anular
-                </button>
+                @if (reserva.tipo === 'RESERVA') {
+                  <span class="estado-badge" [class.estado-pendiente]="reserva.estado === 'PENDIENTE'" [class.estado-confirmada]="reserva.estado === 'CONFIRMADA'" [class.estado-cancelada]="reserva.estado === 'CANCELADA'" [class.estado-completada]="reserva.estado === 'COMPLETADA'">
+                    {{ reserva.estado || 'PENDIENTE' }}
+                  </span>
+                } @else {
+                  <span class="estado-badge estado-clase">Activa</span>
+                }
+              </td>
+              <td>
+                @if (reserva.tipo === 'RESERVA') {
+                  <div class="acciones-reserva">
+                    <select 
+                      class="estado-select" 
+                      [value]="reserva.estado || 'PENDIENTE'"
+                      (change)="cambiarEstadoReserva(reserva, $any($event.target).value)"
+                      [disabled]="isLoading() === reserva.id"
+                      aria-label="Cambiar estado de reserva"
+                    >
+                      <option value="PENDIENTE">Pendiente</option>
+                      <option value="CONFIRMADA">Confirmada (pagada)</option>
+                      <option value="COMPLETADA">Completada</option>
+                      <option value="CANCELADA">Cancelar</option>
+                    </select>
+                    @if (isLoading() === reserva.id) {
+                      <i class="fas fa-spinner fa-spin"></i>
+                    }
+                  </div>
+                } @else {
+                  <button class="btn-danger-glass" (click)="anularElemento(reserva)" aria-label="Anular clase">
+                    <i class="fas fa-times"></i> Anular
+                  </button>
+                }
               </td>
             </tr>
           }

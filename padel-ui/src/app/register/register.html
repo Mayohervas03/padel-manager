@@ -88,23 +88,61 @@
           <div class="input-wrap">
             <i class="fas fa-lock input-icon"></i>
             <input 
-              type="password" 
+              [type]="showPassword() ? 'text' : 'password'"
               id="password" 
               name="password" 
               placeholder="••••••••"
               [(ngModel)]="user().password" 
               required 
-              minlength="4" 
+              minlength="8"
+              maxlength="128"
               #password="ngModel">
+            <button type="button" class="toggle-password" (click)="showPassword.set(!showPassword())" tabindex="-1">
+              <i class="fas" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+            </button>
           </div>
           @if (password.invalid && (password.dirty || password.touched)) {
-            <span class="error-text">Mínimo 4 caracteres.</span>
+            <span class="error-text">
+              @if (password.errors?.['required']) { La contraseña es obligatoria. }
+              @if (password.errors?.['minlength']) { Mínimo 8 caracteres. }
+            </span>
+          }
+          @if (user().password) {
+            <div class="password-strength">
+              <div class="strength-bar">
+                <div class="strength-fill {{ passwordStrengthClass() }}" [style.width.%]="(passwordStrength() / 5) * 100"></div>
+              </div>
+              <span class="strength-label">{{ passwordStrengthLabel() }}</span>
+            </div>
           }
         </div>
 
-        <button type="submit" class="btn-submit" [disabled]="registerForm.invalid">
-          <span>Crear Cuenta</span>
-          <i class="fas fa-arrow-right"></i>
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Contraseña</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input 
+              [type]="showPassword() ? 'text' : 'password'"
+              id="confirmPassword" 
+              name="confirmPassword" 
+              placeholder="••••••••"
+              [(ngModel)]="confirmPassword" 
+              required
+              #confirmPass="ngModel">
+          </div>
+          @if (confirmPass.dirty && !passwordsMatch()) {
+            <span class="error-text">Las contraseñas no coinciden.</span>
+          }
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="registerForm.invalid || cargando() || !passwordsMatch()">
+          @if (cargando()) {
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Creando cuenta...</span>
+          } @else {
+            <span>Crear Cuenta</span>
+            <i class="fas fa-arrow-right"></i>
+          }
         </button>
       </form>
 

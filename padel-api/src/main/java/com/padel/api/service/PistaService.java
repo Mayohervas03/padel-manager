@@ -1,6 +1,7 @@
 package com.padel.api.service;
 
 import com.padel.api.dto.PistaRequest;
+import com.padel.api.exception.BusinessException;
 import com.padel.api.exception.ResourceNotFoundException;
 import com.padel.api.model.Pista;
 import com.padel.api.repository.PistaRepository;
@@ -20,6 +21,10 @@ public class PistaService {
 
     public List<Pista> listarTodas() {
         return pistaRepository.findAll();
+    }
+
+    public List<Pista> listarDisponibles(java.time.LocalDate fecha, java.time.LocalTime hora) {
+        return reservaRepository.findDisponibles(fecha, hora);
     }
 
     public Pista buscarPorId(Long id) {
@@ -53,10 +58,19 @@ public class PistaService {
 
     @Transactional
     public void borrarPista(Long id) {
-        if (!pistaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Pista no encontrada");
+        Pista pista = pistaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pista no encontrada"));
+        
+        long reservasActivas = reservaRepository.countReservasActivasFuturasByPistaId(id);
+        if (reservasActivas > 0) {
+            throw new BusinessException(
+                "No se puede eliminar la pista porque tiene " + reservasActivas + 
+                " reserva(s) activa(s) futura(s). Cancela las reservas primero.");
         }
-        reservaRepository.deleteByPistaId(id);
+        
+        // Soft delete de reservas pasadas (por integridad de historial)
+        reservaRepository.cancelarReservasActivasByPistaId(id);
+        
         pistaRepository.deleteById(id);
     }
 }

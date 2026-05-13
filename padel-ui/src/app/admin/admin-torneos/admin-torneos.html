@@ -73,17 +73,19 @@
                 <div class="ocupacion-cell">
                   <div class="ocupacion-barra">
                     <div class="ocupacion-progreso"
-                         [style.width.%]="((t.inscripcionesCount || 0) / t.maxParejas) * 100"
-                         [class.ocupacion-lleno]="(t.inscripcionesCount || 0) >= t.maxParejas"
-                         [class.ocupacion-medio]="(t.inscripcionesCount || 0) >= t.maxParejas * 0.5 && (t.inscripcionesCount || 0) < t.maxParejas"
-                         [class.ocupacion-bajo]="(t.inscripcionesCount || 0) < t.maxParejas * 0.5">
+                         [style.width.%]="getTotalPlazas(t) > 0 ? ((t.inscripcionesCount || 0) / getTotalPlazas(t)) * 100 : 0"
+                         [class.ocupacion-lleno]="(t.inscripcionesCount || 0) >= getTotalPlazas(t)"
+                         [class.ocupacion-medio]="getTotalPlazas(t) > 0 && (t.inscripcionesCount || 0) >= getTotalPlazas(t) * 0.5 && (t.inscripcionesCount || 0) < getTotalPlazas(t)"
+                         [class.ocupacion-bajo]="getTotalPlazas(t) > 0 && (t.inscripcionesCount || 0) < getTotalPlazas(t) * 0.5">
                     </div>
                   </div>
-                  <span class="ocupacion-texto">{{ t.inscripcionesCount || 0 }}/{{ t.maxParejas }} parejas</span>
+                  <span class="ocupacion-texto">{{ t.inscripcionesCount || 0 }}/{{ getTotalPlazas(t) }} parejas</span>
                 </div>
               </td>
               <td>
-                Max: {{ t.maxParejas }} parejas<br>
+                @for (cat of t.categorias; track cat.id) {
+                  <div class="cat-tag">{{ cat.nombre }} ({{ cat.maxParejas }})</div>
+                }
                 <span style="color: #CCFF00; font-weight: 600;">{{ t.precioPareja | currency:'EUR':'symbol' }}</span>
               </td>
               <td class="actions-cell text-center">

@@ -24,6 +24,8 @@ public class AuthService {
             throw new BusinessException("El email ya esta en uso");
         }
 
+        validarFortalezaPassword(request.getPassword());
+
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNombre(request.getNombre());
         nuevoUsuario.setEmail(request.getEmail());
@@ -31,6 +33,27 @@ public class AuthService {
         nuevoUsuario.setRol("USER");
 
         usuarioRepository.save(nuevoUsuario);
+    }
+
+    private void validarFortalezaPassword(String password) {
+        if (password == null || password.length() < 8) {
+            throw new BusinessException("La contraseña debe tener al menos 8 caracteres");
+        }
+        if (password.length() > 128) {
+            throw new BusinessException("La contraseña no puede exceder 128 caracteres");
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            throw new BusinessException("La contraseña debe contener al menos una mayuscula");
+        }
+        if (!password.matches(".*[a-z].*")) {
+            throw new BusinessException("La contraseña debe contener al menos una minuscula");
+        }
+        if (!password.matches(".*\\d.*")) {
+            throw new BusinessException("La contraseña debe contener al menos un numero");
+        }
+        if (!password.matches(".*[@$!%*?&_#^+=-].*")) {
+            throw new BusinessException("La contraseña debe contener al menos un caracter especial (@$!%*?&_#^+=-)");
+        }
     }
 
     public AuthResponse login(AuthRequest request) {
@@ -41,7 +64,8 @@ public class AuthService {
             throw new BusinessException("Credenciales invalidas");
         }
 
-        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getId());
+        boolean rememberMe = request.getRememberMe() != null && request.getRememberMe();
+        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getId(), rememberMe);
         return new AuthResponse(token, usuario.getEmail(), usuario.getRol(), usuario.getNombre(), usuario.getId());
     }
 }

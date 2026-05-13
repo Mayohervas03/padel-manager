@@ -1,0 +1,85 @@
+<div class="mis-compras-page">
+  <div class="page-header">
+    <h1><i class="fas fa-shopping-bag"></i> Mis Compras</h1>
+    <p>Historial de todos tus pedidos realizados</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Cargando pedidos...</p>
+    </div>
+  } @else if (pedidos().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-shopping-cart"></i>
+      <h3>No tienes compras realizadas</h3>
+      <p>Visita la tienda para realizar tu primera compra</p>
+      <a routerLink="/tienda" class="btn-neon">Ir a la tienda</a>
+    </div>
+  } @else {
+    <div class="pedidos-list">
+      @for (pedido of pedidos(); track pedido.id) {
+        <div class="pedido-card" [class.expandido]="pedidoExpandido() === pedido.id">
+          <div class="pedido-header" (click)="togglePedido(pedido.id)">
+            <div class="pedido-info">
+              <div class="pedido-id">
+                <span class="label">Pedido #</span>
+                <span class="valor">{{ pedido.id }}</span>
+              </div>
+              <div class="pedido-fecha">
+                <i class="fas fa-calendar"></i>
+                {{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}
+              </div>
+            </div>
+            
+            <div class="pedido-estado-total">
+              <span class="estado-badge" [class.pendiente]="pedido.estado === 'PENDIENTE'" 
+                                             [class.completado]="pedido.estado === 'COMPLETADO'"
+                                             [class.cancelado]="pedido.estado === 'CANCELADO'">
+                {{ pedido.estado }}
+              </span>
+              <span class="pedido-total">{{ pedido.total | currency:'EUR':'symbol' }}</span>
+            </div>
+            
+            <i class="fas fa-chevron-down toggle-icon" [class.rotated]="pedidoExpandido() === pedido.id"></i>
+          </div>
+
+          @if (pedidoExpandido() === pedido.id) {
+            <div class="pedido-detalles">
+              <table class="items-table">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unit.</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of pedido.items; track item.id) {
+                    <tr>
+                      <td>{{ item.producto.nombre }}</td>
+                      <td>{{ item.cantidad }}</td>
+                      <td>{{ item.precioUnitario | currency:'EUR':'symbol' }}</td>
+                      <td>{{ item.cantidad * item.precioUnitario | currency:'EUR':'symbol' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+              
+              <div class="pedido-footer">
+                <div class="pedido-total-final">
+                  <span>Total:</span>
+                  <strong>{{ pedido.total | currency:'EUR':'symbol' }}</strong>
+                </div>
+                <button class="btn-descargar" (click)="descargarRecibo(pedido); $event.stopPropagation()">
+                  <i class="fas fa-file-pdf"></i> Descargar Recibo
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

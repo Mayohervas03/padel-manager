@@ -85,24 +85,58 @@
   }
 }
 
-.loading-state {
-  text-align: center;
-  padding: 60px;
-  color: $text-muted;
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(204, 255, 0, 0.15);
+  color: $neon-green;
+  border: 1px solid rgba(204, 255, 0, 0.3);
+  margin-top: 8px;
 
-  .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(204, 255, 0, 0.1);
-    border-top-color: $neon-green;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 16px;
+  &.cancelled {
+    background: rgba(255, 107, 107, 0.15);
+    color: $coral;
+    border-color: rgba(255, 107, 107, 0.3);
   }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.skeleton-table {
+  @include glassmorphism;
+  border-radius: 12px;
+  padding: 20px;
+
+  .skeleton-row {
+    display: flex;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid $border-glass;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .skeleton-cell {
+      height: 20px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+      background-size: 200% 100%;
+      animation: skeletonShimmer 1.5s infinite;
+      flex: 1;
+
+      &.wide { flex: 2; }
+      &.narrow { flex: 0.5; }
+      &.actions { flex: 0.8; }
+    }
+  }
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 @keyframes fadeIn {

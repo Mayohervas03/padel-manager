@@ -1,4 +1,4 @@
-@if (torneo()) {
+@if (torneo(); as t) {
   <div class="admin-torneo-detalle">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs" aria-label="Navegación">
@@ -15,7 +15,7 @@
         <i class="fas fa-chevron-right" aria-hidden="true"></i>
       </span>
       <span class="breadcrumb-current" aria-current="page">
-        {{ torneo()?.titulo }}
+        {{ t.titulo }}
       </span>
     </nav>
 
@@ -26,13 +26,13 @@
           <i class="fas fa-arrow-left" aria-hidden="true"></i> Volver
         </a>
         <h1>
-          <i class="fas fa-trophy" aria-hidden="true"></i> {{ torneo()?.titulo }}
+          <i class="fas fa-trophy" aria-hidden="true"></i> {{ t.titulo }}
         </h1>
       </div>
       <div class="header-stats">
         <div class="stat-box">
           <div class="stat-label">Inscritos</div>
-          <div class="stat-value">{{ inscripciones().length }} / {{ torneo()?.maxParejas }}</div>
+          <div class="stat-value">{{ inscripciones().length }} / {{ getTotalPlazas() }}</div>
         </div>
         <div class="stat-box">
           <div class="stat-label">Recaudación</div>
@@ -42,10 +42,33 @@
     </div>
 
     <div class="detalle-content">
+      <!-- Categorías con ocupación -->
+      @if (t.categorias && t.categorias.length > 0) {
+        <div class="categorias-ocupacion">
+          <h3><i class="fas fa-layer-group"></i> Categorías</h3>
+          <div class="categorias-grid">
+            @for (cat of t.categorias; track cat.id) {
+              <div class="categoria-card">
+                <div class="categoria-header">
+                  <span class="categoria-nombre">{{ cat.nombre }}</span>
+                  <span class="categoria-plazas">{{ getInscripcionesPorCategoria(cat.id) }}/{{ cat.maxParejas }}</span>
+                </div>
+                <div class="ocupacion-barra">
+                  <div class="ocupacion-progreso"
+                       [style.width.%]="(getInscripcionesPorCategoria(cat.id) / cat.maxParejas) * 100"
+                       [class.ocupacion-lleno]="getInscripcionesPorCategoria(cat.id) >= cat.maxParejas">
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
       <!-- Filtros Pills -->
       <div class="filters-bar">
         <span class="filters-label"><i class="fas fa-filter" aria-hidden="true"></i> Filtrar Categoría:</span>
-        @for (cat of categorias(); track cat) {
+        @for (cat of categoriasDisponibles(); track cat) {
           <button 
             class="filter-pill" 
             [class.active]="categoriaSeleccionada() === cat"
@@ -59,7 +82,7 @@
       <div class="admin-table-container">
         <div class="table-responsive">
           <table class="admin-table">
-            <caption class="visually-hidden">Inscripciones al torneo {{ torneo()?.titulo }}</caption>
+            <caption class="visually-hidden">Inscripciones al torneo {{ t.titulo }}</caption>
             <thead>
               <tr>
                 <th>Pareja</th>
@@ -82,7 +105,7 @@
                     </div>
                   </td>
                   <td>
-                    <span class="categoria-badge">{{ insc.categoria }}</span>
+                    <span class="categoria-badge">{{ insc.categoria?.nombre }}</span>
                   </td>
                   <td>{{ insc.fechaInscripcion | date:'dd/MM/yyyy' }}</td>
                   <td class="text-center">

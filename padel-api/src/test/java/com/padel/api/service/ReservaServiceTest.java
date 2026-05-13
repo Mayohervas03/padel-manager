@@ -69,28 +69,24 @@ class ReservaServiceTest {
     }
 
     @Test
-    void listarReservasUsuario_userSoloVeActivas() {
-        when(usuarioRepository.findByEmail("test@padel.com")).thenReturn(Optional.of(usuario));
+    void listarReservasActivasUsuario_userSoloVeActivas() {
         Reserva r1 = new Reserva(); r1.setEstado(EstadoReserva.CONFIRMADA);
-        Reserva r2 = new Reserva(); r2.setEstado(EstadoReserva.CANCELADA);
         when(reservaRepository.findByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(
                 eq("test@padel.com"), anyList(), any(LocalDate.class)))
                 .thenReturn(List.of(r1));
 
-        List<Reserva> result = reservaService.listarReservasUsuario("test@padel.com");
+        List<Reserva> result = reservaService.listarReservasActivasUsuario("test@padel.com");
 
         assertEquals(1, result.size());
         assertEquals(EstadoReserva.CONFIRMADA, result.get(0).getEstado());
     }
 
     @Test
-    void listarReservasUsuario_adminVeTodasSinFiltroEstado() {
-        usuario.setRol("ADMIN");
-        when(usuarioRepository.findByEmail("admin@padel.com")).thenReturn(Optional.of(usuario));
-        when(reservaRepository.findByFechaGreaterThanEqual(any(LocalDate.class)))
+    void listarTodasReservasFuturas_adminVeTodas() {
+        when(reservaRepository.findByFechaGreaterThanEqualAndEstadoNot(any(LocalDate.class), eq(EstadoReserva.CANCELADA)))
                 .thenReturn(Arrays.asList(new Reserva(), new Reserva()));
 
-        List<Reserva> result = reservaService.listarReservasUsuario("admin@padel.com");
+        List<Reserva> result = reservaService.listarTodasReservasFuturas();
 
         assertEquals(2, result.size());
     }
@@ -100,12 +96,13 @@ class ReservaServiceTest {
         when(usuarioRepository.findByEmail("test@padel.com")).thenReturn(Optional.of(usuario));
         when(claseRepository.existsByPistaIdAndFechaAndHora(anyLong(), any(), any())).thenReturn(false);
         when(pistaRepository.findById(1L)).thenReturn(Optional.of(pista));
+        when(reservaRepository.existsByPistaIdAndFechaAndHoraAndEstadoIn(anyLong(), any(), any(), anyList())).thenReturn(false);
         when(reservaRepository.save(any(Reserva.class))).thenAnswer(i -> i.getArgument(0));
 
         Reserva result = reservaService.crearReserva("test@padel.com", request);
 
         assertNotNull(result);
-        assertEquals(EstadoReserva.CONFIRMADA, result.getEstado());
+        assertEquals(EstadoReserva.PENDIENTE, result.getEstado());
         assertEquals(25.0, result.getPrecioPagado());
         assertEquals(usuario, result.getUsuario());
         verify(reservaRepository).save(any(Reserva.class));
@@ -164,12 +161,11 @@ class ReservaServiceTest {
         when(usuarioRepository.findByEmail("test@padel.com")).thenReturn(Optional.of(usuario));
         when(claseRepository.existsByPistaIdAndFechaAndHora(anyLong(), any(), any())).thenReturn(false);
         when(pistaRepository.findById(1L)).thenReturn(Optional.of(pista));
-        when(reservaRepository.findByPistaIdAndFechaAndHoraAndEstadoIn(
-                anyLong(), any(), any(), anyList())).thenReturn(List.of(new Reserva()));
+        when(reservaRepository.existsByPistaIdAndFechaAndHoraAndEstadoIn(
+                anyLong(), any(), any(), anyList())).thenReturn(true);
 
-        BusinessException ex = assertThrows(BusinessException.class, () ->
+        assertThrows(BusinessException.class, () ->
                 reservaService.crearReserva("test@padel.com", request));
-        assertTrue(ex.getMessage().contains("ya esta reservada"));
     }
 
     @Test

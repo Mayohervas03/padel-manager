@@ -1,16 +1,10 @@
 package com.padel.api.service;
 
-import com.padel.api.dto.InscripcionTorneoDto;
-import com.padel.api.dto.InscripcionTorneoPerfilDto;
-import com.padel.api.dto.InscripcionTorneoRequest;
-import com.padel.api.dto.TorneoRequest;
+import com.padel.api.dto.*;
 import com.padel.api.exception.BusinessException;
 import com.padel.api.exception.ResourceNotFoundException;
-import com.padel.api.model.EstadoInscripcion;
-import com.padel.api.model.EstadoTorneo;
-import com.padel.api.model.InscripcionTorneo;
-import com.padel.api.model.Torneo;
-import com.padel.api.model.Usuario;
+import com.padel.api.model.*;
+import com.padel.api.repository.CategoriaTorneoRepository;
 import com.padel.api.repository.InscripcionTorneoRepository;
 import com.padel.api.repository.TorneoRepository;
 import com.padel.api.repository.UsuarioRepository;
@@ -19,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +24,7 @@ public class TorneoService {
     private final TorneoRepository torneoRepository;
     private final InscripcionTorneoRepository inscripcionRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CategoriaTorneoRepository categoriaTorneoRepository;
 
     public List<Torneo> findAll() {
         List<Object[]> results = torneoRepository.findAllWithInscripcionesCount();
@@ -41,18 +37,34 @@ public class TorneoService {
     }
 
     public List<Torneo> findActivos() {
-        return torneoRepository.findByEstadoAndFechaFinGreaterThanEqualOrderByFechaFinAsc(EstadoTorneo.ABIERTO, LocalDate.now());
+        List<Torneo> torneos = torneoRepository.findByEstadoAndFechaFinGreaterThanEqualOrderByFechaFinAsc(EstadoTorneo.ABIERTO, LocalDate.now());
+        // Cargar categorías para cada torneo
+        for (Torneo torneo : torneos) {
+            torneo.getCategorias().size(); // Forzar carga lazy
+        }
+        return torneos;
     }
 
     public Torneo findById(Long id) {
-        return torneoRepository.findById(id)
+        return torneoRepository.findByIdWithCategorias(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Torneo no encontrado"));
     }
 
     @Transactional
     public Torneo createTorneo(TorneoRequest request) {
         Torneo torneo = mapToEntity(request);
-        return torneoRepository.save(torneo);
+        Torneo saved = torneoRepository.save(torneo);
+        
+        // Crear categorías
+        for (CategoriaTorneoRequest catReq : request.getCategorias()) {
+            CategoriaTorneo categoria = new CategoriaTorneo();
+            categoria.setNombre(catReq.getNombre());
+            categoria.setMaxParejas(catReq.getMaxParejas());
+            categoria.setTorneo(saved);
+            categoriaTorneoRepository.save(categoria);
+        }
+        
+        return torneoRepository.findByIdWithCategorias(saved.getId()).orElse(saved);
     }
 
     @Transactional
@@ -63,7 +75,6 @@ public class TorneoService {
         torneo.setFechaInicio(request.getFechaInicio());
         torneo.setFechaFin(request.getFechaFin());
         torneo.setPrecioPareja(request.getPrecioPareja());
-        torneo.setMaxParejas(request.getMaxParejas());
         torneo.setImagenUrl(request.getImagenUrl());
         if (request.getEstado() != null) {
             torneo.setEstado(request.getEstado());
@@ -71,7 +82,43 @@ public class TorneoService {
         if (request.getFechaCierreInscripcion() != null) {
             torneo.setFechaCierreInscripcion(request.getFechaCierreInscripcion());
         }
-        return torneoRepository.save(torneo);
+        
+        // Actualizar categorías: eliminar las que ya no están, actualizar existentes, crear nuevas
+        List<CategoriaTorneo> categoriasExistentes = new ArrayList<>(torneo.getCategorias());
+        List<CategoriaTorneoRequest> categoriasNuevas = request.getCategorias();
+        
+        // Eliminar categorías que ya no están en la lista
+        categoriasExistentes.forEach(catExistente -> {
+            boolean sigue = categoriasNuevas.stream()
+                    .anyMatch(cn -> cn.getNombre().equals(catExistente.getNombre()));
+            if (!sigue) {
+                // Cancelar inscripciones de esta categoría antes de eliminar
+                List<InscripcionTorneo> inscripciones = inscripcionRepository
+                        .findByCategoriaTorneoIdAndEstado(catExistente.getId(), EstadoInscripcion.ACTIVA);
+                inscripciones.forEach(i -> i.setEstado(EstadoInscripcion.CANCELADA));
+                inscripcionRepository.saveAll(inscripciones);
+                categoriaTorneoRepository.delete(catExistente);
+            }
+        });
+        
+        // Actualizar o crear categorías
+        for (CategoriaTorneoRequest catReq : categoriasNuevas) {
+            CategoriaTorneo categoria = categoriasExistentes.stream()
+                    .filter(c -> c.getNombre().equals(catReq.getNombre()))
+                    .findFirst()
+                    .orElse(null);
+            
+            if (categoria == null) {
+                // Nueva categoría
+                categoria = new CategoriaTorneo();
+                categoria.setNombre(catReq.getNombre());
+                categoria.setTorneo(torneo);
+            }
+            categoria.setMaxParejas(catReq.getMaxParejas());
+            categoriaTorneoRepository.save(categoria);
+        }
+        
+        return torneoRepository.findByIdWithCategorias(id).orElse(torneo);
     }
 
     @Transactional
@@ -124,20 +171,39 @@ public class TorneoService {
             throw new BusinessException("El plazo de inscripción ha cerrado");
         }
 
-        if (inscripcionRepository.existsByTorneoIdAndUser1IdAndEstado(torneoId, usuario.getId(), EstadoInscripcion.ACTIVA)) {
+        CategoriaTorneo categoria = categoriaTorneoRepository.findById(request.getCategoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada"));
+        
+        if (!categoria.getTorneo().getId().equals(torneoId)) {
+            throw new BusinessException("La categoria no pertenece a este torneo");
+        }
+
+        // Validar que el usuario no esté inscrito en otra categoría del mismo torneo
+        boolean yaInscritoEnOtraCategoria = inscripcionRepository
+                .existsByTorneoIdAndUser1IdAndEstadoAndCategoriaTorneoIdNot(
+                        torneoId, usuario.getId(), EstadoInscripcion.ACTIVA, request.getCategoriaId());
+        if (yaInscritoEnOtraCategoria) {
+            throw new BusinessException("Ya estas inscrito en otra categoria de este torneo");
+        }
+        
+        // Validar que no esté inscrito en esta misma categoría
+        boolean yaInscritoEnEstaCategoria = inscripcionRepository
+                .existsByTorneoIdAndUser1IdAndEstado(torneoId, usuario.getId(), EstadoInscripcion.ACTIVA);
+        if (yaInscritoEnEstaCategoria) {
             throw new BusinessException("Ya estas inscrito en este torneo");
         }
 
-        long count = inscripcionRepository.countByTorneoIdAndEstado(torneoId, EstadoInscripcion.ACTIVA);
-        if (count >= torneo.getMaxParejas()) {
-            throw new BusinessException("El torneo esta lleno");
+        // Validar cupo por categoría
+        long count = inscripcionRepository.countByCategoriaTorneoIdAndEstado(request.getCategoriaId(), EstadoInscripcion.ACTIVA);
+        if (count >= categoria.getMaxParejas()) {
+            throw new BusinessException("La categoria '" + categoria.getNombre() + "' esta llena");
         }
 
         InscripcionTorneo inscripcion = new InscripcionTorneo();
         inscripcion.setTorneo(torneo);
         inscripcion.setUser1(usuario);
         inscripcion.setNombreCompanero(request.getNombreCompanero());
-        inscripcion.setCategoria(request.getCategoria());
+        inscripcion.setCategoriaTorneo(categoria);
         inscripcion.setPagado(false);
         inscripcion.setFechaInscripcion(LocalDate.now());
         inscripcion.setEstado(EstadoInscripcion.ACTIVA);
@@ -170,6 +236,7 @@ public class TorneoService {
         // Forzar carga de relaciones lazy antes de cerrar la transacción
         saved.getTorneo().getId();
         saved.getUser1().getId();
+        saved.getCategoriaTorneo().getId();
         return InscripcionTorneoDto.fromEntity(saved);
     }
 
@@ -180,7 +247,6 @@ public class TorneoService {
         torneo.setFechaInicio(request.getFechaInicio());
         torneo.setFechaFin(request.getFechaFin());
         torneo.setPrecioPareja(request.getPrecioPareja());
-        torneo.setMaxParejas(request.getMaxParejas());
         torneo.setImagenUrl(request.getImagenUrl());
         if (request.getEstado() != null) {
             torneo.setEstado(request.getEstado());

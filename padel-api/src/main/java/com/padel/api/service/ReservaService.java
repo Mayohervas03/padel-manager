@@ -33,12 +33,20 @@ public class ReservaService {
 
     private static final List<EstadoReserva> ESTADOS_ACTIVOS = Arrays.asList(EstadoReserva.PENDIENTE, EstadoReserva.CONFIRMADA);
 
-    public List<Reserva> listarReservasUsuario(String email) {
-        Usuario usuario = getUsuarioByEmail(email);
-        if ("ADMIN".equals(usuario.getRol())) {
-            return reservaRepository.findByFechaGreaterThanEqual(LocalDate.now());
-        }
+    public List<Reserva> listarReservasActivasUsuario(String email) {
         return reservaRepository.findByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(email, ESTADOS_ACTIVOS, LocalDate.now());
+    }
+
+    public List<Reserva> listarTodasReservasUsuario(String email) {
+        return reservaRepository.findByUsuarioEmailOrderByFechaDescHoraDesc(email);
+    }
+
+    public List<Reserva> listarTodasReservasFuturas() {
+        return reservaRepository.findByFechaGreaterThanEqualAndEstadoNot(LocalDate.now(), EstadoReserva.CANCELADA);
+    }
+
+    public List<Reserva> listarHistorialCompleto() {
+        return reservaRepository.findAllByOrderByFechaDescHoraDesc();
     }
 
     @Transactional
@@ -60,9 +68,9 @@ public class ReservaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Pista no encontrada"));
 
         // Verificar que no existe una reserva activa en ese slot
-        List<Reserva> existentes = reservaRepository.findByPistaIdAndFechaAndHoraAndEstadoIn(
+        boolean ocupada = reservaRepository.existsByPistaIdAndFechaAndHoraAndEstadoIn(
                 request.getPistaId(), request.getFecha(), request.getHora(), ESTADOS_ACTIVOS);
-        if (!existentes.isEmpty()) {
+        if (ocupada) {
             throw new BusinessException("Esa pista ya esta reservada a esa hora. Por favor, elige otro horario.");
         }
 
@@ -73,7 +81,11 @@ public class ReservaService {
         reserva.setHora(request.getHora());
         reserva.setPrecioPagado(pista.getPrecio());
 
-        return reservaRepository.save(reserva);
+        try {
+            return reservaRepository.save(reserva);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new BusinessException("Esa pista ya esta reservada a esa hora. Por favor, elige otro horario.");
+        }
     }
 
     @Transactional

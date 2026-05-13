@@ -381,6 +381,22 @@ $shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
   padding: 1.5rem 0 0.5rem;
 }
 
+// --- Loading pistas ---
+.loading-pistas {
+  text-align: center;
+  padding: 2rem;
+  color: $neon-cyan;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+
+  i {
+    font-size: 1.2rem;
+  }
+}
+
 // --- Alerta sin disponibilidad ---
 .alert-warning {
   @include glassmorphism;

@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TorneoService } from '../../../torneos/torneo.service';
 import { NotificationService } from '../../../shared/notification.service';
 import { ActivityLogService } from '../../../shared/activity-log.service';
-import type { Torneo, InscripcionTorneo } from '../../../shared/models';
+import type { Torneo, InscripcionTorneo, CategoriaTorneo } from '../../../shared/models';
 
 @Component({
   selector: 'app-admin-torneo-detalle',
@@ -23,8 +23,8 @@ export class AdminTorneoDetalleComponent implements OnInit {
   readonly torneo = signal<Torneo | null>(null);
   readonly inscripciones = signal<InscripcionTorneo[]>([]);
   readonly inscripcionesFiltradas = signal<InscripcionTorneo[]>([]);
-  readonly categoriaSeleccionada = signal('Todas');
-  readonly categorias = signal<string[]>(['Todas']);
+  readonly categoriaSeleccionada = signal<string>('Todas');
+  readonly categoriasDisponibles = signal<string[]>(['Todas']);
   readonly isLoadingPago = signal<number | null>(null);
   readonly recaudacion = computed(() => {
     const precio = this.torneo()?.precioPareja ?? 0;
@@ -43,7 +43,9 @@ export class AdminTorneoDetalleComponent implements OnInit {
   cargarDatos(id: number) {
     this.isLoading.set(true);
     this.torneoService.getTorneoByIdAdmin(id).subscribe({
-      next: (data) => this.torneo.set(data),
+      next: (data) => {
+        this.torneo.set(data);
+      },
       error: (err) => {
         this.isLoading.set(false);
         this.notificationService.error('Error al cargar el torneo: ' + (err.error?.message || err.message));
@@ -65,8 +67,8 @@ export class AdminTorneoDetalleComponent implements OnInit {
   }
 
   extraerCategorias(data: InscripcionTorneo[]) {
-    const cats = new Set(data.map(i => i.categoria));
-    this.categorias.set(['Todas', ...Array.from(cats)]);
+    const cats = new Set(data.map(i => i.categoria?.nombre).filter(Boolean));
+    this.categoriasDisponibles.set(['Todas', ...Array.from(cats)]);
   }
 
   filtrarPorCategoria(cat: string) {
@@ -74,7 +76,7 @@ export class AdminTorneoDetalleComponent implements OnInit {
     if (cat === 'Todas') {
       this.inscripcionesFiltradas.set([...this.inscripciones()]);
     } else {
-      this.inscripcionesFiltradas.set(this.inscripciones().filter(i => i.categoria === cat));
+      this.inscripcionesFiltradas.set(this.inscripciones().filter(i => i.categoria?.nombre === cat));
     }
   }
 
@@ -96,5 +98,13 @@ export class AdminTorneoDetalleComponent implements OnInit {
         this.notificationService.error('Error al actualizar pago: ' + (err.error || err.message));
       }
     });
+  }
+
+  getInscripcionesPorCategoria(categoriaId: number): number {
+    return this.inscripciones().filter(i => i.categoria?.id === categoriaId).length;
+  }
+
+  getTotalPlazas(): number {
+    return this.torneo()?.categorias?.reduce((sum, cat) => sum + (cat.maxParejas || 0), 0) || 0;
   }
 }

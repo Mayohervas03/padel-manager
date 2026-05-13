@@ -17,7 +17,8 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private static final long JWT_EXPIRATION = 86400000;
+    private static final long JWT_EXPIRATION_DEFAULT = 86400000;     // 24 horas
+    private static final long JWT_EXPIRATION_REMEMBER = 2592000000L; // 30 días
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -49,12 +50,14 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String email, Long userId) {
+    public String generateToken(String email, Long userId, boolean rememberMe) {
+        long expiration = rememberMe ? JWT_EXPIRATION_REMEMBER : JWT_EXPIRATION_DEFAULT;
         return Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
+                .claim("rememberMe", rememberMe)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

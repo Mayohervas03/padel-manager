@@ -13,6 +13,8 @@ public class PedidoDto {
     private LocalDateTime fecha;
     private String estado;
     private Double total;
+    private String usuarioNombre;
+    private String usuarioEmail;
     private List<PedidoItemDto> items;
 
     public static PedidoDto fromEntity(Pedido pedido) {
@@ -21,6 +23,8 @@ public class PedidoDto {
         dto.setFecha(pedido.getFecha());
         dto.setEstado(pedido.getEstado().name());
         dto.setTotal(pedido.getTotal());
+        dto.setUsuarioNombre(pedido.getUsuario().getNombre());
+        dto.setUsuarioEmail(pedido.getUsuario().getEmail());
         dto.setItems(pedido.getItems().stream()
                 .map(PedidoItemDto::fromEntity)
                 .collect(Collectors.toList()));

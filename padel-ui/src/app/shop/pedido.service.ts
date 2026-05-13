@@ -18,4 +18,13 @@ export class PedidoService {
   checkout(): Observable<Pedido> {
     return this.http.post<Pedido>(`${this.apiUrl}/pedidos/checkout`, {});
   }
+
+  // Admin endpoints
+  getAllPedidos(): Observable<Pedido[]> {
+    return this.http.get<Pedido[]>(`${this.apiUrl}/admin/pedidos`);
+  }
+
+  cambiarEstadoPedido(id: number, estado: string): Observable<Pedido> {
+    return this.http.put<Pedido>(`${this.apiUrl}/admin/pedidos/${id}/estado`, { estado });
+  }
 }

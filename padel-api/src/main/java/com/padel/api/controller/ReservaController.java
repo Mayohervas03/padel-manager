@@ -5,6 +5,7 @@ import com.padel.api.model.Reserva;
 import com.padel.api.service.ReservaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +20,18 @@ public class ReservaController {
     private final ReservaService reservaService;
 
     @GetMapping
-    public List<Reserva> listarReservas() {
+    public List<Reserva> listarReservas(@RequestParam(required = false, defaultValue = "false") boolean historial) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return reservaService.listarReservasUsuario(email);
+        return historial 
+            ? reservaService.listarTodasReservasUsuario(email)
+            : reservaService.listarReservasActivasUsuario(email);
     }
 
     @PostMapping
     public ResponseEntity<Reserva> crearReserva(@Valid @RequestBody ReservaRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Reserva nuevaReserva = reservaService.crearReserva(email, request);
-        return ResponseEntity.ok(nuevaReserva);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
     }
 
     @DeleteMapping("/{id}")

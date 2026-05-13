@@ -48,7 +48,18 @@
 
         <div class="form-group">
           <label>Hora *</label>
-          <input type="time" [(ngModel)]="claseEditando.hora">
+          <select [(ngModel)]="claseEditando.hora">
+            <option [ngValue]="null" disabled>-- Selecciona Horario --</option>
+            <option value="09:00">09:00</option>
+            <option value="10:30">10:30</option>
+            <option value="12:00">12:00</option>
+            <option value="13:30">13:30</option>
+            <option value="15:00">15:00</option>
+            <option value="16:30">16:30</option>
+            <option value="18:00">18:00</option>
+            <option value="19:30">19:30</option>
+            <option value="21:00">21:00</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -72,9 +83,16 @@
   }
 
   @if (isLoading()) {
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>Cargando clases...</p>
+    <div class="skeleton-table">
+      @for (s of [1,2,3,4]; track s) {
+        <div class="skeleton-row">
+          <div class="skeleton-cell wide"></div>
+          <div class="skeleton-cell"></div>
+          <div class="skeleton-cell"></div>
+          <div class="skeleton-cell narrow"></div>
+          <div class="skeleton-cell actions"></div>
+        </div>
+      }
     </div>
   } @else {
     <div class="admin-table-container">
@@ -96,6 +114,7 @@
                 <td>
                   <div class="main-info">{{ clase.titulo }}</div>
                   <div class="sub-info"><i class="fas fa-user-circle"></i> {{ clase.monitor }}</div>
+                  <span class="status-badge" [class.cancelled]="clase.estado === 'CANCELADA'">{{ clase.estado }}</span>
                 </td>
                 <td>
                   <span class="badge" [class]="'badge-' + clase.nivel.toLowerCase()">{{ clase.nivel }}</span>

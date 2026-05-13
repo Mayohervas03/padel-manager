@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,9 +37,6 @@ public class Torneo {
     @Column(nullable = false)
     private Double precioPareja;
 
-    @Column(nullable = false)
-    private Integer maxParejas;
-
     private String imagenUrl;
 
     @Enumerated(EnumType.STRING)
@@ -46,6 +45,19 @@ public class Torneo {
 
     private LocalDate fechaCierreInscripcion;
 
+    @OneToMany(mappedBy = "torneo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CategoriaTorneo> categorias = new ArrayList<>();
+
     @Transient
     private Integer inscripcionesCount;
+
+    /**
+     * Calcula el cupo total como la suma de maxParejas de todas las categorias.
+     */
+    public int getMaxParejas() {
+        if (categorias == null || categorias.isEmpty()) {
+            return 0;
+        }
+        return categorias.stream().mapToInt(CategoriaTorneo::getMaxParejas).sum();
+    }
 }

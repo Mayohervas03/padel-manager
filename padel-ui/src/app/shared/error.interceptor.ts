@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { NotificationService } from './notification.service';
+import { extractErrorMessage } from './error-utils';
 
 /**
  * Interceptor global de errores HTTP.
@@ -53,24 +54,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => sessionError);
       }
 
-      let errorMessage = 'Ha ocurrido un error inesperado.';
-
-      if (error.error instanceof ErrorEvent) {
-        // Error del lado del cliente (red, etc.)
-        errorMessage = error.error.message;
-      } else if (error.error && typeof error.error === 'object') {
-        // Error del backend con estructura JSON
-        if (error.error.message) {
-          errorMessage = error.error.message;
-        } else if (error.error.error) {
-          errorMessage = error.error.error;
-        }
-      } else if (typeof error.error === 'string') {
-        // Error como string plano
-        errorMessage = error.error;
-      } else if (error.statusText) {
-        errorMessage = error.statusText;
-      }
+      const errorMessage = extractErrorMessage(error);
 
       // Mostramos toast de error para feedback visual global
       notificationService.error(errorMessage, 5000);

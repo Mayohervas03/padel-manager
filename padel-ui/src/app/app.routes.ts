@@ -18,6 +18,7 @@ export const routes: Routes = [
       { path: 'torneos', loadComponent: () => import('./admin/admin-torneos/admin-torneos').then(m => m.AdminTorneosComponent) },
       { path: 'torneos/:id', loadComponent: () => import('./admin/admin-torneos/admin-torneo-detalle/admin-torneo-detalle').then(m => m.AdminTorneoDetalleComponent) },
       { path: 'productos', loadComponent: () => import('./admin/productos/admin-productos').then(m => m.AdminProductosComponent) },
+      { path: 'pedidos', loadComponent: () => import('./admin/admin-pedidos/admin-pedidos').then(m => m.AdminPedidosComponent) },
       { path: 'stats', loadComponent: () => import('./admin/stats/admin-stats').then(m => m.AdminStatsComponent) },
       { path: 'manual', loadComponent: () => import('./admin/manual/admin-manual').then(m => m.AdminManualComponent) },
       { path: 'logs', loadComponent: () => import('./admin/logs/admin-logs').then(m => m.AdminLogsComponent) },
@@ -32,6 +33,7 @@ export const routes: Routes = [
   { path: 'clases', loadComponent: () => import('./clases/user-clases').then(m => m.UserClasesComponent), canActivate: [authGuard] },
   { path: 'torneos', loadComponent: () => import('./torneos/user-torneos/user-torneos').then(m => m.UserTorneosComponent), canActivate: [authGuard] },
   { path: 'tienda', loadComponent: () => import('./shop/tienda').then(m => m.TiendaComponent), canActivate: [authGuard] },
+  { path: 'mis-compras', loadComponent: () => import('./mis-compras/mis-compras').then(m => m.MisComprasComponent), canActivate: [authGuard] },
   { path: 'perfil', loadComponent: () => import('./perfil/perfil').then(m => m.PerfilComponent), canActivate: [authGuard] },
   { path: '', canActivate: [rootGuard], children: [] },
   { path: '**', redirectTo: '' }

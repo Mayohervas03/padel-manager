@@ -24,6 +24,11 @@ public class AdminClaseController {
         return ResponseEntity.ok(claseService.listarTodas());
     }
 
+    @GetMapping("/historial")
+    public ResponseEntity<List<Clase>> listarHistorialClases() {
+        return ResponseEntity.ok(claseService.listarHistorial());
+    }
+
     @PostMapping
     public ResponseEntity<Clase> crearClase(@Valid @RequestBody ClaseRequest request) {
         return ResponseEntity.ok(claseService.crearClase(request));

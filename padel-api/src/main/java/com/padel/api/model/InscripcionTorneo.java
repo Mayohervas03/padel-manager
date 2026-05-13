@@ -31,8 +31,9 @@ public class InscripcionTorneo {
     @Column(nullable = false)
     private String nombreCompanero;
 
-    @Column(nullable = false)
-    private String categoria;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private CategoriaTorneo categoriaTorneo;
 
     @Column(nullable = false)
     private boolean pagado = false;

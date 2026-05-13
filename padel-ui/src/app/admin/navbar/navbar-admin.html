@@ -59,6 +59,9 @@
               <a routerLink="/admin/productos" (click)="closeDropdowns()">
                 <i class="fas fa-box icon-sm" aria-hidden="true"></i> Productos
               </a>
+              <a routerLink="/admin/pedidos" (click)="closeDropdowns()">
+                <i class="fas fa-shopping-bag icon-sm" aria-hidden="true"></i> Pedidos
+              </a>
               <a routerLink="/admin/logs" (click)="closeDropdowns()">
                 <i class="fas fa-history icon-sm" aria-hidden="true"></i> Historial
               </a>
@@ -164,6 +167,9 @@
         </a>
         <a routerLink="/admin/productos" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
           <i class="fas fa-box"></i> Productos
+        </a>
+        <a routerLink="/admin/pedidos" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
+          <i class="fas fa-shopping-bag"></i> Pedidos
         </a>
         <a routerLink="/admin/logs" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
           <i class="fas fa-history"></i> Historial

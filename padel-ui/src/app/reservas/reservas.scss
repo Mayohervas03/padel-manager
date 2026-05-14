@@ -415,6 +415,78 @@ $shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
   }
 }
 
+// --- Resumen de confirmación ---
+.confirm-summary {
+  @include glassmorphism;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+  border: 1px solid rgba(204, 255, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(204, 255, 0, 0.05);
+
+  .summary-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: $neon-green;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 1.25rem 0;
+
+    i {
+      font-size: 1.3rem;
+      color: $neon-green;
+    }
+  }
+
+  .summary-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: $text-primary;
+    font-size: 0.95rem;
+    font-weight: 500;
+
+    i {
+      color: $neon-cyan;
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+    }
+  }
+
+  .summary-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    margin: 0.25rem 0;
+  }
+
+  .precio-item {
+    .precio-total {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: $neon-green;
+      text-shadow: 0 0 10px rgba(204, 255, 0, 0.3);
+    }
+  }
+}
+
 // --- Responsive ---
 @media (max-width: 768px) {
   .page-header h1 {
@@ -456,5 +528,34 @@ $shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
     width: 100%;
     padding: 1rem 2rem;
     font-size: 1rem;
+  }
+
+  .confirm-summary {
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.5rem;
+
+    .summary-title {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+
+      i {
+        font-size: 1.1rem;
+      }
+    }
+
+    .summary-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .precio-item {
+      align-self: flex-end;
+      margin-top: 0.5rem;
+
+      .precio-total {
+        font-size: 1.4rem;
+      }
+    }
   }
 }

@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit {
 
   readonly features = [
     {
+      image: 'img/features/reserva.jpg',
       icon: 'fa-calendar-check',
       title: 'Reserva Online',
       description: 'Reserva tu pista en segundos. Sistema de disponibilidad en tiempo real.',
@@ -31,6 +32,7 @@ export class HomeComponent implements OnInit {
       accent: 'cyan'
     },
     {
+      image: 'img/features/academia.jpg',
       icon: 'fa-graduation-cap',
       title: 'Academia Élite',
       description: 'Monitores titulados. Clases para todos los niveles, desde iniciación hasta competición.',
@@ -39,6 +41,7 @@ export class HomeComponent implements OnInit {
       accent: 'lime'
     },
     {
+      image: 'img/features/torneos.jpg',
       icon: 'fa-trophy',
       title: 'Torneos',
       description: 'Compite en nuestros torneos americanos y pozos. Premios y diversión garantizada.',

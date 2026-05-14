@@ -29,4 +29,7 @@ public class CategoriaTorneo {
     @JoinColumn(name = "torneo_id", nullable = false)
     @JsonIgnore
     private Torneo torneo;
+
+    @Transient
+    private Integer inscripcionesCount;
 }

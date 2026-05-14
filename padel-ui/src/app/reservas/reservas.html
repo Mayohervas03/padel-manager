@@ -112,14 +112,31 @@
         <!-- Resumen de confirmación -->
         @if (pistaSeleccionada()) {
           <div class="confirm-summary">
-            <h4><i class="fas fa-clipboard-check"></i> Resumen de tu reserva</h4>
-            <div class="summary-line">
-              <span><i class="fas fa-calendar"></i> {{ fechaSeleccionada() | date:'EEEE, d MMMM' }}</span>
-              <span><i class="fas fa-clock"></i> {{ horaSeleccionada() }}</span>
-            </div>
-            <div class="summary-line">
-              <span><i class="fas fa-map-marker-alt"></i> {{ pistaSeleccionada()?.nombre }}</span>
-              <span class="precio-total">{{ pistaSeleccionada()?.precio }}€</span>
+            <h4 class="summary-title">
+              <i class="fas fa-clipboard-check"></i>
+              Resumen de tu reserva
+            </h4>
+            <div class="summary-details">
+              <div class="summary-row">
+                <div class="summary-item">
+                  <i class="fas fa-calendar"></i>
+                  <span class="summary-label">{{ fechaSeleccionada() | date:'EEEE, d MMMM' }}</span>
+                </div>
+                <div class="summary-item">
+                  <i class="fas fa-clock"></i>
+                  <span class="summary-label">{{ horaSeleccionada() }}</span>
+                </div>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-row">
+                <div class="summary-item">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span class="summary-label">{{ pistaSeleccionada()?.nombre }}</span>
+                </div>
+                <div class="summary-item precio-item">
+                  <span class="precio-total">{{ pistaSeleccionada()?.precio }}€</span>
+                </div>
+              </div>
             </div>
             <div class="confirm-bar">
               <button class="btn-neon" (click)="guardarReserva()" [disabled]="cargando()">

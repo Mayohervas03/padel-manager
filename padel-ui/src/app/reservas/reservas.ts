@@ -87,7 +87,16 @@ export class ReservasComponent implements OnInit {
       const url = `${this.apiUrl}/pistas/disponibles?fecha=${fecha}&hora=${hora}:00`;
       this.http.get<Pista[]>(url).subscribe({
         next: (data) => {
-          this.pistasDisponibles.set(data);
+          const pistasOrdenadas = data.sort((a, b) => {
+            const aIsCentral = a.nombre.toLowerCase().includes('central');
+            const bIsCentral = b.nombre.toLowerCase().includes('central');
+            if (aIsCentral && !bIsCentral) return -1;
+            if (!aIsCentral && bIsCentral) return 1;
+            const aNum = parseInt(a.nombre.replace(/\D/g, ''), 10) || 0;
+            const bNum = parseInt(b.nombre.replace(/\D/g, ''), 10) || 0;
+            return aNum - bNum;
+          });
+          this.pistasDisponibles.set(pistasOrdenadas);
           this.cargandoPistas.set(false);
         },
         error: (err) => {

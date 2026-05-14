@@ -58,15 +58,18 @@
       <div class="features-grid">
         @for (feature of features; track feature.title) {
           <div class="feature-card" [class]="'accent-' + feature.accent">
-            <div class="feature-icon">
-              <i class="fas {{ feature.icon }}"></i>
+            <div class="feature-image-wrapper">
+              <img [src]="feature.image" [alt]="feature.title" class="feature-image">
+              <div class="feature-image-overlay"></div>
             </div>
-            <h3 class="feature-title">{{ feature.title }}</h3>
-            <p class="feature-description">{{ feature.description }}</p>
-            <a [routerLink]="feature.link" class="feature-link">
-              <span>{{ feature.linkText }}</span>
-              <i class="fas fa-arrow-right"></i>
-            </a>
+            <div class="feature-content">
+              <h3 class="feature-title">{{ feature.title }}</h3>
+              <p class="feature-description">{{ feature.description }}</p>
+              <a [routerLink]="feature.link" class="feature-link">
+                <span>{{ feature.linkText }}</span>
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
           </div>
         }
       </div>
@@ -213,6 +216,7 @@
           <li><a routerLink="/reservas">Reservas</a></li>
           <li><a routerLink="/clases">Academia</a></li>
           <li><a routerLink="/torneos">Torneos</a></li>
+          <li><a routerLink="/tienda">Tienda</a></li>
         </ul>
       </div>
 
@@ -230,7 +234,7 @@
         <ul class="footer-contact">
           <li><i class="fas fa-map-marker-alt"></i> Calle del Deporte, 22</li>
           <li><i class="fas fa-phone"></i> 912 345 678</li>
-          <li><i class="fas fa-envelope"></i> hola@elitepadel.com</li>
+          <li><i class="fas fa-envelope"></i> admin@padel.com</li>
         </ul>
       </div>
     </div>

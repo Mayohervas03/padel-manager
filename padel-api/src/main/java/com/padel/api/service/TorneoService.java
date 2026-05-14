@@ -38,9 +38,17 @@ public class TorneoService {
 
     public List<Torneo> findActivos() {
         List<Torneo> torneos = torneoRepository.findByEstadoAndFechaFinGreaterThanEqualOrderByFechaFinAsc(EstadoTorneo.ABIERTO, LocalDate.now());
-        // Cargar categorías para cada torneo
+        // Cargar categorías y contar inscripciones para cada torneo
         for (Torneo torneo : torneos) {
             torneo.getCategorias().size(); // Forzar carga lazy
+            // Contar inscripciones totales del torneo
+            long totalInscritos = inscripcionRepository.countByTorneoIdAndEstado(torneo.getId(), EstadoInscripcion.ACTIVA);
+            torneo.setInscripcionesCount((int) totalInscritos);
+            // Contar inscripciones por categoría
+            for (CategoriaTorneo categoria : torneo.getCategorias()) {
+                long countCategoria = inscripcionRepository.countByCategoriaTorneoIdAndEstado(categoria.getId(), EstadoInscripcion.ACTIVA);
+                categoria.setInscripcionesCount((int) countCategoria);
+            }
         }
         return torneos;
     }

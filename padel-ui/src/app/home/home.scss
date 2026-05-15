@@ -78,7 +78,7 @@ $shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 90px 24px 0;
+  padding: 90px 24px 80px;
 }
 
 .hero-bg {
@@ -404,10 +404,23 @@ $shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
 // =====================================================
 
 .features-section {
-  padding: 120px 0;
+  padding: 160px 0;
   position: relative;
+  overflow: hidden;
 
   &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/img/features/fondo-servicios.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: blur(6px) brightness(0.35);
+    transform: scale(1.1);
+    z-index: 0;
+  }
+
+  &::after {
     content: '';
     position: absolute;
     top: 0;
@@ -415,6 +428,7 @@ $shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
     right: 0;
     height: 1px;
     background: linear-gradient(to right, transparent, $border-glass, transparent);
+    z-index: 1;
   }
 }
 
@@ -592,9 +606,11 @@ $shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
 .showcase-bg {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 30% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 50%, rgba(204, 255, 0, 0.03) 0%, transparent 60%);
+  background-image: url('/img/features/fondo-pistas.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(6px) brightness(0.35);
+  transform: scale(1.1); // Evita bordes blancos del blur
 }
 
 .showcase-content {
@@ -714,10 +730,23 @@ $shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
 // =====================================================
 
 .testimonials-section {
-  padding: 120px 0;
+  padding: 160px 0;
   position: relative;
+  overflow: hidden;
 
   &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/img/features/fondo-reseñas.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: blur(6px) brightness(0.35);
+    transform: scale(1.1);
+    z-index: 0;
+  }
+
+  &::after {
     content: '';
     position: absolute;
     top: 0;
@@ -725,6 +754,7 @@ $shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
     right: 0;
     height: 1px;
     background: linear-gradient(to right, transparent, $border-glass, transparent);
+    z-index: 1;
   }
 }
 

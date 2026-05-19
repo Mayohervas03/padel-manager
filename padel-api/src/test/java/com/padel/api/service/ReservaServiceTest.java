@@ -139,7 +139,8 @@ class ReservaServiceTest {
     @Test
     void crearReserva_limite3ReservasActivas_lanzaExcepcion() {
         when(usuarioRepository.findByEmail("test@padel.com")).thenReturn(Optional.of(usuario));
-        when(reservaRepository.countByUsuarioEmailAndEstadoIn(eq("test@padel.com"), anyList()))
+        when(reservaRepository.countByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(
+                eq("test@padel.com"), anyList(), any(LocalDate.class)))
                 .thenReturn(3L);
 
         BusinessException ex = assertThrows(BusinessException.class, () ->

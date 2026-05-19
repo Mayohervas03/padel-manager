@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { NotificationService } from '../shared/notification.service';
 import { TorneoService } from '../torneos/torneo.service';
+import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { API_BASE_URL } from '../shared/api.config';
@@ -25,6 +26,7 @@ export class PerfilComponent implements OnInit {
   private readonly apiUrl = inject(API_BASE_URL);
   private readonly notificationService = inject(NotificationService);
   private readonly torneoService = inject(TorneoService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly perfil = signal<PerfilDTO | null>(null);
   readonly reservas = signal<Reserva[]>([]);
@@ -116,48 +118,75 @@ export class PerfilComponent implements OnInit {
   }
 
   cancelarReserva(id: number) {
-    if (confirm('¿Estas seguro de que deseas cancelar esta reserva? REGLA: Minimo 24h de antelacion.')) {
-      this.cancelandoReservaId.set(id);
-      this.http.delete(`${this.apiUrl}/reservas/${id}`).subscribe({
-        next: () => {
-          this.cancelandoReservaId.set(null);
-          this.cargarDatos();
-          this.notificationService.success('Reserva cancelada');
-        },
-        error: (err) => {
-          this.cancelandoReservaId.set(null);
-          this.notificationService.error(err.error || 'No se pudo cancelar la reserva. Verifica la antelacion (24h).');
-        }
-      });
-    }
+    this.confirmDialog.confirm({
+      title: 'Cancelar Reserva',
+      message: '¿Estas seguro de que deseas cancelar esta reserva? REGLA: Minimo 24h de antelacion.',
+      confirmText: 'Cancelar Reserva',
+      cancelText: 'Volver',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-calendar-times'
+    }).subscribe(result => {
+      if (result) {
+        this.cancelandoReservaId.set(id);
+        this.http.delete(`${this.apiUrl}/reservas/${id}`).subscribe({
+          next: () => {
+            this.cancelandoReservaId.set(null);
+            this.cargarDatos();
+            this.notificationService.success('Reserva cancelada');
+          },
+          error: (err) => {
+            this.cancelandoReservaId.set(null);
+            this.notificationService.error(err.error || 'No se pudo cancelar la reserva. Verifica la antelacion (24h).');
+          }
+        });
+      }
+    });
   }
 
   cancelarInscripcionTorneo(id: number) {
-    if (confirm('¿Estas seguro de que deseas cancelar tu inscripcion a este torneo?')) {
-      this.torneoService.cancelarInscripcion(id).subscribe({
-        next: () => {
-          this.cargarDatos();
-          this.notificationService.success('Inscripcion cancelada correctamente');
-        },
-        error: (err) => {
-          this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');
-        }
-      });
-    }
+    this.confirmDialog.confirm({
+      title: 'Cancelar Inscripcion',
+      message: '¿Estas seguro de que deseas cancelar tu inscripcion a este torneo?',
+      confirmText: 'Cancelar Inscripcion',
+      cancelText: 'Volver',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-trophy'
+    }).subscribe(result => {
+      if (result) {
+        this.torneoService.cancelarInscripcion(id).subscribe({
+          next: () => {
+            this.cargarDatos();
+            this.notificationService.success('Inscripcion cancelada correctamente');
+          },
+          error: (err) => {
+            this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');
+          }
+        });
+      }
+    });
   }
 
   cancelarInscripcionClase(id: number) {
-    if (confirm('¿Cancelar tu inscripcion a esta clase?')) {
-      this.http.post(`${this.apiUrl}/clases/${id}/cancelar`, {}, { responseType: 'text' }).subscribe({
-        next: () => {
-          this.cargarDatos();
-          this.notificationService.success('Inscripcion a clase cancelada');
-        },
-        error: (err) => {
-          this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');
-        }
-      });
-    }
+    this.confirmDialog.confirm({
+      title: 'Cancelar Inscripcion',
+      message: '¿Cancelar tu inscripcion a esta clase?',
+      confirmText: 'Cancelar Inscripcion',
+      cancelText: 'Volver',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-graduation-cap'
+    }).subscribe(result => {
+      if (result) {
+        this.http.post(`${this.apiUrl}/clases/${id}/cancelar`, {}, { responseType: 'text' }).subscribe({
+          next: () => {
+            this.cargarDatos();
+            this.notificationService.success('Inscripcion a clase cancelada');
+          },
+          error: (err) => {
+            this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');
+          }
+        });
+      }
+    });
   }
 
   togglePasswordForm() {

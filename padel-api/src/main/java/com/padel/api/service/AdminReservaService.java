@@ -208,7 +208,7 @@ public class AdminReservaService {
     private void validarLimiteReservasActivas(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        long activas = reservaRepository.countByUsuarioEmailAndEstadoIn(usuario.getEmail(), ESTADOS_RESERVA_ACTIVOS);
+        long activas = reservaRepository.countByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(usuario.getEmail(), ESTADOS_RESERVA_ACTIVOS, java.time.LocalDate.now());
         if (activas >= 3) {
             throw new BusinessException("El usuario ya tiene 3 reservas activas.");
         }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../shared/api.config';
+import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
 import type { Usuario } from '../shared/models';
 
 @Component({
@@ -15,6 +16,7 @@ import type { Usuario } from '../shared/models';
 export class UsuariosComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly usuarios = signal<Usuario[]>([]);
   readonly mostrarFormulario = signal(false);
@@ -74,11 +76,20 @@ export class UsuariosComponent implements OnInit {
   }
 
   borrarUsuario(id: number) {
-    if (confirm('¿Estás seguro de que deseas borrar este usuario?')) {
-      this.http.delete(`${this.apiUrl}/usuarios/${id}`)
-        .subscribe(() => {
-          this.cargarUsuarios();
-        });
-    }
+    this.confirmDialog.confirm({
+      title: 'Borrar Usuario',
+      message: '¿Estás seguro de que deseas borrar este usuario?',
+      confirmText: 'Borrar',
+      cancelText: 'Cancelar',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-user-times'
+    }).subscribe(result => {
+      if (result) {
+        this.http.delete(`${this.apiUrl}/usuarios/${id}`)
+          .subscribe(() => {
+            this.cargarUsuarios();
+          });
+      }
+    });
   }
 }

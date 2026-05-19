@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PistaService } from './pista.service';
 import { AuthService } from '../auth/auth.service';
+import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
 import type { Pista } from '../shared/models';
 
 @Component({
@@ -14,6 +15,7 @@ import type { Pista } from '../shared/models';
 })
 export class PistasComponent implements OnInit {
   private readonly pistaService = inject(PistaService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   readonly authService = inject(AuthService);
 
   readonly pistas = signal<Pista[]>([]);
@@ -61,11 +63,20 @@ export class PistasComponent implements OnInit {
   }
 
   borrarPista(id: number) {
-    if (window.confirm('¿Estás seguro de que deseas borrar esta pista?')) {
-      this.pistaService.deletePista(id).subscribe(() => {
-        this.cargarPistas();
-      });
-    }
+    this.confirmDialog.confirm({
+      title: 'Borrar Pista',
+      message: '¿Estás seguro de que deseas borrar esta pista?',
+      confirmText: 'Borrar',
+      cancelText: 'Cancelar',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-trash'
+    }).subscribe(result => {
+      if (result) {
+        this.pistaService.deletePista(id).subscribe(() => {
+          this.cargarPistas();
+        });
+      }
+    });
   }
 
   toggleFormulario() {

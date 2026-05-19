@@ -4,11 +4,12 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/rou
 import { AuthService } from './auth/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ToastContainerComponent } from './shared/toast/toast-container.component';
+import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent, ConfirmDialogComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

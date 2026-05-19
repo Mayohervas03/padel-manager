@@ -4,6 +4,7 @@ import com.padel.api.dto.PerfilDTO;
 import com.padel.api.dto.UsuarioUpdateRequest;
 import com.padel.api.exception.BusinessException;
 import com.padel.api.exception.ResourceNotFoundException;
+import com.padel.api.model.EstadoReserva;
 import com.padel.api.model.Reserva;
 import com.padel.api.model.Usuario;
 import com.padel.api.repository.ReservaRepository;
@@ -79,6 +80,7 @@ public class UsuarioService {
 
         List<Reserva> reservas = reservaRepository.findByUsuarioEmail(email);
         Optional<Reserva> proximaReservaOpt = reservas.stream()
+                .filter(r -> r.getEstado() != EstadoReserva.CANCELADA)
                 .filter(r -> {
                     LocalDateTime fechaHora = LocalDateTime.of(r.getFecha(), r.getHora());
                     return fechaHora.isAfter(LocalDateTime.now());

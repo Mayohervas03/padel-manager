@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../shared/api.config';
 import { NotificationService } from '../shared/notification.service';
+import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
 import type { Clase } from '../shared/models';
 
 @Component({
@@ -17,6 +18,7 @@ export class UserClasesComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
   private readonly notificationService = inject(NotificationService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly clasesDisponibles = signal<Clase[]>([]);
   readonly misClasesIds = signal<Set<number>>(new Set());
@@ -108,37 +110,46 @@ export class UserClasesComponent implements OnInit {
   }
 
   cancelarInscripcion(clase: Clase) {
-    if (!confirm('¿Cancelar tu inscripcion a esta clase?')) return;
+    this.confirmDialog.confirm({
+      title: 'Cancelar Inscripcion',
+      message: '¿Cancelar tu inscripcion a esta clase?',
+      confirmText: 'Cancelar Inscripcion',
+      cancelText: 'Volver',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-graduation-cap'
+    }).subscribe(result => {
+      if (!result) return;
 
-    this.inscripcionesEnCurso.update(set => {
-      const newSet = new Set(set);
-      newSet.add(clase.id);
-      return newSet;
-    });
+      this.inscripcionesEnCurso.update(set => {
+        const newSet = new Set(set);
+        newSet.add(clase.id);
+        return newSet;
+      });
 
-    this.http.post(`${this.apiUrl}/clases/${clase.id}/cancelar`, {}, { responseType: 'text' }).subscribe({
-      next: () => {
-        this.inscripcionesEnCurso.update(set => {
-          const newSet = new Set(set);
-          newSet.delete(clase.id);
-          return newSet;
-        });
-        this.misClasesIds.update(set => {
-          const newSet = new Set(set);
-          newSet.delete(clase.id);
-          return newSet;
-        });
-        this.cargarDatos();
-        this.notificationService.success('Inscripcion cancelada');
-      },
-      error: (err) => {
-        this.inscripcionesEnCurso.update(set => {
-          const newSet = new Set(set);
-          newSet.delete(clase.id);
-          return newSet;
-        });
-        this.notificationService.error('Error: ' + (err.error || err.message));
-      }
+      this.http.post(`${this.apiUrl}/clases/${clase.id}/cancelar`, {}, { responseType: 'text' }).subscribe({
+        next: () => {
+          this.inscripcionesEnCurso.update(set => {
+            const newSet = new Set(set);
+            newSet.delete(clase.id);
+            return newSet;
+          });
+          this.misClasesIds.update(set => {
+            const newSet = new Set(set);
+            newSet.delete(clase.id);
+            return newSet;
+          });
+          this.cargarDatos();
+          this.notificationService.success('Inscripcion cancelada');
+        },
+        error: (err) => {
+          this.inscripcionesEnCurso.update(set => {
+            const newSet = new Set(set);
+            newSet.delete(clase.id);
+            return newSet;
+          });
+          this.notificationService.error('Error: ' + (err.error || err.message));
+        }
+      });
     });
   }
 }

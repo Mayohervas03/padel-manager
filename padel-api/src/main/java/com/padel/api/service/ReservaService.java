@@ -145,7 +145,7 @@ public class ReservaService {
     }
 
     private void validarLimiteReservasActivas(String email) {
-        long activas = reservaRepository.countByUsuarioEmailAndEstadoIn(email, ESTADOS_ACTIVOS);
+        long activas = reservaRepository.countByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(email, ESTADOS_ACTIVOS, LocalDate.now());
         if (activas >= 3) {
             throw new BusinessException("Ya tienes 3 reservas activas. Cancela una para hacer una nueva.");
         }

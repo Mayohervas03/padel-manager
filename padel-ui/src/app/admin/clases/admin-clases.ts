@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../shared/api.config';
 import { NotificationService } from '../../shared/notification.service';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import type { Clase, Pista } from '../../shared/models';
 
 @Component({
@@ -18,6 +19,7 @@ export class AdminClasesComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
   private readonly notificationService = inject(NotificationService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly clases = signal<Clase[]>([]);
   readonly pistas = signal<Pista[]>([]);
@@ -112,14 +114,23 @@ export class AdminClasesComponent implements OnInit {
   }
 
   eliminarClase(id: number) {
-    if (confirm('¿Borrar esta clase? Todos los alumnos inscritos la perderán.')) {
-      this.http.delete(`${this.apiUrl}/admin/clases/${id}`).subscribe({
-        next: () => {
-          this.notificationService.success('Clase eliminada');
-          this.cargarClases();
-        },
-        error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
-      });
-    }
+    this.confirmDialog.confirm({
+      title: 'Borrar Clase',
+      message: '¿Borrar esta clase? Todos los alumnos inscritos la perderán.',
+      confirmText: 'Borrar',
+      cancelText: 'Cancelar',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-exclamation-triangle'
+    }).subscribe(result => {
+      if (result) {
+        this.http.delete(`${this.apiUrl}/admin/clases/${id}`).subscribe({
+          next: () => {
+            this.notificationService.success('Clase eliminada');
+            this.cargarClases();
+          },
+          error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
+        });
+      }
+    });
   }
 }

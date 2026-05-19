@@ -25,6 +25,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     long countByUsuarioEmailAndEstadoIn(String email, List<EstadoReserva> estados);
 
+    long countByUsuarioEmailAndEstadoInAndFechaGreaterThanEqual(String email, List<EstadoReserva> estados, LocalDate fecha);
+
     List<Reserva> findByFechaAndEstadoNot(LocalDate fecha, EstadoReserva estado);
     List<Reserva> findByFechaGreaterThanEqualAndEstadoNot(LocalDate fecha, EstadoReserva estado);
     List<Reserva> findByUsuarioEmailOrderByFechaDescHoraDesc(String email);
@@ -33,7 +35,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     @Query("SELECT p FROM Pista p WHERE p.activo = true AND NOT EXISTS (SELECT r FROM Reserva r WHERE r.pista.id = p.id AND r.fecha = :fecha AND r.hora = :hora)")
     List<Pista> findDisponibles(@Param("fecha") LocalDate fecha, @Param("hora") LocalTime hora);
 
-    @Query("SELECT COUNT(r) FROM Reserva r WHERE r.usuario.id = :usuarioId AND r.fecha >= :inicio AND r.fecha <= :fin")
+    @Query("SELECT COUNT(r) FROM Reserva r WHERE r.usuario.id = :usuarioId AND r.fecha >= :inicio AND r.fecha <= :fin AND r.estado <> 'CANCELADA'")
     long countByUsuarioIdAndFechaBetween(@Param("usuarioId") Long usuarioId, @Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
 
     @Modifying

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../../shared/api.config';
 import { NotificationService } from '../../shared/notification.service';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import type { Pista } from '../../shared/models';
 
 @Component({
@@ -18,6 +19,7 @@ export class AdminPistasComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_BASE_URL);
   private readonly notificationService = inject(NotificationService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly pistas = signal<Pista[]>([]);
   readonly mostrarFormulario = signal(false);
@@ -116,14 +118,23 @@ export class AdminPistasComponent implements OnInit {
   }
 
   borrarPista(id: number) {
-    if (confirm('PELIGRO: Borrar la pista eliminará TAMBIÉN todas las reservas asociadas. ¿Deseas continuar?')) {
-      this.http.delete(`${this.apiUrl}/admin/pistas/${id}`, { responseType: 'text' }).subscribe({
-        next: () => {
-          this.notificationService.success('Pista eliminada');
-          this.cargarPistas();
-        },
-        error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
-      });
-    }
+    this.confirmDialog.confirm({
+      title: 'Borrar Pista',
+      message: 'PELIGRO: Borrar la pista eliminará TAMBIÉN todas las reservas asociadas. ¿Deseas continuar?',
+      confirmText: 'Borrar',
+      cancelText: 'Cancelar',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-exclamation-triangle'
+    }).subscribe(result => {
+      if (result) {
+        this.http.delete(`${this.apiUrl}/admin/pistas/${id}`, { responseType: 'text' }).subscribe({
+          next: () => {
+            this.notificationService.success('Pista eliminada');
+            this.cargarPistas();
+          },
+          error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
+        });
+      }
+    });
   }
 }

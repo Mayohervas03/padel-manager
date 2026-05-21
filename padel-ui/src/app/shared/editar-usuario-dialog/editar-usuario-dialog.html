@@ -3,17 +3,17 @@
     <div class="dialog-box" (click)="$event.stopPropagation()">
       <div class="dialog-header">
         <i class="fas fa-user-edit"></i>
-        <h3>Editar Usuario</h3>
+        <h3>Edit User</h3>
       </div>
 
       <div class="dialog-body">
         <div class="form-group">
-          <label for="edit-nombre">Nombre</label>
+          <label for="edit-nombre">Name</label>
           <input
             id="edit-nombre"
             type="text"
             [(ngModel)]="nombre"
-            placeholder="Nombre completo"
+            placeholder="Full name"
             class="form-input"
           />
         </div>
@@ -24,26 +24,26 @@
             id="edit-email"
             type="email"
             [(ngModel)]="email"
-            placeholder="correo@ejemplo.com"
+            placeholder="email@example.com"
             class="form-input"
           />
         </div>
 
         <div class="form-group">
-          <label for="edit-rol">Rol</label>
+          <label for="edit-rol">Role</label>
           <select id="edit-rol" [(ngModel)]="rol" class="form-input">
-            <option value="USER">Usuario</option>
-            <option value="ADMIN">Administrador</option>
+            <option value="USER">User</option>
+            <option value="ADMIN">Administrator</option>
           </select>
         </div>
       </div>
 
       <div class="dialog-footer">
         <button class="btn btn-secondary" (click)="onCerrar()">
-          Cancelar
+          Cancel
         </button>
         <button class="btn btn-primary" (click)="onGuardar()">
-          <i class="fas fa-save"></i> Guardar
+          <i class="fas fa-save"></i> Save
         </button>
       </div>
     </div>

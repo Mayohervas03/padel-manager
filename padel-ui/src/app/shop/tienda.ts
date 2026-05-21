@@ -35,16 +35,16 @@ export class TiendaComponent implements OnInit {
   readonly productoAgregado = signal<number | null>(null);
 
   readonly categorias: { value: CategoriaProducto | 'TODAS'; label: string }[] = [
-    { value: 'TODAS', label: 'Todos' },
-    { value: 'PALAS', label: 'Palas' },
-    { value: 'ROPA', label: 'Ropa' },
-    { value: 'ACCESORIOS', label: 'Accesorios' }
+    { value: 'TODAS', label: 'All' },
+    { value: 'PALAS', label: 'Paddles' },
+    { value: 'ROPA', label: 'Clothing' },
+    { value: 'ACCESORIOS', label: 'Accessories' }
   ];
 
   readonly ordenamientos: { value: Ordenamiento; label: string }[] = [
-    { value: 'nombre', label: 'Nombre' },
-    { value: 'precio-asc', label: 'Precio: Menor a Mayor' },
-    { value: 'precio-desc', label: 'Precio: Mayor a Menor' },
+    { value: 'nombre', label: 'Name' },
+    { value: 'precio-asc', label: 'Price: Low to High' },
+    { value: 'precio-desc', label: 'Price: High to Low' },
     { value: 'stock', label: 'Stock' }
   ];
 
@@ -114,7 +114,7 @@ export class TiendaComponent implements OnInit {
 
   agregarAlCarrito(producto: Producto) {
     if (producto.stock <= 0) {
-      this.notificationService.error('Producto sin stock');
+      this.notificationService.error('Product out of stock');
       return;
     }
 
@@ -123,11 +123,11 @@ export class TiendaComponent implements OnInit {
 
     this.carritoService.agregarAlCarrito(producto.id, 1).subscribe({
       next: () => {
-        this.notificationService.success(`${producto.nombre} añadido al carrito`);
+        this.notificationService.success(`${producto.nombre} added to cart`);
         this.cargarCarrito();
       },
       error: (err) => {
-        this.notificationService.error(err.error || 'Error al añadir al carrito');
+        this.notificationService.error(err.error || 'Error adding to cart');
       }
     });
   }
@@ -147,7 +147,7 @@ export class TiendaComponent implements OnInit {
     }
     this.carritoService.actualizarCantidad(itemId, cantidad).subscribe({
       next: () => this.cargarCarrito(),
-      error: (err) => this.notificationService.error(err.error || 'Error al actualizar cantidad')
+      error: (err) =>         this.notificationService.error(err.error || 'Error updating quantity')
     });
   }
 
@@ -155,16 +155,16 @@ export class TiendaComponent implements OnInit {
     this.carritoService.eliminarItem(itemId).subscribe({
       next: () => {
         this.cargarCarrito();
-        this.notificationService.info('Producto eliminado del carrito');
+        this.notificationService.info('Product removed from cart');
       },
-      error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
+      error: (err) =>         this.notificationService.error(err.error || 'Error removing product')
     });
   }
 
   checkout() {
     this.pedidoService.checkout().subscribe({
       next: (pedido) => {
-        this.notificationService.success(`Pedido #${pedido.id} realizado con éxito. Total: ${pedido.total.toFixed(2)}€`);
+        this.notificationService.success(`Order #${pedido.id} placed successfully. Total: ${pedido.total.toFixed(2)}€`);
         this.carritoItems.set([]);
         this.carritoTotal.set(0);
         this.carritoVisible.set(false);

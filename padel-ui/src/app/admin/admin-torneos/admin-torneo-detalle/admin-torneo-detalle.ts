@@ -23,8 +23,8 @@ export class AdminTorneoDetalleComponent implements OnInit {
   readonly torneo = signal<Torneo | null>(null);
   readonly inscripciones = signal<InscripcionTorneo[]>([]);
   readonly inscripcionesFiltradas = signal<InscripcionTorneo[]>([]);
-  readonly categoriaSeleccionada = signal<string>('Todas');
-  readonly categoriasDisponibles = signal<string[]>(['Todas']);
+  readonly categoriaSeleccionada = signal<string>('All');
+  readonly categoriasDisponibles = signal<string[]>(['All']);
   readonly isLoadingPago = signal<number | null>(null);
   readonly recaudacion = computed(() => {
     const precio = this.torneo()?.precioPareja ?? 0;
@@ -48,7 +48,7 @@ export class AdminTorneoDetalleComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.notificationService.error('Error al cargar el torneo: ' + (err.error?.message || err.message));
+        this.notificationService.error('Error loading tournament: ' + (err.error?.message || err.message));
       }
     });
 
@@ -61,19 +61,19 @@ export class AdminTorneoDetalleComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.notificationService.error('Error al cargar inscripciones: ' + (err.error?.message || err.message));
+        this.notificationService.error('Error loading registrations: ' + (err.error?.message || err.message));
       }
     });
   }
 
   extraerCategorias(data: InscripcionTorneo[]) {
     const cats = new Set(data.map(i => i.categoria?.nombre).filter(Boolean));
-    this.categoriasDisponibles.set(['Todas', ...Array.from(cats)]);
+    this.categoriasDisponibles.set(['All', ...Array.from(cats)]);
   }
 
   filtrarPorCategoria(cat: string) {
     this.categoriaSeleccionada.set(cat);
-    if (cat === 'Todas') {
+    if (cat === 'All') {
       this.inscripcionesFiltradas.set([...this.inscripciones()]);
     } else {
       this.inscripcionesFiltradas.set(this.inscripciones().filter(i => i.categoria?.nombre === cat));
@@ -90,12 +90,12 @@ export class AdminTorneoDetalleComponent implements OnInit {
         const list = this.inscripciones().map(i => i.id === updated.id ? updated : i);
         this.inscripciones.set(list);
         this.filtrarPorCategoria(this.categoriaSeleccionada());
-        this.activityLog.log('CAMBIAR_PAGO', 'INSCRIPCION', `Pago ${updated.pagado ? 'marcado' : 'desmarcado'} para inscripción #${updated.id}`, updated.id);
+        this.activityLog.log('CAMBIAR_PAGO', 'INSCRIPCION', `Payment ${updated.pagado ? 'marked' : 'unmarked'} for registration #${updated.id}`, updated.id);
         this.isLoadingPago.set(null);
       },
       error: (err) => {
         this.isLoadingPago.set(null);
-        this.notificationService.error('Error al actualizar pago: ' + (err.error || err.message));
+        this.notificationService.error('Error updating payment: ' + (err.error || err.message));
       }
     });
   }

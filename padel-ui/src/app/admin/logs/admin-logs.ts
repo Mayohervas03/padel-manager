@@ -58,10 +58,10 @@ export class AdminLogsComponent implements OnInit {
 
   clearLogs() {
     this.confirmDialog.confirm({
-      title: 'Borrar historial',
-      message: '¿Estás seguro de que deseas borrar todo el historial de actividad? Esta acción no se puede deshacer.',
-      confirmText: 'Borrar',
-      cancelText: 'Cancelar',
+      title: 'Clear history',
+      message: 'Are you sure you want to clear all activity history? This action cannot be undone.',
+      confirmText: 'Clear',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-danger'
     }).subscribe(confirmed => {
       if (confirmed) {

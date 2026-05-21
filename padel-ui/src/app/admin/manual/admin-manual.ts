@@ -91,7 +91,7 @@ export class AdminManualComponent implements OnInit, OnDestroy {
         this.seleccionarUsuario(user);
       },
       error: () => {
-        this.notificationService.error('Error al cargar usuario');
+        this.notificationService.error('Error loading user');
       }
     });
   }
@@ -143,7 +143,7 @@ export class AdminManualComponent implements OnInit, OnDestroy {
     this.mensajeError.set('');
 
     if (!this.usuarioSeleccionado()) {
-      this.mensajeError.set('Selecciona un usuario');
+      this.mensajeError.set('Select a user');
       return;
     }
 
@@ -155,12 +155,12 @@ export class AdminManualComponent implements OnInit, OnDestroy {
     };
 
     if (!data.pistaId || !data.fecha || !data.hora) {
-      this.mensajeError.set('Rellena todos los campos');
+      this.mensajeError.set('Fill in all fields');
       return;
     }
 
     if (this.esFechaHoraPasada()) {
-      this.mensajeError.set('No se pueden hacer reservas en fechas u horas que ya han pasado');
+      this.mensajeError.set('Bookings cannot be made for dates or times that have already passed');
       return;
     }
 
@@ -168,15 +168,15 @@ export class AdminManualComponent implements OnInit, OnDestroy {
     this.http.post(`${this.apiUrl}/admin/reservas/manual`, data).subscribe({
       next: () => {
         this.isProcessing.set(false);
-        this.mensajeExito.set('Reserva creada con éxito');
+        this.mensajeExito.set('Booking created successfully');
         this.pistaIdValue = null;
         this.limpiarBusqueda();
-        this.notificationService.success('Reserva creada con éxito');
+        this.notificationService.success('Booking created successfully');
       },
       error: (err) => {
         this.isProcessing.set(false);
-        this.mensajeError.set(err.error || 'Error al crear la reserva');
-        this.notificationService.error(err.error || 'Error al crear la reserva');
+        this.mensajeError.set(err.error || 'Error creating booking');
+        this.notificationService.error(err.error || 'Error creating booking');
       }
     });
   }

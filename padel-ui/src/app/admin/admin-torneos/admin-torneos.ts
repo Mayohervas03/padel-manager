@@ -64,7 +64,7 @@ export class AdminTorneosComponent implements OnInit {
         this.torneos.set(datos);
         this.filtrarTorneos();
       },
-      error: (err) => this.notificationService.error('Error cargando torneos: ' + (err.error?.message || err.message))
+      error: (err) => this.notificationService.error('Error loading tournaments: ' + (err.error?.message || err.message))
     });
   }
 
@@ -134,28 +134,28 @@ export class AdminTorneosComponent implements OnInit {
     if (!editando) return;
 
     if (!datos.titulo || !datos.fechaInicio || !datos.fechaFin) {
-      this.notificationService.error('Por favor, rellena los campos obligatorios (Título y Fechas)');
+      this.notificationService.error('Please fill in the required fields (Title and Dates)');
       return;
     }
 
     if (datos.fechaInicio > datos.fechaFin) {
-      this.notificationService.error('La fecha de inicio no puede ser posterior a la fecha de fin');
+      this.notificationService.error('Start date cannot be after end date');
       return;
     }
 
     if ((datos.precioPareja ?? 0) < 0) {
-      this.notificationService.error('El precio no puede ser negativo');
+      this.notificationService.error('Price cannot be negative');
       return;
     }
 
     if (!datos.categorias || datos.categorias.length === 0) {
-      this.notificationService.error('Debe definir al menos una categoría');
+      this.notificationService.error('You must define at least one category');
       return;
     }
 
     for (const cat of datos.categorias) {
       if (!cat.nombre || (cat.maxParejas ?? 0) < 1) {
-        this.notificationService.error('Todas las categorías deben tener nombre y al menos 1 pareja');
+        this.notificationService.error('All categories must have a name and at least 1 pair');
         return;
       }
     }
@@ -168,14 +168,14 @@ export class AdminTorneosComponent implements OnInit {
     operacion.subscribe({
       next: () => {
         const action = editando.id ? 'ACTUALIZAR' : 'CREAR';
-        this.activityLog.log(action, 'TORNEO', `${action === 'CREAR' ? 'Creado' : 'Actualizado'} torneo ${datos.titulo}`, editando.id);
+        this.activityLog.log(action, 'TORNEO', `${action === 'CREAR' ? 'Created' : 'Updated'} tournament ${datos.titulo}`, editando.id);
         this.isLoading.set(null);
         this.cerrarModal();
         this.cargarTorneos();
       },
       error: (err) => {
         this.isLoading.set(null);
-        this.notificationService.error(err.error?.message || 'Error al guardar el torneo');
+        this.notificationService.error(err.error?.message || 'Error saving tournament');
       }
     });
   }
@@ -184,23 +184,23 @@ export class AdminTorneosComponent implements OnInit {
     if (this.isLoading() === id) return;
 
     this.confirmDialog.confirm({
-      title: 'Eliminar Torneo',
-      message: '¿Estás seguro de borrar este torneo?',
-      confirmText: 'Eliminar',
-      cancelText: 'Cancelar',
+      title: 'Delete Tournament',
+      message: 'Are you sure you want to delete this tournament?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-danger'
     }).subscribe(confirmed => {
       if (!confirmed) return;
       this.isLoading.set(id);
       this.torneoService.deleteTorneo(id).subscribe({
         next: () => {
-          this.activityLog.log('ELIMINAR', 'TORNEO', `Eliminado torneo #${id}`, id);
+          this.activityLog.log('ELIMINAR', 'TORNEO', `Deleted tournament #${id}`, id);
           this.isLoading.set(null);
           this.cargarTorneos();
         },
         error: (err) => {
           this.isLoading.set(null);
-          this.notificationService.error(err.error?.message || 'Error al borrar el torneo');
+          this.notificationService.error(err.error?.message || 'Error deleting tournament');
         }
       });
     });
@@ -212,23 +212,23 @@ export class AdminTorneosComponent implements OnInit {
     const nuevoEstado = estados[(idx + 1) % estados.length];
 
     this.confirmDialog.confirm({
-      title: 'Cambiar Estado',
-      message: `¿Cambiar estado de "${torneo.titulo}" a ${nuevoEstado.toLowerCase()}?`,
-      confirmText: 'Cambiar',
-      cancelText: 'Cancelar',
+      title: 'Change Status',
+      message: `Change status of "${torneo.titulo}" to ${nuevoEstado.toLowerCase()}?`,
+      confirmText: 'Change',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-primary'
     }).subscribe(confirmed => {
       if (!confirmed) return;
       this.isLoading.set(torneo.id);
       this.torneoService.cambiarEstadoAdmin(torneo.id, nuevoEstado).subscribe({
         next: () => {
-          this.activityLog.log('CAMBIAR_ESTADO', 'TORNEO', `Estado cambiado a ${nuevoEstado} para ${torneo.titulo}`, torneo.id);
+          this.activityLog.log('CAMBIAR_ESTADO', 'TORNEO', `Status changed to ${nuevoEstado} for ${torneo.titulo}`, torneo.id);
           this.isLoading.set(null);
           this.cargarTorneos();
         },
         error: (err) => {
           this.isLoading.set(null);
-          this.notificationService.error(err.error?.message || 'Error al cambiar estado');
+          this.notificationService.error(err.error?.message || 'Error changing status');
         }
       });
     });
@@ -241,16 +241,16 @@ export class AdminTorneosComponent implements OnInit {
   exportarCSV() {
     const datos = this.torneosFiltrados().map(t => ({
       ID: t.id,
-      Titulo: t.titulo,
-      'Fecha Inicio': t.fechaInicio,
-      'Fecha Fin': t.fechaFin,
-      'Precio Pareja': t.precioPareja,
-      'Categorias': t.categorias?.map(c => `${c.nombre} (${c.maxParejas})`).join(', ') || '',
-      Estado: t.estado,
-      Inscritos: t.inscripcionesCount || 0
+      Title: t.titulo,
+      'Start Date': t.fechaInicio,
+      'End Date': t.fechaFin,
+      'Pair Price': t.precioPareja,
+      'Categories': t.categorias?.map(c => `${c.nombre} (${c.maxParejas})`).join(', ') || '',
+      Status: t.estado,
+      Enrolled: t.inscripcionesCount || 0
     }));
-    this.exportService.exportToCSV(datos, 'torneos');
-    this.activityLog.log('EXPORTAR', 'TORNEO', `Exportados ${datos.length} torneos a CSV`);
-    this.notificationService.success('Torneos exportados correctamente');
+    this.exportService.exportToCSV(datos, 'tournaments');
+    this.activityLog.log('EXPORTAR', 'TORNEO', `Exported ${datos.length} tournaments to CSV`);
+    this.notificationService.success('Tournaments exported successfully');
   }
 }

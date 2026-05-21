@@ -1,40 +1,40 @@
 <div class="admin-clases">
   <div class="page-header">
-    <h1><i class="fas fa-graduation-cap"></i> Gestión de Clases</h1>
+    <h1><i class="fas fa-graduation-cap"></i> Class Management</h1>
     <button class="btn-neon" (click)="toggleFormulario()">
       <i class="fas" [class.fa-times]="mostrarFormulario()" [class.fa-plus]="!mostrarFormulario()"></i>
-      {{ mostrarFormulario() ? 'Cancelar' : 'Nueva Clase' }}
+      {{ mostrarFormulario() ? 'Cancel' : 'New Class' }}
     </button>
   </div>
 
   @if (mostrarFormulario()) {
     <div class="form-panel">
-      <h3>{{ claseEditando.id ? 'Editar Clase' : 'Nueva Clase' }}</h3>
+      <h3>{{ claseEditando.id ? 'Edit Class' : 'New Class' }}</h3>
 
       <div class="form-grid">
         <div class="form-group">
-          <label>Título *</label>
-          <input type="text" [(ngModel)]="claseEditando.titulo" placeholder="Ej. Masterclass Volea">
+          <label>Title *</label>
+          <input type="text" [(ngModel)]="claseEditando.titulo" placeholder="Ex. Volley Masterclass">
         </div>
 
         <div class="form-group">
-          <label>Monitor *</label>
-          <input type="text" [(ngModel)]="claseEditando.monitor" placeholder="Nombre del monitor">
+          <label>Instructor *</label>
+          <input type="text" [(ngModel)]="claseEditando.monitor" placeholder="Instructor name">
         </div>
 
         <div class="form-group">
-          <label>Nivel *</label>
+          <label>Level *</label>
           <select [(ngModel)]="claseEditando.nivel">
-            <option value="INICIACION">Iniciación</option>
-            <option value="INTERMEDIO">Intermedio</option>
-            <option value="AVANZADO">Avanzado</option>
+            <option value="INICIACION">Beginner</option>
+            <option value="INTERMEDIO">Intermediate</option>
+            <option value="AVANZADO">Advanced</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Pista *</label>
+          <label>Court *</label>
           <select [(ngModel)]="claseEditando.pistaId">
-            <option [ngValue]="null" disabled>-- Selecciona Pista --</option>
+            <option [ngValue]="null" disabled>-- Select Court --</option>
             @for (p of pistas(); track p.id) {
               <option [ngValue]="p.id">{{ p.nombre }}</option>
             }
@@ -42,14 +42,14 @@
         </div>
 
         <div class="form-group">
-          <label>Fecha *</label>
+          <label>Date *</label>
           <input type="date" [(ngModel)]="claseEditando.fecha">
         </div>
 
         <div class="form-group">
-          <label>Hora *</label>
+          <label>Time *</label>
           <select [(ngModel)]="claseEditando.hora">
-            <option [ngValue]="null" disabled>-- Selecciona Horario --</option>
+            <option [ngValue]="null" disabled>-- Select Time --</option>
             <option value="09:00">09:00</option>
             <option value="10:30">10:30</option>
             <option value="12:00">12:00</option>
@@ -63,21 +63,21 @@
         </div>
 
         <div class="form-group">
-          <label>Máx Alumnos</label>
+          <label>Max Students</label>
           <input type="number" [(ngModel)]="claseEditando.maxAlumnos" placeholder="4">
         </div>
 
         <div class="form-group">
-          <label>Precio (€)</label>
+          <label>Price (€)</label>
           <input type="number" step="0.01" [(ngModel)]="claseEditando.precio" placeholder="0.00">
         </div>
       </div>
 
       <div class="form-actions">
         <button class="btn-neon" (click)="guardarClase()">
-          <i class="fas fa-save"></i> Guardar
+          <i class="fas fa-save"></i> Save
         </button>
-        <button class="btn-glass" (click)="toggleFormulario()">Cancelar</button>
+        <button class="btn-glass" (click)="toggleFormulario()">Cancel</button>
       </div>
     </div>
   }
@@ -98,14 +98,14 @@
     <div class="admin-table-container">
       <div class="table-responsive">
         <table class="admin-table">
-          <caption class="visually-hidden">Lista de clases programadas</caption>
+          <caption class="visually-hidden">List of scheduled classes</caption>
           <thead>
             <tr>
-              <th>Clase</th>
-              <th>Detalles</th>
-              <th>Horario</th>
-              <th>Ocupación</th>
-              <th>Acciones</th>
+              <th>Class</th>
+              <th>Details</th>
+              <th>Schedule</th>
+              <th>Occupancy</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -125,7 +125,7 @@
                   <div class="sub-info">{{ clase.hora }} | {{ clase.pista.nombre }}</div>
                 </td>
                 <td>
-                  <strong>{{ clase.alumnos?.length || 0 }} / {{ clase.maxAlumnos }}</strong> inscritos
+                  <strong>{{ clase.alumnos?.length || 0 }} / {{ clase.maxAlumnos }}</strong> enrolled
                   @if (clase.alumnos && clase.alumnos.length > 0) {
                     <div class="alumnos-list">
                       @for (alumno of clase.alumnos; track alumno.id) {
@@ -135,17 +135,17 @@
                   }
                 </td>
                 <td class="actions-cell">
-                  <button class="btn-icon btn-edit" (click)="editarClase(clase)" title="Editar" aria-label="Editar clase {{ clase.titulo }}">
+                  <button class="btn-icon btn-edit" (click)="editarClase(clase)" title="Edit" aria-label="Edit class {{ clase.titulo }}">
                     <i class="fas fa-edit"></i>
                   </button>
-                  <button class="btn-icon btn-delete" (click)="eliminarClase(clase.id)" title="Eliminar" aria-label="Eliminar clase {{ clase.titulo }}">
+                  <button class="btn-icon btn-delete" (click)="eliminarClase(clase.id)" title="Delete" aria-label="Delete class {{ clase.titulo }}">
                     <i class="fas fa-trash"></i>
                   </button>
                 </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="5" class="empty-row">No hay clases programadas. Crea la primera.</td>
+                <td colspan="5" class="empty-row">No classes scheduled. Create the first one.</td>
               </tr>
             }
           </tbody>

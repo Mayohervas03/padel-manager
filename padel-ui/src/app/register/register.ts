@@ -45,10 +45,10 @@ export class RegisterComponent {
 
   passwordStrengthLabel(): string {
     const s = this.passwordStrength();
-    if (s <= 2) return 'Débil';
-    if (s <= 3) return 'Media';
-    if (s <= 4) return 'Fuerte';
-    return 'Muy fuerte';
+    if (s <= 2) return 'Weak';
+    if (s <= 3) return 'Medium';
+    if (s <= 4) return 'Strong';
+    return 'Very strong';
   }
 
   passwordStrengthClass(): string {
@@ -71,7 +71,7 @@ export class RegisterComponent {
     this.authService.register(u).subscribe({
       next: () => {
         this.cargando.set(false);
-        this.successMessage.set('Registro exitoso. Redirigiendo al login...');
+        this.successMessage.set('Registration successful. Redirecting to login...');
         this.errorMessage.set('');
         setTimeout(() => {
           this.router.navigate(['/login']);

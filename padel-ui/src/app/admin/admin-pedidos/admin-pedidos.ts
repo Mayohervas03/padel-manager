@@ -28,10 +28,10 @@ export class AdminPedidosComponent implements OnInit {
   readonly filtroBusqueda = signal('');
 
   readonly estados: { value: FiltroEstado; label: string }[] = [
-    { value: 'TODOS', label: 'Todos' },
-    { value: 'PENDIENTE', label: 'Pendiente' },
-    { value: 'COMPLETADO', label: 'Completado' },
-    { value: 'CANCELADO', label: 'Cancelado' }
+    { value: 'TODOS', label: 'All' },
+    { value: 'PENDIENTE', label: 'Pending' },
+    { value: 'COMPLETADO', label: 'Completed' },
+    { value: 'CANCELADO', label: 'Canceled' }
   ];
 
   readonly pedidosFiltrados = computed(() => {
@@ -74,17 +74,17 @@ export class AdminPedidosComponent implements OnInit {
     if (pedido.estado === nuevoEstado) return;
 
     const confirmado = await firstValueFrom(this.confirmDialog.confirm({
-      title: 'Cambiar Estado',
-      message: `¿Cambiar el pedido #${pedido.id} de "${pedido.estado}" a "${nuevoEstado}"?`,
-      confirmText: 'Cambiar',
-      cancelText: 'Cancelar'
+      title: 'Change Status',
+      message: `Change order #${pedido.id} from "${pedido.estado}" to "${nuevoEstado}"?`,
+      confirmText: 'Change',
+      cancelText: 'Cancel'
     }));
 
     if (!confirmado) return;
 
     this.pedidoService.cambiarEstadoPedido(pedido.id, nuevoEstado).subscribe({
       next: () => {
-        this.notificationService.success(`Pedido #${pedido.id} actualizado a ${nuevoEstado}`);
+        this.notificationService.success(`Order #${pedido.id} updated to ${nuevoEstado}`);
         this.cargarPedidos();
       },
       error: (err) => {

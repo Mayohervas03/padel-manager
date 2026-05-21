@@ -33,27 +33,27 @@ export class KeyboardShortcutsService implements OnDestroy {
 
   private registerDefaults() {
     // Navegación rápida con g + tecla
-    this.register('g+d', 'Ir al Dashboard (Agenda)', () => {
+    this.register('g+d', 'Go to Dashboard (Schedule)', () => {
       this.router.navigate(['/admin/dashboard']);
     });
-    this.register('g+u', 'Ir a Usuarios', () => {
+    this.register('g+u', 'Go to Users', () => {
       this.router.navigate(['/admin/usuarios']);
     });
-    this.register('g+p', 'Ir a Productos', () => {
+    this.register('g+p', 'Go to Products', () => {
       this.router.navigate(['/admin/productos']);
     });
-    this.register('g+t', 'Ir a Torneos', () => {
+    this.register('g+t', 'Go to Tournaments', () => {
       this.router.navigate(['/admin/torneos']);
     });
-    this.register('g+s', 'Ir a Estadísticas', () => {
+    this.register('g+s', 'Go to Statistics', () => {
       this.router.navigate(['/admin/stats']);
     });
-    this.register('g+l', 'Ir a Historial', () => {
+    this.register('g+l', 'Go to History', () => {
       this.router.navigate(['/admin/logs']);
     });
 
-    // Ayuda
-    this.register('?', 'Mostrar/Ocultar ayuda de atajos', () => {
+    // Help
+    this.register('?', 'Show/Hide shortcut help', () => {
       this.showHelp.update(v => !v);
     });
   }

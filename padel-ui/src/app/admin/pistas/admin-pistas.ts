@@ -65,7 +65,7 @@ export class AdminPistasComponent implements OnInit {
   guardarPista() {
     const p = this.pistaEditando;
     if (!p.nombre) {
-      this.notificationService.error('El nombre es obligatorio');
+      this.notificationService.error('Name is required');
       return;
     }
 
@@ -80,20 +80,20 @@ export class AdminPistasComponent implements OnInit {
     if (p.id) {
       this.http.put<Pista>(`${this.apiUrl}/admin/pistas/${p.id}`, payload).subscribe({
         next: () => {
-          this.notificationService.success('Pista actualizada');
+          this.notificationService.success('Court updated');
           this.toggleFormulario();
           this.cargarPistas();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error al actualizar')
+        error: (err) => this.notificationService.error(err.error || 'Error updating')
       });
     } else {
       this.http.post<Pista>(`${this.apiUrl}/admin/pistas`, payload).subscribe({
         next: () => {
-          this.notificationService.success('Pista creada');
+          this.notificationService.success('Court created');
           this.toggleFormulario();
           this.cargarPistas();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error al crear')
+        error: (err) => this.notificationService.error(err.error || 'Error creating')
       });
     }
   }
@@ -110,29 +110,29 @@ export class AdminPistasComponent implements OnInit {
 
     this.http.put<Pista>(`${this.apiUrl}/admin/pistas/${pista.id}`, payload).subscribe({
       next: () => {
-        this.notificationService.success(`Pista ${nuevoEstado ? 'activada' : 'desactivada'}`);
+        this.notificationService.success(`Court ${nuevoEstado ? 'activated' : 'deactivated'}`);
         this.cargarPistas();
       },
-      error: (err) => this.notificationService.error(err.error || 'Error al cambiar estado')
+      error: (err) => this.notificationService.error(err.error || 'Error changing status')
     });
   }
 
   borrarPista(id: number) {
     this.confirmDialog.confirm({
-      title: 'Borrar Pista',
-      message: 'PELIGRO: Borrar la pista eliminará TAMBIÉN todas las reservas asociadas. ¿Deseas continuar?',
-      confirmText: 'Borrar',
-      cancelText: 'Cancelar',
+      title: 'Delete Court',
+      message: 'WARNING: Deleting the court will ALSO delete all associated bookings. Do you want to continue?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-danger',
       icon: 'fa-exclamation-triangle'
     }).subscribe(result => {
       if (result) {
         this.http.delete(`${this.apiUrl}/admin/pistas/${id}`, { responseType: 'text' }).subscribe({
           next: () => {
-            this.notificationService.success('Pista eliminada');
+            this.notificationService.success('Court deleted');
             this.cargarPistas();
           },
-          error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
+          error: (err) => this.notificationService.error(err.error || 'Error deleting')
         });
       }
     });

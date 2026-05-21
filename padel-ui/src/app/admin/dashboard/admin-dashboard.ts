@@ -65,14 +65,14 @@ export class AdminDashboardComponent implements OnInit {
     this.http.get<AgendaItem[]>(`${this.apiUrl}/admin/reservas?fecha=${this.fechaActual()}`)
       .subscribe({
         next: (data) => this.reservas.set(data),
-        error: (err) => console.error('Error cargando reservas', err)
+        error: (err) => console.error('Error loading bookings', err)
       });
   }
 
   cargarPistasActivas() {
     this.http.get<DashboardStats>(`${this.apiUrl}/dashboard`).subscribe({
       next: (data) => this.pistasActivas.set(data.pistasActivas || 0),
-      error: (err) => console.error('Error cargando pistas activas', err)
+      error: (err) => console.error('Error loading active courts', err)
     });
   }
 
@@ -103,22 +103,22 @@ export class AdminDashboardComponent implements OnInit {
     if (item.tipo !== 'RESERVA' || this.isLoading() === item.id) return;
 
     const estadoLabels: Record<EstadoReserva, string> = {
-      PENDIENTE: 'Pendiente',
-      CONFIRMADA: 'Confirmada',
-      CANCELADA: 'Cancelada',
-      COMPLETADA: 'Completada'
+      PENDIENTE: 'Pending',
+      CONFIRMADA: 'Confirmed',
+      CANCELADA: 'Canceled',
+      COMPLETADA: 'Completed'
     };
 
-    const accion = nuevoEstado === 'CANCELADA' ? 'Anular' : 'Cambiar estado';
+    const accion = nuevoEstado === 'CANCELADA' ? 'Cancel' : 'Change status';
     const mensaje = nuevoEstado === 'CANCELADA'
-      ? `¿Estás seguro de que deseas anular esta reserva? Esta acción no se puede deshacer.`
-      : `¿Confirmar cambio de estado a "${estadoLabels[nuevoEstado]}"?`;
+      ? `Are you sure you want to cancel this booking? This action cannot be undone.`
+      : `Confirm status change to "${estadoLabels[nuevoEstado]}"?`;
 
     this.confirmDialog.confirm({
-      title: `${accion} reserva`,
+      title: `${accion} booking`,
       message: mensaje,
-      confirmText: 'Confirmar',
-      cancelText: 'Cancelar',
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
       confirmButtonClass: nuevoEstado === 'CANCELADA' ? 'btn-danger' : 'btn-primary'
     }).subscribe(confirmed => {
       if (!confirmed) return;
@@ -129,9 +129,9 @@ export class AdminDashboardComponent implements OnInit {
         next: () => {
           const accionLabel = nuevoEstado === 'CANCELADA' ? 'ANULAR' : 'CAMBIAR_ESTADO';
           this.activityLog.log(accionLabel, 'RESERVA',
-            `Reserva #${item.id} → ${estadoLabels[nuevoEstado]} - ${item.usuario.nombre}`, item.id);
+            `Booking #${item.id} → ${estadoLabels[nuevoEstado]} - ${item.usuario.nombre}`, item.id);
           this.isLoading.set(null);
-          this.notificationService.success(`Reserva marcada como ${estadoLabels[nuevoEstado]}`);
+          this.notificationService.success(`Booking marked as ${estadoLabels[nuevoEstado]}`);
           this.cargarReservas();
         },
         error: (err) => {
@@ -146,10 +146,10 @@ export class AdminDashboardComponent implements OnInit {
     if (item.tipo !== 'CLASE' || this.isLoading() === item.id) return;
 
     this.confirmDialog.confirm({
-      title: 'Anular clase',
-      message: '¿Estás seguro de que deseas anular esta clase? Esta acción no se puede deshacer.',
-      confirmText: 'Anular',
-      cancelText: 'Cancelar',
+      title: 'Cancel class',
+      message: 'Are you sure you want to cancel this class? This action cannot be undone.',
+      confirmText: 'Cancel',
+      cancelText: 'Close',
       confirmButtonClass: 'btn-danger'
     }).subscribe(confirmed => {
       if (!confirmed) return;
@@ -158,7 +158,7 @@ export class AdminDashboardComponent implements OnInit {
 
       this.http.delete(url).subscribe({
         next: () => {
-          this.activityLog.log('ANULAR', 'CLASE', `Anulada clase #${item.id} - ${item.usuario.nombre}`, item.id);
+          this.activityLog.log('ANULAR', 'CLASE', `Canceled class #${item.id} - ${item.usuario.nombre}`, item.id);
           this.isLoading.set(null);
           this.cargarReservas();
         },

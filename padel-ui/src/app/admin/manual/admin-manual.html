@@ -1,29 +1,29 @@
 <div class="admin-manual">
   <div class="page-header">
-    <h1><i class="fas fa-phone-alt"></i> Reserva Manual por Teléfono</h1>
+    <h1><i class="fas fa-phone-alt"></i> Manual Phone Booking</h1>
   </div>
 
   <div class="steps-container">
     <!-- Step 1: Búsqueda inteligente -->
     <div class="step-card">
-      <div class="step-header">
-        <span class="step-number">1</span>
-        <h3>Selección de Usuario</h3>
-      </div>
-        <div class="step-body">
-          <div class="search-box">
-            <div class="search-input-wrap">
-              <i class="fas fa-search search-icon"></i>
-              <input
-                type="text"
-                [value]="textoBusqueda()"
-                (input)="onBusquedaInput($event)"
-                placeholder="Buscar por nombre o email..."
-                autocomplete="off"
-                [disabled]="isProcessing()"
-              >
-              @if (textoBusqueda()) {
-                <button class="clear-btn" (click)="limpiarBusqueda()" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+        <div class="step-header">
+          <span class="step-number">1</span>
+          <h3>User Selection</h3>
+        </div>
+          <div class="step-body">
+            <div class="search-box">
+              <div class="search-input-wrap">
+                <i class="fas fa-search search-icon"></i>
+                <input
+                  type="text"
+                  [value]="textoBusqueda()"
+                  (input)="onBusquedaInput($event)"
+                  placeholder="Search by name or email..."
+                  autocomplete="off"
+                  [disabled]="isProcessing()"
+                >
+                @if (textoBusqueda()) {
+                  <button class="clear-btn" (click)="limpiarBusqueda()" title="Clear search" aria-label="Clear search">
                   <i class="fas fa-times"></i>
                 </button>
               }
@@ -51,7 +51,7 @@
                 <span class="u-name">{{ usuarioSeleccionado()!.nombre }}</span>
                 <span class="u-email">{{ usuarioSeleccionado()!.email }}</span>
               </div>
-              <button class="btn-icon btn-delete" (click)="limpiarBusqueda()" title="Cambiar usuario" aria-label="Cambiar usuario seleccionado">
+              <button class="btn-icon btn-delete" (click)="limpiarBusqueda()" title="Change user" aria-label="Change selected user">
                 <i class="fas fa-times"></i>
               </button>
             </div>
@@ -64,16 +64,16 @@
       <div class="step-card" [class.disabled]="!usuarioSeleccionado()">
         <div class="step-header">
           <span class="step-number">2</span>
-          <h3>Detalles de la Reserva</h3>
+          <h3>Booking Details</h3>
         </div>
         <div class="step-body">
           <div class="form-grid">
             <div class="form-group">
-              <label>Fecha del Partido *</label>
+              <label>Match Date *</label>
               <input type="date" [(ngModel)]="fechaValue" name="fecha" [min]="fechaMinima" [disabled]="!usuarioSeleccionado() || isProcessing()">
             </div>
             <div class="form-group">
-              <label>Bloque Horario *</label>
+              <label>Time Slot *</label>
               <select [(ngModel)]="horaValue" name="hora" [disabled]="!usuarioSeleccionado() || isProcessing()">
                 <option value="09:00">09:00 a 10:30</option>
                 <option value="10:30">10:30 a 12:00</option>
@@ -87,9 +87,9 @@
               </select>
             </div>
             <div class="form-group form-full">
-              <label>Pista *</label>
+              <label>Court *</label>
               <select [(ngModel)]="pistaIdValue" name="pista" [disabled]="!usuarioSeleccionado() || isProcessing()">
-                <option [ngValue]="null" disabled>Selecciona una pista...</option>
+                <option [ngValue]="null" disabled>Select a court...</option>
                 @for (p of pistas(); track p.id) {
                   <option [ngValue]="p.id">{{ p.nombre }} - {{ p.tipo }} ({{p.ubicacion}}) - {{ p.precio }}€</option>
                 }
@@ -103,7 +103,7 @@
       <div class="step-card" [class.disabled]="!usuarioSeleccionado()">
         <div class="step-header">
           <span class="step-number">3</span>
-          <h3>Confirmación</h3>
+          <h3>Confirmation</h3>
         </div>
         <div class="step-body text-center">
           @if (mensajeExito()) {
@@ -113,7 +113,7 @@
             <div class="alert alert-error">{{ mensajeError() }}</div>
           }
           <button type="submit" class="btn-neon btn-block" [disabled]="!usuarioSeleccionado() || !pistaIdValue || !fechaValue || !horaValue || isProcessing()">
-            Confirmar Reserva por Teléfono
+            Confirm Phone Booking
           </button>
         </div>
       </div>

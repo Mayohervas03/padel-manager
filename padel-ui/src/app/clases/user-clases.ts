@@ -80,7 +80,7 @@ export class UserClasesComponent implements OnInit {
           return newSet;
         });
         this.cargarDatos();
-        this.notificationService.success('Inscripcion completada');
+        this.notificationService.success('Registration completed');
       },
       error: (err) => {
         this.inscripcionesEnCurso.update(set => {
@@ -88,16 +88,16 @@ export class UserClasesComponent implements OnInit {
           newSet.delete(clase.id);
           return newSet;
         });
-        this.notificationService.error('No se pudo completar la inscripcion: ' + (err.error || err.message));
+                this.notificationService.error('Could not complete registration: ' + (err.error || err.message));
       }
     });
   }
 
   formatearFecha(fechaStr: string): string {
     const fecha = new Date(fechaStr + 'T00:00:00');
-    const dias = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
-    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
-                   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const dias = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const meses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return `${dias[fecha.getDay()]}, ${fecha.getDate()} ${meses[fecha.getMonth()]}`;
   }
 
@@ -111,10 +111,10 @@ export class UserClasesComponent implements OnInit {
 
   cancelarInscripcion(clase: Clase) {
     this.confirmDialog.confirm({
-      title: 'Cancelar Inscripcion',
-      message: '¿Cancelar tu inscripcion a esta clase?',
-      confirmText: 'Cancelar Inscripcion',
-      cancelText: 'Volver',
+      title: 'Cancel Registration',
+      message: 'Cancel your registration for this class?',
+      confirmText: 'Cancel Registration',
+      cancelText: 'Back',
       confirmButtonClass: 'btn-danger',
       icon: 'fa-graduation-cap'
     }).subscribe(result => {
@@ -139,7 +139,7 @@ export class UserClasesComponent implements OnInit {
             return newSet;
           });
           this.cargarDatos();
-          this.notificationService.success('Inscripcion cancelada');
+          this.notificationService.success('Registration cancelled');
         },
         error: (err) => {
           this.inscripcionesEnCurso.update(set => {

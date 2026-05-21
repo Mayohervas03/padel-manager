@@ -23,28 +23,28 @@
     <!-- Center Navigation -->
     <nav class="navbar-menu">
       @if (authService.isLoggedIn()) {
-        <a routerLink="/home" routerLinkActive="active" class="nav-item">Inicio</a>
-        <a routerLink="/reservas" routerLinkActive="active" class="nav-item">Reservas</a>
-        <a routerLink="/clases" routerLinkActive="active" class="nav-item">Academia</a>
-        <a routerLink="/torneos" routerLinkActive="active" class="nav-item">Torneos</a>
-        <a routerLink="/tienda" routerLinkActive="active" class="nav-item">Tienda</a>
+        <a routerLink="/home" routerLinkActive="active" class="nav-item">Home</a>
+      <a routerLink="/reservas" routerLinkActive="active" class="nav-item">Bookings</a>
+      <a routerLink="/clases" routerLinkActive="active" class="nav-item">Academy</a>
+      <a routerLink="/torneos" routerLinkActive="active" class="nav-item">Tournaments</a>
+      <a routerLink="/tienda" routerLinkActive="active" class="nav-item">Shop</a>
       }
       @if (authService.isAdmin()) {
         <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item nav-admin">Admin</a>
       }
       @if (!authService.isLoggedIn()) {
-        <a routerLink="/login" routerLinkActive="active" class="nav-item nav-login">Entrar</a>
+        <a routerLink="/login" routerLinkActive="active" class="nav-item nav-login">Log In</a>
       }
     </nav>
 
     <!-- Right: User -->
     <div class="navbar-user">
       @if (authService.isLoggedIn()) {
-        <a routerLink="/perfil" class="user-pill" title="Mi Perfil">
+        <a routerLink="/perfil" class="user-pill" title="My Profile">
           <span class="user-avatar">{{ nombre()?.substring(0, 1) }}</span>
           <span class="user-name">{{ nombre() }}</span>
         </a>
-        <button class="logout-btn" (click)="logout()" title="Cerrar sesión">
+        <button class="logout-btn" (click)="logout()" title="Log Out">
           <i class="fas fa-sign-out-alt"></i>
         </button>
       }
@@ -62,21 +62,21 @@
   @if (showMobileMenu()) {
     <div class="mobile-menu">
       @if (authService.isLoggedIn()) {
-        <a routerLink="/home" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-home"></i> Inicio</a>
-        <a routerLink="/reservas" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-calendar-check"></i> Reservas</a>
-        <a routerLink="/clases" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-graduation-cap"></i> Academia</a>
-        <a routerLink="/torneos" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-trophy"></i> Torneos</a>
-        <a routerLink="/tienda" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-shopping-bag"></i> Tienda</a>
-        <a routerLink="/perfil" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-user"></i> Mi Perfil</a>
+        <a routerLink="/home" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-home"></i> Home</a>
+        <a routerLink="/reservas" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-calendar-check"></i> Bookings</a>
+        <a routerLink="/clases" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-graduation-cap"></i> Academy</a>
+        <a routerLink="/torneos" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-trophy"></i> Tournaments</a>
+        <a routerLink="/tienda" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-shopping-bag"></i> Shop</a>
+        <a routerLink="/perfil" routerLinkActive="active" class="mobile-item" (click)="showMobileMenu.set(false)"><i class="fas fa-user"></i> My Profile</a>
       }
       @if (authService.isAdmin()) {
-        <a routerLink="/admin/dashboard" routerLinkActive="active" class="mobile-item mobile-admin" (click)="showMobileMenu.set(false)"><i class="fas fa-shield-alt"></i> Panel Admin</a>
+        <a routerLink="/admin/dashboard" routerLinkActive="active" class="mobile-item mobile-admin" (click)="showMobileMenu.set(false)"><i class="fas fa-shield-alt"></i> Admin Panel</a>
       }
       @if (!authService.isLoggedIn()) {
-        <a routerLink="/login" routerLinkActive="active" class="mobile-item mobile-login" (click)="showMobileMenu.set(false)"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+        <a routerLink="/login" routerLinkActive="active" class="mobile-item mobile-login" (click)="showMobileMenu.set(false)"><i class="fas fa-sign-in-alt"></i> Sign In</a>
       }
       @if (authService.isLoggedIn()) {
-        <button class="mobile-item mobile-logout" (click)="logout(); showMobileMenu.set(false)"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+        <button class="mobile-item mobile-logout" (click)="logout(); showMobileMenu.set(false)"><i class="fas fa-sign-out-alt"></i> Log Out</button>
       }
     </div>
   }

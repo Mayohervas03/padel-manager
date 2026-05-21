@@ -5,13 +5,13 @@
       <div class="header-title">
         <i class="fas fa-shopping-bag"></i>
         <div>
-          <h1>Tienda Élite</h1>
-          <p>Equípate como un profesional</p>
+          <h1>Élite Shop</h1>
+          <p>Equip yourself like a pro</p>
         </div>
       </div>
 
       <div class="header-actions">
-        <a routerLink="/mis-compras" class="btn-mis-compras" title="Mis Compras">
+        <a routerLink="/mis-compras" class="btn-mis-compras" title="My Purchases">
           <i class="fas fa-receipt"></i>
         </a>
         <button class="carrito-btn" (click)="toggleCarrito()">
@@ -34,7 +34,7 @@
       <input
         type="text"
         class="buscador-input"
-        placeholder="Buscar productos..."
+        placeholder="Search products..."
         [ngModel]="terminoBusqueda()"
         (ngModelChange)="onBusquedaChange($event)"
       >
@@ -72,9 +72,9 @@
     </div>
   </div>
 
-  <!-- RESULTADOS COUNT -->
+  <!-- RESULTS COUNT -->
   <div class="resultados-info">
-    <span>{{ productosFiltrados().length }} producto{{ productosFiltrados().length === 1 ? '' : 's' }}</span>
+    <span>{{ productosFiltrados().length }} product{{ productosFiltrados().length === 1 ? '' : 's' }}</span>
   </div>
 
   <!-- PRODUCTOS GRID -->
@@ -112,7 +112,7 @@
 
             @if (producto.stock <= 0) {
               <div class="sin-stock-overlay">
-                <span>Sin Stock</span>
+                <span>Out of Stock</span>
               </div>
             }
 
@@ -141,10 +141,10 @@
             >
               @if (productoAgregado() === producto.id) {
                 <i class="fas fa-check"></i>
-                ¡Agregado!
+                Added!
               } @else {
                 <i class="fas fa-cart-plus"></i>
-                Añadir
+                Add
               }
             </button>
           </div>
@@ -152,10 +152,10 @@
       } @empty {
         <div class="empty-state">
           <i class="fas fa-search"></i>
-          <h3>No se encontraron productos</h3>
-          <p>Intenta con otros términos de búsqueda o categorías</p>
+          <h3>No products found</h3>
+          <p>Try other search terms or categories</p>
           <button class="btn-neon-small" (click)="onBusquedaChange(''); filtrarPorCategoria('TODAS')">
-            Ver todos los productos
+            View all products
           </button>
         </div>
       }
@@ -171,7 +171,7 @@
     <div class="carrito-header">
       <h2>
         <i class="fas fa-shopping-cart"></i>
-        Tu Carrito
+        Your Cart
       </h2>
       <button class="btn-cerrar" (click)="toggleCarrito()">
         <i class="fas fa-times"></i>
@@ -210,8 +210,8 @@
       } @else {
         <div class="carrito-vacio">
           <i class="fas fa-shopping-basket"></i>
-          <p>Tu carrito está vacío</p>
-          <button class="btn-neon-small" (click)="toggleCarrito()">Seguir comprando</button>
+          <p>Your cart is empty</p>
+          <button class="btn-neon-small" (click)="toggleCarrito()">Continue shopping</button>
         </div>
       }
     </div>
@@ -224,7 +224,7 @@
         </div>
         <button class="btn-checkout" (click)="checkout()">
           <i class="fas fa-credit-card"></i>
-          Finalizar Pedido
+          Place Order
         </button>
       </div>
     }

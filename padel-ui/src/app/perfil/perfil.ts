@@ -88,9 +88,9 @@ export class PerfilComponent implements OnInit {
   formatearFecha(fechaStr: string): string {
     const [year, month, day] = fechaStr.split('-').map(Number);
     const fecha = new Date(Date.UTC(year, month - 1, day));
-    const dias = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
-    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const dias = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const meses = ['January', 'February', 'March', 'April', 'May', 'June', 
+                   'July', 'August', 'September', 'October', 'November', 'December'];
     
     const diaSemana = dias[fecha.getUTCDay()];
     const diaNum = fecha.getUTCDate();
@@ -110,19 +110,19 @@ export class PerfilComponent implements OnInit {
    * Determina el nivel/rango del jugador basado en partidos del mes
    */
   getRangoJugador(partidosMes: number): { titulo: string; icono: string; color: string } {
-    if (partidosMes >= 20) return { titulo: 'Leyenda', icono: 'fa-crown', color: '#FFD700' };
+    if (partidosMes >= 20) return { titulo: 'Legend', icono: 'fa-crown', color: '#FFD700' };
     if (partidosMes >= 12) return { titulo: 'Elite', icono: 'fa-star', color: '#CCFF00' };
-    if (partidosMes >= 6) return { titulo: 'Avanzado', icono: 'fa-medal', color: '#00D4FF' };
-    if (partidosMes >= 3) return { titulo: 'Intermedio', icono: 'fa-bolt', color: '#FF6B35' };
-    return { titulo: 'Principiante', icono: 'fa-seedling', color: '#A8E6CF' };
+    if (partidosMes >= 6) return { titulo: 'Advanced', icono: 'fa-medal', color: '#00D4FF' };
+    if (partidosMes >= 3) return { titulo: 'Intermediate', icono: 'fa-bolt', color: '#FF6B35' };
+    return { titulo: 'Beginner', icono: 'fa-seedling', color: '#A8E6CF' };
   }
 
   cancelarReserva(id: number) {
     this.confirmDialog.confirm({
-      title: 'Cancelar Reserva',
-      message: '¿Estas seguro de que deseas cancelar esta reserva? REGLA: Minimo 24h de antelacion.',
-      confirmText: 'Cancelar Reserva',
-      cancelText: 'Volver',
+      title: 'Cancel Booking',
+      message: 'Are you sure you want to cancel this booking? RULE: Minimum 24h notice.',
+      confirmText: 'Cancel Booking',
+      cancelText: 'Back',
       confirmButtonClass: 'btn-danger',
       icon: 'fa-calendar-times'
     }).subscribe(result => {
@@ -132,11 +132,11 @@ export class PerfilComponent implements OnInit {
           next: () => {
             this.cancelandoReservaId.set(null);
             this.cargarDatos();
-            this.notificationService.success('Reserva cancelada');
+            this.notificationService.success('Booking cancelled');
           },
           error: (err) => {
             this.cancelandoReservaId.set(null);
-            this.notificationService.error(err.error || 'No se pudo cancelar la reserva. Verifica la antelacion (24h).');
+            this.notificationService.error(err.error || 'Could not cancel the booking. Please check the notice period (24h).');
           }
         });
       }
@@ -145,10 +145,10 @@ export class PerfilComponent implements OnInit {
 
   cancelarInscripcionTorneo(id: number) {
     this.confirmDialog.confirm({
-      title: 'Cancelar Inscripcion',
-      message: '¿Estas seguro de que deseas cancelar tu inscripcion a este torneo?',
-      confirmText: 'Cancelar Inscripcion',
-      cancelText: 'Volver',
+      title: 'Cancel Registration',
+      message: 'Are you sure you want to cancel your registration for this tournament?',
+      confirmText: 'Cancel Registration',
+      cancelText: 'Back',
       confirmButtonClass: 'btn-danger',
       icon: 'fa-trophy'
     }).subscribe(result => {
@@ -156,10 +156,10 @@ export class PerfilComponent implements OnInit {
         this.torneoService.cancelarInscripcion(id).subscribe({
           next: () => {
             this.cargarDatos();
-            this.notificationService.success('Inscripcion cancelada correctamente');
+            this.notificationService.success('Registration cancelled successfully');
           },
           error: (err) => {
-            this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');
+            this.notificationService.error(err.error || 'Could not cancel the registration');
           }
         });
       }
@@ -168,10 +168,10 @@ export class PerfilComponent implements OnInit {
 
   cancelarInscripcionClase(id: number) {
     this.confirmDialog.confirm({
-      title: 'Cancelar Inscripcion',
-      message: '¿Cancelar tu inscripcion a esta clase?',
-      confirmText: 'Cancelar Inscripcion',
-      cancelText: 'Volver',
+      title: 'Cancel Registration',
+      message: 'Cancel your registration for this class?',
+      confirmText: 'Cancel Registration',
+      cancelText: 'Back',
       confirmButtonClass: 'btn-danger',
       icon: 'fa-graduation-cap'
     }).subscribe(result => {
@@ -179,10 +179,10 @@ export class PerfilComponent implements OnInit {
         this.http.post(`${this.apiUrl}/clases/${id}/cancelar`, {}, { responseType: 'text' }).subscribe({
           next: () => {
             this.cargarDatos();
-            this.notificationService.success('Inscripcion a clase cancelada');
+            this.notificationService.success('Class registration cancelled');
           },
           error: (err) => {
-            this.notificationService.error(err.error || 'No se pudo cancelar la inscripcion');
+            this.notificationService.error(err.error || 'Could not cancel the registration');
           }
         });
       }
@@ -200,12 +200,12 @@ export class PerfilComponent implements OnInit {
     this.mensajeError.set('');
     this.authService.cambiarPassword(this.passwordData()).subscribe({
       next: () => {
-        this.mensajeExito.set('Contraseña actualizada correctamente.');
+        this.mensajeExito.set('Password updated successfully.');
         this.passwordData.set({ oldPassword: '', newPassword: '' });
         setTimeout(() => this.showPasswordForm.set(false), 2000);
       },
       error: (err) => {
-        this.mensajeError.set(err.error || 'Error al cambiar contraseña');
+        this.mensajeError.set(err.error || 'Error changing password');
       }
     });
   }

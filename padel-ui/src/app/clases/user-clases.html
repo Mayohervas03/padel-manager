@@ -1,7 +1,7 @@
 <div class="user-view">
   <div class="page-header">
-    <h1>Academia <span class="accent">Élite</span></h1>
-    <p>Mejora tu técnica con los mejores profesionales del sector. Selecciona tu nivel y asegura tu plaza.</p>
+    <h1>Élite <span class="accent">Academy</span></h1>
+    <p>Improve your technique with the best professionals in the industry. Select your level and secure your spot.</p>
   </div>
 
   <div class="content-grid">
@@ -21,7 +21,7 @@
 
     @if (!isLoading() && clasesDisponibles().length === 0) {
       <div class="empty-state">
-        <p>No hay clases disponibles en este momento. ¡Vuelve pronto!</p>
+        <p>No classes available at the moment. Come back soon!</p>
       </div>
     }
 
@@ -42,12 +42,12 @@
           
           <div class="info-line">
             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-            <span>{{ formatearFecha(clase.fecha) }} a las {{ formatearHora(clase.hora) }}</span>
+            <span>{{ formatearFecha(clase.fecha) }} at {{ formatearHora(clase.hora) }}</span>
           </div>
           
           <div class="info-line">
             <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
-            <span>Profesor: <strong>{{ clase.monitor }}</strong></span>
+            <span>Coach: <strong>{{ clase.monitor }}</strong></span>
           </div>
           
           <div class="info-line urgencia" 
@@ -55,11 +55,8 @@
                [class.pocas]="plazasRestantes(clase) > 0 && plazasRestantes(clase) <= 2">
             <i class="fas fa-users" aria-hidden="true"></i>
             <span>
-              @if (plazasRestantes(clase) > 0) {
-                Quedan <strong>{{ plazasRestantes(clase) }}</strong> de {{ clase.maxAlumnos }} plazas
-              } @else {
-                <strong>Clase completa</strong>
-              }
+              <span class="if-plazas">Remaining </span><strong class="plazas-num">{{ plazasRestantes(clase) }}</strong><span class="of-plazas"> of {{ clase.maxAlumnos }} spots</span>
+              <span class="else-plazas">Class full</span>
             </span>
           </div>
         </div>
@@ -70,9 +67,9 @@
                     (click)="cancelarInscripcion(clase)"
                     [disabled]="inscripcionesEnCurso().has(clase.id)">
               @if (!inscripcionesEnCurso().has(clase.id)) {
-                <i class="fas fa-times-circle" aria-hidden="true"></i> Cancelar inscripcion
+                <i class="fas fa-times-circle" aria-hidden="true"></i> Cancel registration
               } @else {
-                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Procesando...
+                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Processing...
               }
             </button>
           }
@@ -82,17 +79,17 @@
                     (click)="inscribirse(clase)" 
                     [disabled]="inscripcionesEnCurso().has(clase.id)">
               @if (!inscripcionesEnCurso().has(clase.id)) {
-                <i class="fas fa-check-circle" aria-hidden="true"></i> Inscribirme
+                <i class="fas fa-check-circle" aria-hidden="true"></i> Register
               } @else {
-                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Procesando...
+                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Processing...
               }
             </button>
           }
 
           @if (!isInscrito(clase) && (clase.alumnos?.length || 0) >= clase.maxAlumnos) {
-            <button class="btn-disabled" disabled>
-              <i class="fas fa-ban" aria-hidden="true"></i> Clase Llena
-            </button>
+              <button class="btn-disabled" disabled>
+                <i class="fas fa-ban" aria-hidden="true"></i> Class Full
+              </button>
           }
         </div>
 

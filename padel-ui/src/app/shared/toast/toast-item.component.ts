@@ -11,7 +11,7 @@ import type { Toast, ToastType } from '../notification.service';
       <div class="toast-content">
         <span class="toast-icon" aria-hidden="true">{{ icon }}</span>
         <span class="toast-message">{{ toast.message }}</span>
-        <button class="toast-close" (click)="onClose()" aria-label="Cerrar notificación">
+        <button class="toast-close" (click)="onClose()" aria-label="Close notification">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>

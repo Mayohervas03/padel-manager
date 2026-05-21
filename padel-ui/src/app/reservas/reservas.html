@@ -1,17 +1,17 @@
 <div class="booking-wrapper">
-  <!-- Cabecera -->
+  <!-- Header -->
   <div class="page-header">
-    <h1>Reserva tu <span class="accent">Pista</span></h1>
-    <p>Selecciona el día y la hora para saltar a la pista hoy mismo.</p>
+    <h1>Book your <span class="accent">Court</span></h1>
+    <p>Select the day and time to hit the court today.</p>
   </div>
 
-  <!-- VISTA: NUEVA RESERVA -->
+  <!-- VIEW: NEW BOOKING -->
   <div class="content-grid">
     <!-- Paso 1: Día -->
     <div class="glass-card">
       <div class="card-header">
         <h4>
-          <span class="step-number">1</span> Elige Fecha
+          <span class="step-number">1</span> Choose Date
         </h4>
       </div>
       <div class="scroller-dias">
@@ -22,7 +22,7 @@
             (click)="seleccionarDia(dia.fecha)"
             role="button"
             tabindex="0"
-            [attr.aria-label]="'Seleccionar día ' + dia.diaLetra + ' ' + dia.diaNum + ' ' + dia.mes"
+            [attr.aria-label]="'Select day ' + dia.diaLetra + ' ' + dia.diaNum + ' ' + dia.mes"
           >
             <span class="dia-letra">{{ dia.diaLetra }}</span>
             <span class="dia-num">{{ dia.diaNum }}</span>
@@ -37,7 +37,7 @@
       <div class="glass-card">
         <div class="card-header">
           <h4>
-            <span class="step-number">2</span> Elige Hora
+            <span class="step-number">2</span> Choose Time
             <span class="step-date">({{ fechaSeleccionada() }})</span>
           </h4>
         </div>
@@ -49,7 +49,7 @@
               (click)="seleccionarHora(hora)"
               role="button"
               tabindex="0"
-              [attr.aria-label]="'Seleccionar hora ' + hora"
+              [attr.aria-label]="'Select time ' + hora"
             >
               {{ hora }}
             </div>
@@ -64,7 +64,7 @@
         @if (pistasDisponibles().length > 0) {
           <div class="card-header">
             <h4>
-              <span class="step-number">3</span> Selecciona una Pista
+              <span class="step-number">3</span> Select a Court
             </h4>
           </div>
         }
@@ -72,14 +72,14 @@
         @if (cargandoPistas()) {
           <div class="loading-pistas">
             <i class="fas fa-spinner fa-spin"></i>
-            <span>Consultando disponibilidad...</span>
+            <span>Checking availability...</span>
           </div>
         }
 
         @if (!cargandoPistas() && pistasDisponibles().length === 0 && fechaSeleccionada() && horaSeleccionada()) {
           <div class="alert-warning">
             <i class="fas fa-exclamation-triangle"></i>
-            <span>Lo sentimos, no hay pistas disponibles a esa hora. Prueba con otro horario.</span>
+            <span>Sorry, no courts available at that time. Try another schedule.</span>
           </div>
         }
 
@@ -92,7 +92,7 @@
                 (click)="seleccionarPista(pista)"
                 role="button"
                 tabindex="0"
-                [attr.aria-label]="'Seleccionar pista ' + pista.nombre"
+                [attr.aria-label]="'Select court ' + pista.nombre"
               >
                 <div class="item-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-layout-wtf" viewBox="0 0 16 16" aria-hidden="true">
@@ -114,7 +114,7 @@
           <div class="confirm-summary">
             <h4 class="summary-title">
               <i class="fas fa-clipboard-check"></i>
-              Resumen de tu reserva
+              Booking Summary
             </h4>
             <div class="summary-details">
               <div class="summary-row">
@@ -140,7 +140,7 @@
             </div>
             <div class="confirm-bar">
               <button class="btn-neon" (click)="guardarReserva()" [disabled]="cargando()">
-                  {{ cargando() ? 'Procesando...' : 'Confirmar Reserva' }}
+                  {{ cargando() ? 'Processing...' : 'Confirm Booking' }}
               </button>
             </div>
           </div>

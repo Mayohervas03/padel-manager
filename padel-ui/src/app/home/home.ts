@@ -15,57 +15,57 @@ export class HomeComponent implements OnInit {
   readonly currentYear = signal(new Date().getFullYear());
 
   readonly stats = [
-    { value: '8', label: 'Pistas Premium' },
-    { value: '2.4K+', label: 'Jugadores Activos' },
-    { value: '15K+', label: 'Partidos al Año' },
-    { value: '4.9', label: 'Valoración Media' }
+    { value: '8', label: 'Premium Courts' },
+    { value: '2.4K+', label: 'Active Players' },
+    { value: '15K+', label: 'Matches per Year' },
+    { value: '4.9', label: 'Average Rating' }
   ];
 
   readonly features = [
     {
       image: 'img/features/reserva.jpg',
       icon: 'fa-calendar-check',
-      title: 'Reserva Online',
-      description: 'Reserva tu pista en segundos. Sistema de disponibilidad en tiempo real.',
+      title: 'Online Booking',
+      description: 'Book your court in seconds. Real-time availability system.',
       link: '/reservas',
-      linkText: 'Reservar Ahora',
+      linkText: 'Book Now',
       accent: 'cyan'
     },
     {
       image: 'img/features/academia.jpg',
       icon: 'fa-graduation-cap',
-      title: 'Academia Élite',
-      description: 'Monitores titulados. Clases para todos los niveles, desde iniciación hasta competición.',
+      title: 'Élite Academy',
+      description: 'Certified coaches. Classes for all levels, from beginner to competition.',
       link: '/clases',
-      linkText: 'Ver Clases',
+      linkText: 'View Classes',
       accent: 'lime'
     },
     {
       image: 'img/features/torneos.jpg',
       icon: 'fa-trophy',
-      title: 'Torneos',
-      description: 'Compite en nuestros torneos americanos y pozos. Premios y diversión garantizada.',
+      title: 'Tournaments',
+      description: 'Compete in our american and pool tournaments. Prizes and fun guaranteed.',
       link: '/torneos',
-      linkText: 'Ver Torneos',
+      linkText: 'View Tournaments',
       accent: 'coral'
     }
   ];
 
   readonly testimonials = [
     {
-      text: 'Las mejores instalaciones de la ciudad. Las pistas están impecables y el ambiente es increíble.',
+      text: 'The best facilities in the city. The courts are impeccable and the atmosphere is incredible.',
       author: 'Carlos Martínez',
-      role: 'Jugador Amateur'
+      role: 'Amateur Player'
     },
     {
-      text: 'La academia me ha ayudado a mejorar mi técnica un montón. Los monitores son top.',
+      text: 'The academy has helped me improve my technique a lot. The coaches are top.',
       author: 'Ana García',
-      role: 'Nivel Intermedio'
+      role: 'Intermediate Level'
     },
     {
-      text: 'Venimos todos los fines de semana con los amigos. El torneo americano es lo más.',
+      text: 'We come every weekend with friends. The american tournament is the best.',
       author: 'Miguel López',
-      role: 'Jugador Élite'
+      role: 'Élite Player'
     }
   ];
 

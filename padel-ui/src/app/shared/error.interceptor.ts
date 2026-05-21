@@ -35,16 +35,16 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       // Detectar sesión expirada o acceso no autorizado
       if (error.status === 401 || error.status === 403) {
         console.warn(`[ErrorInterceptor] Error ${error.status} detectado. Cerrando sesión...`);
-        authService.logoutAndRedirect('Tu sesion ha expirado, por favor vuelve a entrar.');
+        authService.logoutAndRedirect('Your session has expired, please log in again.');
         
         // Creamos un error específico para informar al componente
         const sessionError = {
           status: error.status,
           statusText: error.statusText,
-          message: 'Tu sesion ha expirado. Por favor, inicia sesion de nuevo.',
-          error: 'Tu sesion ha expirado. Por favor, inicia sesion de nuevo.',
+          message: 'Your session has expired. Please log in again.',
+          error: 'Your session has expired. Please log in again.',
           errorObject: {
-            message: 'Tu sesion ha expirado. Por favor, inicia sesion de nuevo.',
+            message: 'Your session has expired. Please log in again.',
             status: error.status,
             path: req.url,
             sessionExpired: true

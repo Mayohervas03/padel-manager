@@ -3,58 +3,58 @@
     <div class="dialog-box" (click)="$event.stopPropagation()">
       <div class="dialog-header">
         <i class="fas fa-trophy"></i>
-        <h3>{{ t.id ? 'Editar Torneo' : 'Crear Torneo' }}</h3>
+        <h3>{{ t.id ? 'Edit Tournament' : 'Create Tournament' }}</h3>
       </div>
 
       <div class="dialog-body">
         <div class="form-grid">
           <div class="form-group">
-            <label for="tf-titulo">Título *</label>
-            <input id="tf-titulo" type="text" [(ngModel)]="titulo" placeholder="Título del torneo" class="form-input" />
+            <label for="tf-titulo">Title *</label>
+            <input id="tf-titulo" type="text" [(ngModel)]="titulo" placeholder="Tournament title" class="form-input" />
           </div>
 
           <div class="form-group">
-            <label for="tf-imagen">Imagen URL</label>
+            <label for="tf-imagen">Image URL</label>
             <input id="tf-imagen" type="url" [(ngModel)]="imagenUrl" placeholder="https://..." class="form-input" />
           </div>
 
           <div class="form-group form-full">
-            <label for="tf-desc">Descripción</label>
-            <textarea id="tf-desc" [(ngModel)]="descripcion" rows="3" placeholder="Descripción del torneo" class="form-input"></textarea>
+            <label for="tf-desc">Description</label>
+            <textarea id="tf-desc" [(ngModel)]="descripcion" rows="3" placeholder="Tournament description" class="form-input"></textarea>
           </div>
 
           <div class="form-group">
-            <label for="tf-inicio">Fecha Inicio *</label>
+            <label for="tf-inicio">Start Date *</label>
             <input id="tf-inicio" type="date" [(ngModel)]="fechaInicio" class="form-input" />
           </div>
 
           <div class="form-group">
-            <label for="tf-fin">Fecha Fin *</label>
+            <label for="tf-fin">End Date *</label>
             <input id="tf-fin" type="date" [(ngModel)]="fechaFin" class="form-input" />
           </div>
 
           <div class="form-group">
-            <label for="tf-precio">Precio Pareja (€) *</label>
+            <label for="tf-precio">Pair Price (€) *</label>
             <input id="tf-precio" type="number" [(ngModel)]="precioPareja" min="0" class="form-input" />
           </div>
 
           <div class="form-group">
-            <label for="tf-estado">Estado</label>
+            <label for="tf-estado">Status</label>
             <select id="tf-estado" [(ngModel)]="estado" class="form-input">
-              <option value="ABIERTO">Abierto</option>
-              <option value="CERRADO">Cerrado</option>
-              <option value="CANCELADO">Cancelado</option>
+              <option value="ABIERTO">Open</option>
+              <option value="CERRADO">Closed</option>
+              <option value="CANCELADO">Canceled</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="tf-cierre">Fecha Cierre Inscripciones</label>
+            <label for="tf-cierre">Registration Closing Date</label>
             <input id="tf-cierre" type="date" [(ngModel)]="fechaCierreInscripcion" class="form-input" />
           </div>
 
-          <!-- Categorías -->
+          <!-- Categories -->
           <div class="form-group form-full categorias-section">
-            <label>Categorías *</label>
+            <label>Categories *</label>
             <div class="categorias-list">
               @for (cat of categorias(); track $index; let i = $index) {
                 <div class="categoria-row">
@@ -62,14 +62,14 @@
                     type="text" 
                     [value]="cat.nombre"
                     (input)="actualizarCategoria(i, 'nombre', $any($event.target).value)"
-                    placeholder="Nombre categoría (ej: Masculino A)"
+                    placeholder="Category name (e.g. Men A)"
                     class="form-input cat-nombre"
                   />
                   <input 
                     type="number" 
                     [value]="cat.maxParejas"
                     (input)="actualizarCategoria(i, 'maxParejas', +$any($event.target).value)"
-                    placeholder="Max parejas"
+                    placeholder="Max pairs"
                     min="1"
                     class="form-input cat-max"
                   />
@@ -78,7 +78,7 @@
                     class="btn-icon btn-danger" 
                     (click)="eliminarCategoria(i)"
                     [disabled]="categorias().length <= 1"
-                    title="Eliminar categoría"
+                    title="Delete category"
                   >
                     <i class="fas fa-trash"></i>
                   </button>
@@ -86,16 +86,16 @@
               }
             </div>
             <button type="button" class="btn btn-sm btn-secondary" (click)="agregarCategoria()">
-              <i class="fas fa-plus"></i> Añadir categoría
+              <i class="fas fa-plus"></i> Add category
             </button>
           </div>
         </div>
       </div>
 
       <div class="dialog-footer">
-        <button class="btn btn-secondary" (click)="onCerrar()">Cancelar</button>
+        <button class="btn btn-secondary" (click)="onCerrar()">Cancel</button>
         <button class="btn btn-primary" (click)="onGuardar()">
-          <i class="fas fa-save"></i> Guardar
+          <i class="fas fa-save"></i> Save
         </button>
       </div>
     </div>

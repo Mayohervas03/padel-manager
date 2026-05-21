@@ -2,14 +2,14 @@
   <div class="admin-header">
     <h1>
       <i class="fas fa-shopping-bag"></i>
-      Gestión de Pedidos
+      Order Management
     </h1>
   </div>
 
-  <!-- Filtros -->
+  <!-- Filters -->
   <div class="filtros-bar">
     <div class="filtro-grupo">
-      <span class="filtro-label">Estado:</span>
+      <span class="filtro-label">Status:</span>
       <div class="filtro-botones">
         @for (est of estados; track est.value) {
           <button
@@ -27,7 +27,7 @@
       <input
         type="text"
         class="buscador-input"
-        placeholder="Buscar por #pedido o producto..."
+        placeholder="Search by #order or product..."
         [ngModel]="filtroBusqueda()"
         (ngModelChange)="filtroBusqueda.set($event)"
       >
@@ -43,26 +43,26 @@
   @if (isLoading()) {
     <div class="loading-state">
       <i class="fas fa-spinner fa-spin"></i>
-      <p>Cargando pedidos...</p>
+      <p>Loading orders...</p>
     </div>
   } @else if (pedidosFiltrados().length === 0) {
     <div class="empty-state">
       <i class="fas fa-inbox"></i>
-      <h3>No hay pedidos</h3>
-      <p>No se encontraron pedidos con los filtros seleccionados</p>
+      <h3>No orders</h3>
+      <p>No orders found with the selected filters</p>
     </div>
   } @else {
     <div class="tabla-wrapper">
       <table class="pedidos-tabla">
         <thead>
           <tr>
-            <th># Pedido</th>
-            <th>Usuario</th>
-            <th>Fecha</th>
-            <th>Productos</th>
+            <th># Order</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Products</th>
             <th>Total</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -94,21 +94,21 @@
                   <button
                     class="btn-accion btn-completar"
                     (click)="cambiarEstado(pedido, 'COMPLETADO')"
-                    title="Marcar como completado">
+                    title="Mark as completed">
                     <i class="fas fa-check"></i>
                   </button>
                   <button
                     class="btn-accion btn-cancelar"
                     (click)="cambiarEstado(pedido, 'CANCELADO')"
-                    title="Cancelar pedido">
+                    title="Cancel order">
                     <i class="fas fa-times"></i>
                   </button>
                 }
                 @if (pedido.estado === 'CANCELADO') {
-                  <span class="accion-deshabilitada">Cancelado</span>
+                  <span class="accion-deshabilitada">Canceled</span>
                 }
                 @if (pedido.estado === 'COMPLETADO') {
-                  <span class="accion-deshabilitada">Completado</span>
+                  <span class="accion-deshabilitada">Completed</span>
                 }
               </td>
             </tr>
@@ -118,7 +118,7 @@
     </div>
 
     <div class="resultados-info">
-      <span>{{ pedidosFiltrados().length }} pedido{{ pedidosFiltrados().length === 1 ? '' : 's' }}</span>
+      <span>{{ pedidosFiltrados().length }} order{{ pedidosFiltrados().length === 1 ? '' : 's' }}</span>
     </div>
   }
 </div>

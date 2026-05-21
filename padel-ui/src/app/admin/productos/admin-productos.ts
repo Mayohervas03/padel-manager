@@ -118,17 +118,17 @@ export class AdminProductosComponent implements OnInit {
   guardarProducto() {
     const p = this.productoEditando;
     if (!p.nombre || p.precio === undefined || p.precio === null || p.stock === undefined || p.stock === null) {
-      this.notificationService.error('Completa los campos obligatorios');
+      this.notificationService.error('Please fill in the required fields');
       return;
     }
 
     if (p.precio < 0) {
-      this.notificationService.error('El precio no puede ser negativo');
+      this.notificationService.error('Price cannot be negative');
       return;
     }
 
     if (p.stock < 0) {
-      this.notificationService.error('El stock no puede ser negativo');
+      this.notificationService.error('Stock cannot be negative');
       return;
     }
 
@@ -145,42 +145,42 @@ export class AdminProductosComponent implements OnInit {
     if (p.id) {
       this.productoService.updateProducto(p.id, payload).subscribe({
         next: () => {
-          this.activityLog.log('ACTUALIZAR', 'PRODUCTO', `Actualizado ${payload.nombre}`, p.id);
-          this.notificationService.success('Producto actualizado');
+          this.activityLog.log('ACTUALIZAR', 'PRODUCTO', `Updated ${payload.nombre}`, p.id);
+          this.notificationService.success('Product updated');
           this.toggleFormulario();
           this.cargarProductos();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error al actualizar')
+        error: (err) => this.notificationService.error(err.error || 'Error updating')
       });
     } else {
       this.productoService.createProducto(payload).subscribe({
         next: () => {
-          this.activityLog.log('CREAR', 'PRODUCTO', `Creado ${payload.nombre}`);
-          this.notificationService.success('Producto creado');
+          this.activityLog.log('CREAR', 'PRODUCTO', `Created ${payload.nombre}`);
+          this.notificationService.success('Product created');
           this.toggleFormulario();
           this.cargarProductos();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error al crear')
+        error: (err) => this.notificationService.error(err.error || 'Error creating')
       });
     }
   }
 
   borrarProducto(id: number) {
     this.confirmDialog.confirm({
-      title: 'Eliminar Producto',
-      message: '¿Seguro que quieres eliminar este producto?',
-      confirmText: 'Eliminar',
-      cancelText: 'Cancelar',
+      title: 'Delete Product',
+      message: 'Are you sure you want to delete this product?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-danger'
     }).subscribe(confirmed => {
       if (!confirmed) return;
       this.productoService.deleteProducto(id).subscribe({
         next: () => {
           this.activityLog.log('ELIMINAR', 'PRODUCTO', `Eliminado producto #${id}`, id);
-          this.notificationService.success('Producto eliminado');
+          this.notificationService.success('Product deleted');
           this.cargarProductos();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
+        error: (err) => this.notificationService.error(err.error || 'Error deleting')
       });
     });
   }
@@ -208,10 +208,10 @@ export class AdminProductosComponent implements OnInit {
       Categoria: p.categoria,
       Precio: p.precio,
       Stock: p.stock,
-      Activo: p.activo ? 'Si' : 'No'
+      Active: p.activo ? 'Yes' : 'No'
     }));
-    this.exportService.exportToCSV(datos, 'productos');
-    this.activityLog.log('EXPORTAR', 'PRODUCTO', `Exportados ${datos.length} productos a CSV`);
-    this.notificationService.success('Productos exportados correctamente');
+    this.exportService.exportToCSV(datos, 'products');
+    this.activityLog.log('EXPORTAR', 'PRODUCTO', `Exported ${datos.length} products to CSV`);
+    this.notificationService.success('Products exported successfully');
   }
 }

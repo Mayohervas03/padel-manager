@@ -1,8 +1,8 @@
 <div class="admin-dashboard">
   <div class="dashboard-header">
-    <h2><i class="fas fa-calendar-alt"></i> Agenda del Día</h2>
+    <h2><i class="fas fa-calendar-alt"></i> Daily Schedule</h2>
     <div class="date-selector">
-      <label for="fechaReservas">Día de control:</label>
+      <label for="fechaReservas">Control day:</label>
       <input type="date" id="fechaReservas" [(ngModel)]="fechaActual" (change)="onFechaChange()" />
     </div>
   </div>
@@ -13,35 +13,35 @@
       <div class="kpi-icon kpi-icon-total"><i class="fas fa-calendar-check"></i></div>
       <div class="kpi-data">
         <span class="kpi-value">{{ kpis().totalItems }}</span>
-        <span class="kpi-label">Total Actividades</span>
+        <span class="kpi-label">Total Activities</span>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-icon-reserva"><i class="fas fa-table-tennis"></i></div>
       <div class="kpi-data">
         <span class="kpi-value">{{ kpis().reservasCount }}</span>
-        <span class="kpi-label">Reservas</span>
+        <span class="kpi-label">Bookings</span>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-icon-clase"><i class="fas fa-graduation-cap"></i></div>
       <div class="kpi-data">
         <span class="kpi-value">{{ kpis().clasesCount }}</span>
-        <span class="kpi-label">Clases</span>
+        <span class="kpi-label">Classes</span>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-icon-pista"><i class="fas fa-map-marker-alt"></i></div>
       <div class="kpi-data">
         <span class="kpi-value">{{ kpis().pistasUnicas }}</span>
-        <span class="kpi-label">Pistas Usadas</span>
+        <span class="kpi-label">Courts Used</span>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-icon-ocupacion"><i class="fas fa-percentage"></i></div>
       <div class="kpi-data">
         <span class="kpi-value">{{ kpis().ocupacionPct }}%</span>
-        <span class="kpi-label">Ocupación</span>
+        <span class="kpi-label">Occupancy</span>
       </div>
     </div>
   </div>
@@ -49,40 +49,40 @@
   <!-- Filters -->
   <div class="filters-bar">
     <div class="filter-group">
-      <label>Tipo:</label>
+      <label>Type:</label>
       <div class="filter-pills">
         <button 
           class="filter-pill" 
           [class.active]="filtroTipo() === 'TODOS'"
           (click)="setFiltroTipo('TODOS')"
-          aria-label="Mostrar todas las actividades"
+          aria-label="Show all activities"
         >
-          Todos
+          All
         </button>
         <button 
           class="filter-pill" 
           [class.active]="filtroTipo() === 'RESERVA'"
           (click)="setFiltroTipo('RESERVA')"
-          aria-label="Filtrar solo reservas"
+          aria-label="Filter bookings only"
         >
-          <i class="fas fa-table-tennis"></i> Reservas
+          <i class="fas fa-table-tennis"></i> Bookings
         </button>
         <button 
           class="filter-pill" 
           [class.active]="filtroTipo() === 'CLASE'"
           (click)="setFiltroTipo('CLASE')"
-          aria-label="Filtrar solo clases"
+          aria-label="Filter classes only"
         >
-          <i class="fas fa-graduation-cap"></i> Clases
+          <i class="fas fa-graduation-cap"></i> Classes
         </button>
       </div>
     </div>
     
     <div class="filter-group">
-      <label>Pista:</label>
-      <select [(ngModel)]="filtroPista" (change)="setFiltroPista(filtroPista())" class="filter-select" aria-label="Filtrar por pista">
+      <label>Court:</label>
+      <select [(ngModel)]="filtroPista" (change)="setFiltroPista(filtroPista())" class="filter-select" aria-label="Filter by court">
         @for (pista of pistasDisponibles(); track pista) {
-          <option [value]="pista">{{ pista === 'TODAS' ? 'Todas las pistas' : pista }}</option>
+          <option [value]="pista">{{ pista === 'TODAS' ? 'All courts' : pista }}</option>
         }
       </select>
     </div>
@@ -91,16 +91,16 @@
   <div class="table-container">
     @if (reservasFiltradas().length > 0) {
       <table class="reservas-table">
-        <caption class="visually-hidden">Reservas y clases programadas para el día seleccionado</caption>
+        <caption class="visually-hidden">Bookings and classes scheduled for the selected day</caption>
         <thead>
           <tr>
-            <th>Tipo</th>
-            <th>Jugador</th>
-            <th>Pista</th>
-            <th>Hora Inicio</th>
-            <th>Hora Fin</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Type</th>
+            <th>Player</th>
+            <th>Court</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -114,11 +114,11 @@
               </td>
               <td>
                 <div class="jugador-info">
-                  <span class="j-nombre">{{ reserva.usuario.nombre || 'Desconocido' }}</span>
+                  <span class="j-nombre">{{ reserva.usuario.nombre || 'Unknown' }}</span>
                   <span class="j-email">{{ reserva.usuario.email }}</span>
                 </div>
               </td>
-              <td>{{ reserva.pista.nombre || 'Pista borrada' }}</td>
+              <td>{{ reserva.pista.nombre || 'Court deleted' }}</td>
               <td>{{ reserva.hora }}</td>
               <td>{{ calcularHoraFin(reserva.hora) }}</td>
               <td>
@@ -127,7 +127,7 @@
                     {{ reserva.estado || 'PENDIENTE' }}
                   </span>
                 } @else {
-                  <span class="estado-badge estado-clase">Activa</span>
+                  <span class="estado-badge estado-clase">Active</span>
                 }
               </td>
               <td>
@@ -138,20 +138,20 @@
                       [value]="reserva.estado || 'PENDIENTE'"
                       (change)="cambiarEstadoReserva(reserva, $any($event.target).value)"
                       [disabled]="isLoading() === reserva.id"
-                      aria-label="Cambiar estado de reserva"
+                      aria-label="Change booking status"
                     >
-                      <option value="PENDIENTE">Pendiente</option>
-                      <option value="CONFIRMADA">Confirmada (pagada)</option>
-                      <option value="COMPLETADA">Completada</option>
-                      <option value="CANCELADA">Cancelar</option>
+                      <option value="PENDIENTE">Pending</option>
+                      <option value="CONFIRMADA">Confirmed (paid)</option>
+                      <option value="COMPLETADA">Completed</option>
+                      <option value="CANCELADA">Cancel</option>
                     </select>
                     @if (isLoading() === reserva.id) {
                       <i class="fas fa-spinner fa-spin"></i>
                     }
                   </div>
                 } @else {
-                  <button class="btn-danger-glass" (click)="anularElemento(reserva)" aria-label="Anular clase">
-                    <i class="fas fa-times"></i> Anular
+                  <button class="btn-danger-glass" (click)="anularElemento(reserva)" aria-label="Cancel class">
+                    <i class="fas fa-times"></i> Cancel
                   </button>
                 }
               </td>
@@ -160,9 +160,9 @@
         </tbody>
       </table>
     } @else {
-      <div class="empty-state">
+        <div class="empty-state">
         <i class="fas fa-calendar-day" style="font-size: 3rem; margin-bottom: 16px; display: block; opacity: 0.3;"></i>
-        <p>No hay reservas programadas para este día.</p>
+        <p>No bookings scheduled for this day.</p>
       </div>
     }
   </div>

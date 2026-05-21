@@ -1,10 +1,10 @@
 <div class="admin-view">
   <div class="view-header">
-    <h2><i class="fas fa-chart-line"></i> Rendimiento del Club</h2>
+    <h2><i class="fas fa-chart-line"></i> Club Performance</h2>
     <div class="date-filters">
-      <label for="desde">Desde:</label>
+      <label for="desde">From:</label>
       <input type="date" id="desde" [(ngModel)]="desde" (change)="aplicarFiltros()" />
-      <label for="hasta">Hasta:</label>
+      <label for="hasta">To:</label>
       <input type="date" id="hasta" [(ngModel)]="hasta" (change)="aplicarFiltros()" />
     </div>
   </div>
@@ -15,7 +15,7 @@
       <div class="kpi-icon kpi-icon-partidos"><i class="fas fa-table-tennis"></i></div>
       <div class="kpi-data">
         <span class="kpi-value">{{ kpis().totalPartidos }}</span>
-        <span class="kpi-label">Total Partidos</span>
+        <span class="kpi-label">Total Matches</span>
       </div>
     </div>
     
@@ -23,7 +23,7 @@
       <div class="kpi-icon kpi-icon-ingresos"><i class="fas fa-euro-sign"></i></div>
       <div class="kpi-data">
         <span class="kpi-value">{{ kpis().totalIngresos | currency:'EUR':'symbol':'1.0-0' }}</span>
-        <span class="kpi-label">Ingresos Totales</span>
+        <span class="kpi-label">Total Revenue</span>
       </div>
     </div>
     
@@ -31,7 +31,7 @@
       <div class="kpi-icon kpi-icon-promedio"><i class="fas fa-chart-bar"></i></div>
       <div class="kpi-data">
         <span class="kpi-value">{{ kpis().promedioDiario | currency:'EUR':'symbol':'1.0-0' }}</span>
-        <span class="kpi-label">Promedio Diario</span>
+        <span class="kpi-label">Daily Average</span>
       </div>
     </div>
     
@@ -40,7 +40,7 @@
       <div class="kpi-data">
         <span class="kpi-value" *ngIf="kpis().pistaTop">{{ kpis().pistaTop!.nombre }}</span>
         <span class="kpi-value" *ngIf="!kpis().pistaTop">--</span>
-        <span class="kpi-label">Pista Más Usada</span>
+        <span class="kpi-label">Most Used Court</span>
       </div>
     </div>
     
@@ -49,14 +49,14 @@
       <div class="kpi-data">
         <span class="kpi-value" *ngIf="kpis().horaTop">{{ kpis().horaTop!.nombre }}</span>
         <span class="kpi-value" *ngIf="!kpis().horaTop">--</span>
-        <span class="kpi-label">Hora Más Popular</span>
+        <span class="kpi-label">Most Popular Time</span>
       </div>
     </div>
   </div>
 
   <div class="stats-grid">
     <div class="stat-card">
-      <h3>Uso de Pistas (Global)</h3>
+      <h3>Court Usage (Global)</h3>
       @defer (on viewport) {
         @if (barChartData()) {
           <div class="chart-container">
@@ -64,12 +64,12 @@
           </div>
         }
       } @placeholder {
-        <div class="chart-placeholder">Cargando gráfico...</div>
+        <div class="chart-placeholder">Loading chart...</div>
       }
     </div>
     
     <div class="stat-card">
-      <h3>Distribución por Horarios</h3>
+      <h3>Distribution by Time Slots</h3>
       @defer (on viewport) {
         @if (pieChartData()) {
           <div class="chart-container">
@@ -77,12 +77,12 @@
           </div>
         }
       } @placeholder {
-        <div class="chart-placeholder">Cargando gráfico...</div>
+        <div class="chart-placeholder">Loading chart...</div>
       }
     </div>
     
     <div class="stat-card full-width">
-      <h3>Ingresos Consolidados (Últimos activos)</h3>
+      <h3>Consolidated Revenue (Latest Active)</h3>
       @defer (on viewport) {
         @if (lineChartData()) {
           <div class="chart-container">
@@ -90,7 +90,7 @@
           </div>
         }
       } @placeholder {
-        <div class="chart-placeholder">Cargando gráfico...</div>
+        <div class="chart-placeholder">Loading chart...</div>
       }
     </div>
   </div>

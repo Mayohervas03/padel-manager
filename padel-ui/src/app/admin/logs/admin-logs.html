@@ -1,6 +1,6 @@
 <div class="admin-logs">
   <div class="page-header">
-    <h1><i class="fas fa-history"></i> Historial de Actividad</h1>
+    <h1><i class="fas fa-history"></i> Activity History</h1>
     <div class="header-actions">
       <div class="search-wrap">
         <i class="fas fa-search icon-search"></i>
@@ -8,31 +8,31 @@
           type="text" 
           [(ngModel)]="filtro" 
           (ngModelChange)="filtrarLogs()"
-          placeholder="Buscar en el historial..."
-          aria-label="Buscar en historial"
+          placeholder="Search history..."
+          aria-label="Search history"
         >
       </div>
-      <button class="btn-danger-glass" (click)="clearLogs()" [disabled]="isLoading()" title="Borrar historial" aria-label="Borrar historial">
-        <i class="fas fa-trash"></i> Limpiar
+      <button class="btn-danger-glass" (click)="clearLogs()" [disabled]="isLoading()" title="Clear history" aria-label="Clear history">
+        <i class="fas fa-trash"></i> Clear
       </button>
     </div>
   </div>
 
   <div class="logs-container">
-    @if (isLoading()) {
+      @if (isLoading()) {
       <div class="empty-state">
         <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
-        <p>Cargando historial...</p>
+        <p>Loading history...</p>
       </div>
     } @else if (logsFiltrados().length > 0) {
       <table class="logs-table">
         <thead>
           <tr>
-            <th>Hora</th>
-            <th>Acción</th>
-            <th>Entidad</th>
-            <th>Detalles</th>
-            <th>Usuario</th>
+            <th>Time</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>Details</th>
+            <th>User</th>
           </tr>
         </thead>
         <tbody>
@@ -56,7 +56,7 @@
       <!-- Paginación -->
       <div class="pagination-bar">
         <div class="pagination-info">
-          Mostrando <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> de <strong>{{ infoPaginacion().total }}</strong> registros
+          Showing <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> of <strong>{{ infoPaginacion().total }}</strong> records
         </div>
         
         <div class="pagination-controls">
@@ -64,18 +64,18 @@
             class="pagination-btn" 
             [disabled]="paginaActual() === 1"
             (click)="cambiarPagina(paginaActual() - 1)"
-            aria-label="Página anterior"
+            aria-label="Previous page"
           >
             <i class="fas fa-chevron-left"></i>
           </button>
           
-          <span class="pagination-page">Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+          <span class="pagination-page">Page {{ paginaActual() }} of {{ totalPaginas() }}</span>
           
           <button 
             class="pagination-btn" 
             [disabled]="paginaActual() === totalPaginas()"
             (click)="cambiarPagina(paginaActual() + 1)"
-            aria-label="Página siguiente"
+            aria-label="Next page"
           >
             <i class="fas fa-chevron-right"></i>
           </button>
@@ -84,8 +84,8 @@
     } @else {
       <div class="empty-state">
         <i class="fas fa-clipboard-list" style="font-size: 3rem; margin-bottom: 16px; display: block; opacity: 0.3;"></i>
-        <p>No hay registros de actividad.</p>
-        <p class="empty-hint">Las acciones realizadas en el panel se registrarán automáticamente aquí.</p>
+        <p>No activity records.</p>
+        <p class="empty-hint">Actions performed in the panel will be automatically logged here.</p>
       </div>
     }
   </div>

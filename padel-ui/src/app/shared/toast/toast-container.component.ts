@@ -9,7 +9,7 @@ import { ToastItemComponent } from './toast-item.component';
   imports: [CommonModule, ToastItemComponent],
   template: `
     @if (notifications().length > 0) {
-      <div class="toast-container" role="region" aria-label="Notificaciones">
+      <div class="toast-container" role="region" aria-label="Notifications">
         @for (toast of notifications(); track toast.id) {
           <app-toast-item
             [toast]="toast"

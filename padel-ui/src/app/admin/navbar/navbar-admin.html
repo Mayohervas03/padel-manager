@@ -19,7 +19,7 @@
           <text fill="#0A192F" font-family="Arial Black, sans-serif" font-weight="900" font-size="110px" letter-spacing="-2px" x="340" y="268" text-anchor="middle" dominant-baseline="middle">EP</text>
         </svg>
         <span class="logo-text">ÉLITE PADEL</span>
-        <span class="badge desktop-only">PANEL ADMIN</span>
+        <span class="badge desktop-only">ADMIN PANEL</span>
       </div>
     </div>
 
@@ -28,46 +28,46 @@
       <ul class="nav-menu">
         <li>
           <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeDropdowns()">
-            <i class="fas fa-calendar-alt icon" aria-hidden="true"></i> Agenda
+            <i class="fas fa-calendar-alt icon" aria-hidden="true"></i> Schedule
           </a>
         </li>
         <li>
           <a routerLink="/admin/stats" routerLinkActive="active" (click)="closeDropdowns()">
-            <i class="fas fa-chart-line icon" aria-hidden="true"></i> Estadísticas
+            <i class="fas fa-chart-line icon" aria-hidden="true"></i> Statistics
           </a>
         </li>
         
         <!-- DROP-DOWN GESTIÓN -->
         <li class="dropdown-item" [class.open]="showGestionDropdown()">
-          <a (click)="toggleGestion($event)" class="dropdown-trigger" [attr.aria-expanded]="showGestionDropdown()" aria-haspopup="true" aria-label="Menú de gestión">
-            <i class="fas fa-th-large icon" aria-hidden="true"></i> Gestión <i class="fas fa-chevron-down arrow" aria-hidden="true"></i>
+          <a (click)="toggleGestion($event)" class="dropdown-trigger" [attr.aria-expanded]="showGestionDropdown()" aria-haspopup="true" aria-label="Management menu">
+            <i class="fas fa-th-large icon" aria-hidden="true"></i> Management <i class="fas fa-chevron-down arrow" aria-hidden="true"></i>
           </a>
           @if (showGestionDropdown()) {
             <div class="dropdown-menu">
               <a routerLink="/admin/clases" (click)="closeDropdowns()">
-                <i class="fas fa-graduation-cap icon-sm" aria-hidden="true"></i> Academia
+                <i class="fas fa-graduation-cap icon-sm" aria-hidden="true"></i> Academy
               </a>
               <a routerLink="/admin/pistas" (click)="closeDropdowns()">
-                <i class="fas fa-table-tennis icon-sm" aria-hidden="true"></i> Pistas
+                <i class="fas fa-table-tennis icon-sm" aria-hidden="true"></i> Courts
               </a>
               <a routerLink="/admin/torneos" (click)="closeDropdowns()">
-                <i class="fas fa-trophy icon-sm" aria-hidden="true"></i> Torneos
+                <i class="fas fa-trophy icon-sm" aria-hidden="true"></i> Tournaments
               </a>
               <a routerLink="/admin/usuarios" (click)="closeDropdowns()">
-                <i class="fas fa-users icon-sm" aria-hidden="true"></i> Usuarios
+                <i class="fas fa-users icon-sm" aria-hidden="true"></i> Users
               </a>
               <a routerLink="/admin/productos" (click)="closeDropdowns()">
-                <i class="fas fa-box icon-sm" aria-hidden="true"></i> Productos
+                <i class="fas fa-box icon-sm" aria-hidden="true"></i> Products
               </a>
               <a routerLink="/admin/pedidos" (click)="closeDropdowns()">
-                <i class="fas fa-shopping-bag icon-sm" aria-hidden="true"></i> Pedidos
+                <i class="fas fa-shopping-bag icon-sm" aria-hidden="true"></i> Orders
               </a>
               <a routerLink="/admin/logs" (click)="closeDropdowns()">
-                <i class="fas fa-history icon-sm" aria-hidden="true"></i> Historial
+                <i class="fas fa-history icon-sm" aria-hidden="true"></i> History
               </a>
               <div class="dropdown-divider"></div>
               <a routerLink="/admin/manual" (click)="closeDropdowns()" class="dropdown-highlight">
-                <i class="fas fa-phone-alt icon-sm" aria-hidden="true"></i> Reserva Manual
+                <i class="fas fa-phone-alt icon-sm" aria-hidden="true"></i> Manual Booking
               </a>
             </div>
           }
@@ -77,19 +77,19 @@
 
     <!-- LADO DERECHO -->
     <div class="nav-right">
-      <!-- Botón atajos (desktop) -->
+      <!-- Keyboard shortcuts button (desktop) -->
       <button 
         class="keyboard-shortcut-trigger desktop-only" 
         (click)="showKeyboardHelp()" 
-        title="Atajos de teclado (?)"
-        aria-label="Mostrar atajos de teclado"
+        title="Keyboard shortcuts (?)"
+        aria-label="Show keyboard shortcuts"
       >
         <i class="fas fa-keyboard"></i>
       </button>
       
-      <!-- Avatar usuario (solo desktop) -->
+      <!-- User avatar (desktop only) -->
       <div class="user-menu-wrap desktop-only" [class.open]="showUserDropdown()">
-        <div class="avatar-trigger" (click)="toggleUser($event)" title="Opciones de Administrador" aria-label="Menú de usuario administrador" [attr.aria-expanded]="showUserDropdown()" aria-haspopup="true">
+        <div class="avatar-trigger" (click)="toggleUser($event)" title="Admin Options" aria-label="Admin user menu" [attr.aria-expanded]="showUserDropdown()" aria-haspopup="true">
           <span class="avatar-initial">{{ nombre()?.substring(0, 1) }}</span>
           <span class="status-indicator"></span>
         </div>
@@ -100,98 +100,98 @@
               <div class="avatar-large">{{ nombre()?.substring(0, 1) }}</div>
               <div class="user-info">
                 <span class="name">{{ nombre() }}</span>
-                <span class="role"><i class="fas fa-shield-alt"></i> Administrador</span>
+                <span class="role"><i class="fas fa-shield-alt"></i> Administrator</span>
               </div>
             </div>
             <div class="divider"></div>
             <a routerLink="/home" (click)="closeDropdowns()">
-              <i class="fas fa-globe" aria-hidden="true"></i> Ir a la Web Pública
+              <i class="fas fa-globe" aria-hidden="true"></i> Go to Public Website
             </a>
             <a routerLink="/perfil" (click)="closeDropdowns()">
-              <i class="fas fa-user-cog" aria-hidden="true"></i> Configuración de Perfil
+              <i class="fas fa-user-cog" aria-hidden="true"></i> Profile Settings
             </a>
             <div class="divider"></div>
             <a (click)="logout()" class="logout-link">
-              <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Cerrar Sesión
+              <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Log Out
             </a>
           </div>
         }
       </div>
 
-      <!-- Botón menú móvil -->
+      <!-- Mobile menu button -->
       <button 
         class="mobile-menu-btn mobile-only" 
         (click)="toggleMobileMenu()"
         [attr.aria-expanded]="showMobileMenu()"
-        aria-label="Abrir menú de navegación"
+        aria-label="Open navigation menu"
       >
         <i class="fas" [class.fa-bars]="!showMobileMenu()" [class.fa-times]="showMobileMenu()"></i>
       </button>
     </div>
   </div>
 
-  <!-- MENÚ MÓVIL -->
+  <!-- MOBILE MENU -->
   @if (showMobileMenu()) {
     <div class="mobile-menu-overlay" (click)="closeMobileMenu()"></div>
     <nav class="mobile-menu">
       <div class="mobile-menu-header">
-        <span class="mobile-menu-title">Menú</span>
-        <button class="mobile-menu-close" (click)="closeMobileMenu()" aria-label="Cerrar menú">
+        <span class="mobile-menu-title">Menu</span>
+        <button class="mobile-menu-close" (click)="closeMobileMenu()" aria-label="Close menu">
           <i class="fas fa-times"></i>
         </button>
       </div>
 
       <div class="mobile-menu-body">
-        <!-- Enlaces principales -->
+        <!-- Main links -->
         <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link">
-          <i class="fas fa-calendar-alt"></i> Agenda
+          <i class="fas fa-calendar-alt"></i> Schedule
         </a>
         <a routerLink="/admin/stats" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link">
-          <i class="fas fa-chart-line"></i> Estadísticas
+          <i class="fas fa-chart-line"></i> Statistics
         </a>
 
-        <!-- Sección Gestión -->
-        <div class="mobile-section-title">Gestión</div>
+        <!-- Management Section -->
+        <div class="mobile-section-title">Management</div>
         
         <a routerLink="/admin/clases" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
-          <i class="fas fa-graduation-cap"></i> Academia
+          <i class="fas fa-graduation-cap"></i> Academy
         </a>
         <a routerLink="/admin/pistas" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
-          <i class="fas fa-table-tennis"></i> Pistas
+          <i class="fas fa-table-tennis"></i> Courts
         </a>
         <a routerLink="/admin/torneos" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
-          <i class="fas fa-trophy"></i> Torneos
+          <i class="fas fa-trophy"></i> Tournaments
         </a>
         <a routerLink="/admin/usuarios" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
-          <i class="fas fa-users"></i> Usuarios
+          <i class="fas fa-users"></i> Users
         </a>
         <a routerLink="/admin/productos" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
-          <i class="fas fa-box"></i> Productos
+          <i class="fas fa-box"></i> Products
         </a>
         <a routerLink="/admin/pedidos" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
-          <i class="fas fa-shopping-bag"></i> Pedidos
+          <i class="fas fa-shopping-bag"></i> Orders
         </a>
         <a routerLink="/admin/logs" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-sublink">
-          <i class="fas fa-history"></i> Historial
+          <i class="fas fa-history"></i> History
         </a>
 
         <div class="mobile-divider"></div>
 
         <a routerLink="/admin/manual" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-link mobile-highlight">
-          <i class="fas fa-phone-alt"></i> Reserva Manual
+          <i class="fas fa-phone-alt"></i> Manual Booking
         </a>
 
         <div class="mobile-divider"></div>
 
-        <!-- Acciones de usuario -->
+        <!-- User actions -->
         <a routerLink="/home" (click)="closeMobileMenu()" class="mobile-link">
-          <i class="fas fa-globe"></i> Ir a la Web Pública
+          <i class="fas fa-globe"></i> Go to Public Website
         </a>
         <a routerLink="/perfil" (click)="closeMobileMenu()" class="mobile-link">
-          <i class="fas fa-user-cog"></i> Configuración de Perfil
+          <i class="fas fa-user-cog"></i> Profile Settings
         </a>
         <a (click)="logout()" class="mobile-link mobile-logout">
-          <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+          <i class="fas fa-sign-out-alt"></i> Log Out
         </a>
       </div>
     </nav>

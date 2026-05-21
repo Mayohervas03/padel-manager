@@ -1,17 +1,17 @@
 <div class="admin-torneos">
   <div class="page-header">
-    <h1><i class="fas fa-trophy"></i> Gestión de Torneos</h1>
+    <h1><i class="fas fa-trophy"></i> Tournament Management</h1>
     <div class="header-actions">
-      <button class="btn-export" (click)="exportarCSV()" title="Exportar a CSV" aria-label="Exportar torneos a CSV">
-        <i class="fas fa-file-csv"></i> Exportar
+      <button class="btn-export" (click)="exportarCSV()" title="Export to CSV" aria-label="Export tournaments to CSV">
+        <i class="fas fa-file-csv"></i> Export
       </button>
       <button class="btn-neon" (click)="abrirCrearModal()">
-        <i class="fas fa-plus"></i> Nuevo Torneo
+        <i class="fas fa-plus"></i> New Tournament
       </button>
     </div>
   </div>
 
-  <!-- Filtros -->
+    <!-- Filters -->
   <div class="filters-bar">
     <div class="search-wrap">
       <i class="fas fa-search icon-search"></i>
@@ -19,18 +19,18 @@
         type="text"
         [(ngModel)]="filtroTexto"
         (ngModelChange)="filtrarTorneos()"
-        placeholder="Buscar por título..."
+        placeholder="Search by title..."
         class="search-input"
-        aria-label="Buscar torneos por título"
+        aria-label="Search tournaments by title"
       >
     </div>
     <div class="filter-group">
-      <label>Estado:</label>
-      <select [(ngModel)]="filtroEstado" (change)="filtrarTorneos()" aria-label="Filtrar por estado">
-        <option value="TODOS">Todos</option>
-        <option value="ABIERTO">Abierto</option>
-        <option value="CERRADO">Cerrado</option>
-        <option value="CANCELADO">Cancelado</option>
+      <label>Status:</label>
+      <select [(ngModel)]="filtroEstado" (change)="filtrarTorneos()" aria-label="Filter by status">
+        <option value="TODOS">All</option>
+        <option value="ABIERTO">Open</option>
+        <option value="CERRADO">Closed</option>
+        <option value="CANCELADO">Canceled</option>
       </select>
     </div>
   </div>
@@ -39,16 +39,16 @@
   <div class="admin-table-container">
     <div class="table-responsive">
       <table class="admin-table">
-        <caption class="visually-hidden">Lista de torneos registrados</caption>
+        <caption class="visually-hidden">List of registered tournaments</caption>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Título</th>
-            <th>Fechas</th>
-            <th>Estado</th>
-            <th>Ocupación</th>
+            <th>Title</th>
+            <th>Dates</th>
+            <th>Status</th>
+            <th>Occupancy</th>
             <th>Info</th>
-            <th class="text-center">Acciones</th>
+            <th class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -58,14 +58,14 @@
               <td><strong>{{ t.titulo }}</strong></td>
               <td>{{ t.fechaInicio | date:'dd/MM/yyyy' }} - {{ t.fechaFin | date:'dd/MM/yyyy' }}</td>
               <td>
-                <button
+                  <button
                   class="estado-badge"
                   [class.abierto]="t.estado === 'ABIERTO'"
                   [class.cerrado]="t.estado === 'CERRADO'"
                   [class.cancelado]="t.estado === 'CANCELADO'"
                   (click)="cambiarEstado(t)"
-                  title="Cambiar estado"
-                  [attr.aria-label]="'Cambiar estado de ' + t.titulo">
+                  title="Change status"
+                  [attr.aria-label]="'Change status of ' + t.titulo">
                   {{ t.estado }}
                 </button>
               </td>
@@ -79,7 +79,7 @@
                          [class.ocupacion-bajo]="getTotalPlazas(t) > 0 && (t.inscripcionesCount || 0) < getTotalPlazas(t) * 0.5">
                     </div>
                   </div>
-                  <span class="ocupacion-texto">{{ t.inscripcionesCount || 0 }}/{{ getTotalPlazas(t) }} parejas</span>
+                  <span class="ocupacion-texto">{{ t.inscripcionesCount || 0 }}/{{ getTotalPlazas(t) }} pairs</span>
                 </div>
               </td>
               <td>
@@ -90,19 +90,19 @@
               </td>
               <td class="actions-cell text-center">
                 <a class="btn-neon-small" [routerLink]="['/admin/torneos', t.id]">
-                  <i class="fas fa-users"></i> Gestionar
+                  <i class="fas fa-users"></i> Manage
                 </a>
-                <button class="btn-icon btn-edit" (click)="abrirEditarModal(t)" title="Editar" aria-label="Editar torneo {{ t.titulo }}">
+                <button class="btn-icon btn-edit" (click)="abrirEditarModal(t)" title="Edit" aria-label="Edit tournament {{ t.titulo }}">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn-icon btn-delete" (click)="borrarTorneo(t.id)" title="Borrar" aria-label="Borrar torneo {{ t.titulo }}">
+                <button class="btn-icon btn-delete" (click)="borrarTorneo(t.id)" title="Delete" aria-label="Delete tournament {{ t.titulo }}">
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="7" class="empty-row">No hay torneos que coincidan con los filtros.</td>
+                <td colspan="7" class="empty-row">No tournaments match the filters.</td>
             </tr>
           }
         </tbody>
@@ -114,7 +114,7 @@
   @if (torneosFiltrados().length > 0) {
     <div class="pagination-bar">
       <div class="pagination-info">
-        Mostrando <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> de <strong>{{ infoPaginacion().total }}</strong> torneos
+        Showing <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> of <strong>{{ infoPaginacion().total }}</strong> tournaments
       </div>
 
       <div class="pagination-controls">
@@ -122,26 +122,26 @@
           class="pagination-btn"
           [disabled]="paginaActual() === 1"
           (click)="cambiarPagina(paginaActual() - 1)"
-          aria-label="Página anterior"
+          aria-label="Previous page"
         >
           <i class="fas fa-chevron-left"></i>
         </button>
 
-        <span class="pagination-page">Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+        <span class="pagination-page">Page {{ paginaActual() }} of {{ totalPaginas() }}</span>
 
         <button
           class="pagination-btn"
           [disabled]="paginaActual() === totalPaginas()"
           (click)="cambiarPagina(paginaActual() + 1)"
-          aria-label="Página siguiente"
+          aria-label="Next page"
         >
           <i class="fas fa-chevron-right"></i>
         </button>
       </div>
 
       <div class="pagination-size">
-        <label for="itemsPorPagina">Mostrar:</label>
-        <select id="itemsPorPagina" [(ngModel)]="itemsPorPagina" (change)="cambiarItemsPorPagina(itemsPorPagina())" aria-label="Torneos por página">
+        <label for="itemsPorPagina">Show:</label>
+        <select id="itemsPorPagina" [(ngModel)]="itemsPorPagina" (change)="cambiarItemsPorPagina(itemsPorPagina())" aria-label="Tournaments per page">
           @for (opt of opcionesItemsPorPagina; track opt) {
             <option [value]="opt">{{ opt }}</option>
           }

@@ -62,7 +62,7 @@ export class MisComprasComponent implements OnInit {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text('Recibo de Compra', pageWidth / 2, y + 20, { align: 'center' });
+    doc.text('Purchase Receipt', pageWidth / 2, y + 20, { align: 'center' });
 
     y = 70;
 
@@ -70,12 +70,12 @@ export class MisComprasComponent implements OnInit {
     doc.setTextColor(50, 50, 50);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Pedido #${pedido.id}`, margin, y);
+    doc.text(`Order #${pedido.id}`, margin, y);
     y += 8;
     doc.setFont('helvetica', 'normal');
-    doc.text(`Fecha: ${new Date(pedido.fecha).toLocaleDateString('es-ES')}`, margin, y);
+    doc.text(`Date: ${new Date(pedido.fecha).toLocaleDateString('en-US')}`, margin, y);
     y += 8;
-    doc.text(`Estado: ${pedido.estado}`, margin, y);
+    doc.text(`Status: ${pedido.estado}`, margin, y);
     y += 15;
 
     // Línea separadora
@@ -87,9 +87,9 @@ export class MisComprasComponent implements OnInit {
     // Tabla de items
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
-    doc.text('Producto', margin, y);
-    doc.text('Cant.', pageWidth - margin - 80, y, { align: 'center' });
-    doc.text('Precio', pageWidth - margin - 40, y, { align: 'center' });
+    doc.text('Product', margin, y);
+    doc.text('Qty', pageWidth - margin - 80, y, { align: 'center' });
+    doc.text('Price', pageWidth - margin - 40, y, { align: 'center' });
     doc.text('Subtotal', pageWidth - margin, y, { align: 'right' });
     y += 5;
 
@@ -133,7 +133,7 @@ export class MisComprasComponent implements OnInit {
     doc.setTextColor(100, 100, 100);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Gracias por tu compra en Elite Padel', pageWidth / 2, pageWidth - 20, { align: 'center' });
+    doc.text('Thank you for your purchase at Elite Padel', pageWidth / 2, pageWidth - 20, { align: 'center' });
 
     doc.save(`recibo-pedido-${pedido.id}.pdf`);
   }

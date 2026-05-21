@@ -1,20 +1,20 @@
 <div class="mis-compras-page">
   <div class="page-header">
-    <h1><i class="fas fa-shopping-bag"></i> Mis Compras</h1>
-    <p>Historial de todos tus pedidos realizados</p>
+    <h1><i class="fas fa-shopping-bag"></i> My Purchases</h1>
+    <p>History of all your placed orders</p>
   </div>
 
   @if (loading()) {
     <div class="loading-state">
       <i class="fas fa-spinner fa-spin"></i>
-      <p>Cargando pedidos...</p>
+      <p>Loading orders...</p>
     </div>
   } @else if (pedidos().length === 0) {
     <div class="empty-state">
       <i class="fas fa-shopping-cart"></i>
-      <h3>No tienes compras realizadas</h3>
-      <p>Visita la tienda para realizar tu primera compra</p>
-      <a routerLink="/tienda" class="btn-neon">Ir a la tienda</a>
+      <h3>You haven't made any purchases yet</h3>
+      <p>Visit the shop to make your first purchase</p>
+      <a routerLink="/tienda" class="btn-neon">Go to Shop</a>
     </div>
   } @else {
     <div class="pedidos-list">
@@ -23,7 +23,7 @@
           <div class="pedido-header" (click)="togglePedido(pedido.id)">
             <div class="pedido-info">
               <div class="pedido-id">
-                <span class="label">Pedido #</span>
+                <span class="label">Order #</span>
                 <span class="valor">{{ pedido.id }}</span>
               </div>
               <div class="pedido-fecha">
@@ -49,9 +49,9 @@
               <table class="items-table">
                 <thead>
                   <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unit.</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
                     <th>Subtotal</th>
                   </tr>
                 </thead>
@@ -73,7 +73,7 @@
                   <strong>{{ pedido.total | currency:'EUR':'symbol' }}</strong>
                 </div>
                 <button class="btn-descargar" (click)="descargarRecibo(pedido); $event.stopPropagation()">
-                  <i class="fas fa-file-pdf"></i> Descargar Recibo
+                  <i class="fas fa-file-pdf"></i> Download Receipt
                 </button>
               </div>
             </div>

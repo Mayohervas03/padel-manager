@@ -21,8 +21,8 @@ export class ConfirmDialogService {
 
   confirm(data: ConfirmDialogData): Observable<boolean> {
     this.dialogData.set({
-      confirmText: 'Confirmar',
-      cancelText: 'Cancelar',
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-danger',
       icon: 'fa-exclamation-triangle',
       ...data

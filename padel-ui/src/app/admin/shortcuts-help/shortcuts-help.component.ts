@@ -11,61 +11,61 @@ import { KeyboardShortcutsService } from '../../shared/keyboard-shortcuts.servic
       <div class="shortcuts-overlay" (click)="shortcutsService.showHelp.set(false)">
         <div class="shortcuts-modal" (click)="$event.stopPropagation()">
           <div class="shortcuts-header">
-            <h3><i class="fas fa-keyboard"></i> Atajos de Teclado</h3>
-            <button class="btn-close" (click)="shortcutsService.showHelp.set(false)" aria-label="Cerrar ayuda">
+            <h3><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
+            <button class="btn-close" (click)="shortcutsService.showHelp.set(false)" aria-label="Close help">
               <i class="fas fa-times"></i>
             </button>
           </div>
           
           <div class="shortcuts-body">
             <div class="shortcut-section">
-              <h4>Navegación Rápida</h4>
-              <p class="section-desc">Presiona <strong>G</strong> seguido de:</p>
+              <h4>Quick Navigation</h4>
+              <p class="section-desc">Press <strong>G</strong> followed by:</p>
               <div class="shortcut-list">
                 <div class="shortcut-item">
                   <span class="key-combo">G > D</span>
-                  <span class="key-desc">Dashboard (Agenda)</span>
+                  <span class="key-desc">Dashboard (Schedule)</span>
                 </div>
                 <div class="shortcut-item">
                   <span class="key-combo">G > U</span>
-                  <span class="key-desc">Usuarios</span>
+                  <span class="key-desc">Users</span>
                 </div>
                 <div class="shortcut-item">
                   <span class="key-combo">G > P</span>
-                  <span class="key-desc">Productos</span>
+                  <span class="key-desc">Products</span>
                 </div>
                 <div class="shortcut-item">
                   <span class="key-combo">G > T</span>
-                  <span class="key-desc">Torneos</span>
+                  <span class="key-desc">Tournaments</span>
                 </div>
                 <div class="shortcut-item">
                   <span class="key-combo">G > S</span>
-                  <span class="key-desc">Estadísticas</span>
+                  <span class="key-desc">Statistics</span>
                 </div>
                 <div class="shortcut-item">
                   <span class="key-combo">G > L</span>
-                  <span class="key-desc">Historial</span>
+                  <span class="key-desc">History</span>
                 </div>
               </div>
             </div>
 
             <div class="shortcut-section">
-              <h4>Generales</h4>
+              <h4>General</h4>
               <div class="shortcut-list">
                 <div class="shortcut-item">
                   <span class="key-combo">ESC</span>
-                  <span class="key-desc">Cerrar modales y dropdowns</span>
+                  <span class="key-desc">Close modals and dropdowns</span>
                 </div>
                 <div class="shortcut-item">
                   <span class="key-combo">?</span>
-                  <span class="key-desc">Mostrar/Ocultar esta ayuda</span>
+                  <span class="key-desc">Show/Hide this help</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="shortcuts-footer">
-            <p>Presiona <strong>?</strong> en cualquier momento para ver esta ayuda.</p>
+            <p>Press <strong>?</strong> at any time to view this help.</p>
           </div>
         </div>
       </div>

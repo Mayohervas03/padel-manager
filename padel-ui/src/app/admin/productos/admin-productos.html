@@ -2,31 +2,31 @@
   <div class="admin-header">
     <h1>
       <i class="fas fa-box"></i>
-      Gestión de Productos
+      Product Management
     </h1>
     <div class="header-actions">
-      <button class="btn-export" (click)="exportarCSV()" title="Exportar a CSV" aria-label="Exportar productos a CSV">
-        <i class="fas fa-file-csv"></i> Exportar
+      <button class="btn-export" (click)="exportarCSV()" title="Export to CSV" aria-label="Export products to CSV">
+        <i class="fas fa-file-csv"></i> Export
       </button>
       <button class="btn-neon" (click)="toggleFormulario()">
         <i class="fas"></i>
-        {{ mostrarFormulario() ? 'Cancelar' : 'Nuevo Producto' }}
+        {{ mostrarFormulario() ? 'Cancel' : 'New Product' }}
       </button>
     </div>
   </div>
 
   @if (mostrarFormulario()) {
     <div class="form-panel">
-      <h3>{{ productoEditando.id ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+      <h3>{{ productoEditando.id ? 'Edit Product' : 'New Product' }}</h3>
 
       <div class="form-grid">
         <div class="form-group">
-          <label>Nombre *</label>
-          <input type="text" [(ngModel)]="productoEditando.nombre" placeholder="Nombre del producto">
+          <label>Name *</label>
+          <input type="text" [(ngModel)]="productoEditando.nombre" placeholder="Product name">
         </div>
 
         <div class="form-group">
-          <label>Precio *</label>
+          <label>Price *</label>
           <input type="number" [(ngModel)]="productoEditando.precio" placeholder="0.00" step="0.01">
         </div>
 
@@ -36,7 +36,7 @@
         </div>
 
         <div class="form-group">
-          <label>Categoría *</label>
+          <label>Category *</label>
           <select [(ngModel)]="productoEditando.categoria">
             @for (cat of categorias; track cat) {
               <option [value]="cat">{{ cat }}</option>
@@ -45,26 +45,26 @@
         </div>
 
         <div class="form-group form-full">
-          <label>Descripción</label>
-          <textarea [(ngModel)]="productoEditando.descripcion" rows="3" placeholder="Descripción del producto"></textarea>
+          <label>Description</label>
+          <textarea [(ngModel)]="productoEditando.descripcion" rows="3" placeholder="Product description"></textarea>
         </div>
 
         <div class="form-group form-full">
-          <label>URL Imagen</label>
+          <label>Image URL</label>
           <input type="text" [(ngModel)]="productoEditando.imagenUrl" placeholder="https://...">
         </div>
 
         <div class="form-group">
           <label class="checkbox-label">
             <input type="checkbox" [(ngModel)]="productoEditando.activo">
-            Activo
+            Active
           </label>
         </div>
       </div>
 
       <div class="form-actions">
-        <button class="btn-neon" (click)="guardarProducto()">Guardar</button>
-        <button class="btn-glass" (click)="toggleFormulario()">Cancelar</button>
+        <button class="btn-neon" (click)="guardarProducto()">Save</button>
+        <button class="btn-glass" (click)="toggleFormulario()">Cancel</button>
       </div>
     </div>
   }
@@ -78,15 +78,15 @@
           type="text" 
           [(ngModel)]="filtroBusqueda" 
           (ngModelChange)="aplicarFiltros()"
-          placeholder="Buscar producto..."
-          aria-label="Buscar productos por nombre"
+          placeholder="Search product..."
+          aria-label="Search products by name"
         >
       </div>
 
       <div class="filter-group">
-        <label>Categoría:</label>
-        <select [(ngModel)]="filtroCategoria" (change)="aplicarFiltros()" aria-label="Filtrar por categoría">
-          <option value="TODAS">Todas</option>
+        <label>Category:</label>
+        <select [(ngModel)]="filtroCategoria" (change)="aplicarFiltros()" aria-label="Filter by category">
+          <option value="TODAS">All</option>
           @for (cat of categorias; track cat) {
             <option [value]="cat">{{ cat }}</option>
           }
@@ -94,11 +94,11 @@
       </div>
 
       <div class="filter-group">
-        <label>Estado:</label>
-        <select [(ngModel)]="filtroActivo" (change)="aplicarFiltros()" aria-label="Filtrar por estado">
-          <option value="TODOS">Todos</option>
-          <option value="ACTIVO">Activos</option>
-          <option value="INACTIVO">Inactivos</option>
+        <label>Status:</label>
+        <select [(ngModel)]="filtroActivo" (change)="aplicarFiltros()" aria-label="Filter by status">
+          <option value="TODOS">All</option>
+          <option value="ACTIVO">Active</option>
+          <option value="INACTIVO">Inactive</option>
         </select>
       </div>
     </div>
@@ -107,19 +107,19 @@
   @if (isLoading()) {
     <div class="loading-state">
       <div class="loading-spinner"></div>
-      <p>Cargando productos...</p>
+      <p>Loading products...</p>
     </div>
   } @else {
     <div class="productos-table-container">
       <table class="productos-table">
         <thead>
           <tr>
-            <th>Producto</th>
-            <th>Categoría</th>
-            <th>Precio</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
             <th>Stock</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -148,17 +148,17 @@
               </td>
               <td>
                 @if (producto.activo) {
-                  <span class="estado activo"><i class="fas fa-check"></i> Activo</span>
+                  <span class="estado activo"><i class="fas fa-check"></i> Active</span>
                 } @else {
-                  <span class="estado inactivo"><i class="fas fa-times"></i> Inactivo</span>
+                  <span class="estado inactivo"><i class="fas fa-times"></i> Inactive</span>
                 }
               </td>
               <td>
                 <div class="acciones">
-                  <button class="btn-icon btn-edit" (click)="editarProducto(producto)" title="Editar" aria-label="Editar producto {{ producto.nombre }}">
+                  <button class="btn-icon btn-edit" (click)="editarProducto(producto)" title="Edit" aria-label="Edit product {{ producto.nombre }}">
                     <i class="fas fa-edit"></i>
                   </button>
-                  <button class="btn-icon btn-delete" (click)="borrarProducto(producto.id)" title="Eliminar" aria-label="Eliminar producto {{ producto.nombre }}">
+                  <button class="btn-icon btn-delete" (click)="borrarProducto(producto.id)" title="Delete" aria-label="Delete product {{ producto.nombre }}">
                     <i class="fas fa-trash"></i>
                   </button>
                 </div>
@@ -166,7 +166,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="empty-cell">No hay productos registrados</td>
+              <td colspan="6" class="empty-cell">No products registered</td>
             </tr>
           }
         </tbody>
@@ -177,7 +177,7 @@
     @if (productosFiltrados().length > 0) {
       <div class="pagination-bar">
         <div class="pagination-info">
-          Mostrando <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> de <strong>{{ infoPaginacion().total }}</strong> productos
+          Showing <strong>{{ infoPaginacion().inicio }}</strong> - <strong>{{ infoPaginacion().fin }}</strong> of <strong>{{ infoPaginacion().total }}</strong> products
         </div>
         
         <div class="pagination-controls">
@@ -185,26 +185,26 @@
             class="pagination-btn" 
             [disabled]="paginaActual() === 1"
             (click)="cambiarPagina(paginaActual() - 1)"
-            aria-label="Página anterior"
+            aria-label="Previous page"
           >
             <i class="fas fa-chevron-left"></i>
           </button>
           
-          <span class="pagination-page">Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+          <span class="pagination-page">Page {{ paginaActual() }} of {{ totalPaginas() }}</span>
           
           <button 
             class="pagination-btn" 
             [disabled]="paginaActual() === totalPaginas()"
             (click)="cambiarPagina(paginaActual() + 1)"
-            aria-label="Página siguiente"
+            aria-label="Next page"
           >
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
 
         <div class="pagination-size">
-          <label for="itemsProdPorPagina">Mostrar:</label>
-          <select id="itemsProdPorPagina" [(ngModel)]="itemsPorPagina" (change)="cambiarItemsPorPagina(itemsPorPagina())" aria-label="Productos por página">
+          <label for="itemsProdPorPagina">Show:</label>
+          <select id="itemsProdPorPagina" [(ngModel)]="itemsPorPagina" (change)="cambiarItemsPorPagina(itemsPorPagina())" aria-label="Products per page">
             @for (opt of opcionesItemsPorPagina; track opt) {
               <option [value]="opt">{{ opt }}</option>
             }

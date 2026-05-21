@@ -68,7 +68,7 @@ export class AdminUsuariosComponent implements OnInit {
         this.usuarios.set(data);
         this.filtrarUsuarios();
       },
-      error: (err) => console.error('Error cargando usuarios', err)
+      error: (err) => console.error('Error loading users', err)
     });
   }
 
@@ -103,10 +103,10 @@ export class AdminUsuariosComponent implements OnInit {
     const nuevoRol = usuario.rol === 'ADMIN' ? 'USER' : 'ADMIN';
     
     this.confirmDialog.confirm({
-      title: 'Cambiar Rol',
-      message: `¿Seguro que quieres cambiar el rol de ${usuario.nombre} a ${nuevoRol}?`,
-      confirmText: 'Cambiar Rol',
-      cancelText: 'Cancelar',
+      title: 'Change Role',
+      message: `Are you sure you want to change ${usuario.nombre}'s role to ${nuevoRol}?`,
+      confirmText: 'Change Role',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-primary'
     }).subscribe(confirmed => {
       if (!confirmed) return;
@@ -119,7 +119,7 @@ export class AdminUsuariosComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading.set(null);
-          this.notificationService.error('No se pudo cambiar el rol del usuario: ' + (err.error || err.message));
+          this.notificationService.error('Could not change user role: ' + (err.error || err.message));
         }
       });
     });
@@ -134,15 +134,15 @@ export class AdminUsuariosComponent implements OnInit {
 
     const currentUserId = this.authService.getCurrentUserId();
     if (currentUserId !== null && usuario.id === currentUserId) {
-      this.notificationService.error('No puedes eliminar tu propio usuario');
+      this.notificationService.error('You cannot delete your own user');
       return;
     }
 
     this.confirmDialog.confirm({
-      title: 'Eliminar Usuario',
-      message: `¿Seguro que quieres eliminar a ${usuario.nombre} (${usuario.email})?\n\nEsta acción no se puede deshacer y eliminará todas sus reservas e inscripciones.`,
-      confirmText: 'Eliminar',
-      cancelText: 'Cancelar',
+      title: 'Delete User',
+      message: `Are you sure you want to delete ${usuario.nombre} (${usuario.email})?\n\nThis action cannot be undone and will delete all their bookings and registrations.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-danger'
     }).subscribe(confirmed => {
       if (!confirmed) return;
@@ -152,11 +152,11 @@ export class AdminUsuariosComponent implements OnInit {
           this.activityLog.log('ELIMINAR', 'USUARIO', `Eliminado ${usuario.nombre} (${usuario.email})`, usuario.id);
           this.cargarUsuarios();
           this.isLoading.set(null);
-          this.notificationService.success('Usuario eliminado correctamente');
+          this.notificationService.success('User deleted successfully');
         },
         error: (err) => {
           this.isLoading.set(null);
-          this.notificationService.error('Error al eliminar el usuario: ' + (err.error || err.message));
+          this.notificationService.error('Error deleting user: ' + (err.error || err.message));
         }
       });
     });
@@ -181,11 +181,11 @@ export class AdminUsuariosComponent implements OnInit {
         this.cargarUsuarios();
         this.isLoading.set(null);
         this.usuarioEditando.set(null);
-        this.notificationService.success('Usuario actualizado correctamente');
+        this.notificationService.success('User updated successfully');
       },
       error: (err) => {
         this.isLoading.set(null);
-        this.notificationService.error('Error al actualizar el usuario: ' + (err.error?.message || err.message));
+          this.notificationService.error('Error updating user: ' + (err.error?.message || err.message));
       }
     });
   }
@@ -197,8 +197,8 @@ export class AdminUsuariosComponent implements OnInit {
       Email: u.email,
       Rol: u.rol
     }));
-    this.exportService.exportToCSV(datos, 'usuarios');
-    this.activityLog.log('EXPORTAR', 'USUARIO', `Exportados ${datos.length} usuarios a CSV`);
-    this.notificationService.success('Usuarios exportados correctamente');
+    this.exportService.exportToCSV(datos, 'users');
+    this.activityLog.log('EXPORTAR', 'USUARIO', `Exported ${datos.length} users to CSV`);
+    this.notificationService.success('Users exported successfully');
   }
 }

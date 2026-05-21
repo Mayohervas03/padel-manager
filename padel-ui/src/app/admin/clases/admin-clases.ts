@@ -77,7 +77,7 @@ export class AdminClasesComponent implements OnInit {
   guardarClase() {
     const c = this.claseEditando;
     if (!c.titulo || !c.monitor || !c.fecha || !c.hora || !c.pistaId) {
-      this.notificationService.error('Completa todos los campos obligatorios');
+      this.notificationService.error('Please fill in all required fields');
       return;
     }
 
@@ -95,40 +95,40 @@ export class AdminClasesComponent implements OnInit {
     if (c.id) {
       this.http.put<Clase>(`${this.apiUrl}/admin/clases/${c.id}`, payload).subscribe({
         next: () => {
-          this.notificationService.success('Clase actualizada');
+          this.notificationService.success('Class updated');
           this.toggleFormulario();
           this.cargarClases();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error al actualizar')
+        error: (err) => this.notificationService.error(err.error || 'Error updating')
       });
     } else {
       this.http.post<Clase>(`${this.apiUrl}/admin/clases`, payload).subscribe({
         next: () => {
-          this.notificationService.success('Clase creada');
+          this.notificationService.success('Class created');
           this.toggleFormulario();
           this.cargarClases();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error al crear')
+        error: (err) => this.notificationService.error(err.error || 'Error creating')
       });
     }
   }
 
   eliminarClase(id: number) {
     this.confirmDialog.confirm({
-      title: 'Borrar Clase',
-      message: '¿Borrar esta clase? Todos los alumnos inscritos la perderán.',
-      confirmText: 'Borrar',
-      cancelText: 'Cancelar',
+      title: 'Delete Class',
+      message: 'Delete this class? All enrolled students will lose it.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
       confirmButtonClass: 'btn-danger',
       icon: 'fa-exclamation-triangle'
     }).subscribe(result => {
       if (result) {
         this.http.delete(`${this.apiUrl}/admin/clases/${id}`).subscribe({
           next: () => {
-            this.notificationService.success('Clase eliminada');
+            this.notificationService.success('Class deleted');
             this.cargarClases();
           },
-          error: (err) => this.notificationService.error(err.error || 'Error al eliminar')
+          error: (err) => this.notificationService.error(err.error || 'Error deleting')
         });
       }
     });

@@ -12,7 +12,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   // Si hay un token pero está expirado, limpiamos la sesión
   if (authService.getToken()) {
-    authService.logoutAndRedirect('Tu sesion ha expirado, por favor vuelve a entrar.');
+    authService.logoutAndRedirect('Your session has expired, please log in again.');
     return false;
   }
 

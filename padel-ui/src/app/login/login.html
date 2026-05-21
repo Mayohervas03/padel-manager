@@ -25,7 +25,7 @@
         </svg>
         <div class="brand-text">
           <span class="brand-title">ÉLITE PADEL</span>
-          <span class="brand-subtitle">Bienvenido de vuelta</span>
+          <span class="brand-subtitle">Welcome back</span>
         </div>
       </div>
 
@@ -47,7 +47,7 @@
       <!-- Form -->
       <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="auth-form">
         <div class="form-group">
-          <label for="email">Correo Electrónico</label>
+          <label for="email">Email</label>
           <div class="input-wrap">
             <i class="fas fa-envelope input-icon"></i>
             <input 
@@ -61,12 +61,12 @@
               #email="ngModel">
           </div>
           @if (email.invalid && (email.dirty || email.touched)) {
-            <span class="error-text">Ingresa un email válido.</span>
+            <span class="error-text">Please enter a valid email.</span>
           }
         </div>
 
         <div class="form-group">
-          <label for="password">Contraseña</label>
+          <label for="password">Password</label>
           <div class="input-wrap">
             <i class="fas fa-lock input-icon"></i>
             <input 
@@ -82,7 +82,7 @@
             </button>
           </div>
           @if (password.invalid && (password.dirty || password.touched)) {
-            <span class="error-text">La contraseña es obligatoria.</span>
+            <span class="error-text">Password is required.</span>
           }
         </div>
 
@@ -90,23 +90,23 @@
           <label class="checkbox-label">
             <input type="checkbox" [(ngModel)]="credentials().rememberMe" name="rememberMe">
             <span class="checkmark"></span>
-            <span class="label-text">Recordarme (30 días)</span>
+            <span class="label-text">Remember me (30 days)</span>
           </label>
         </div>
 
         <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || cargando()">
           @if (cargando()) {
             <i class="fas fa-spinner fa-spin"></i>
-            <span>Entrando...</span>
+            <span>Signing in...</span>
           } @else {
-            <span>Entrar</span>
+            <span>Log In</span>
             <i class="fas fa-arrow-right"></i>
           }
         </button>
       </form>
 
       <div class="auth-footer">
-        <p>¿No tienes cuenta? <a routerLink="/register">Regístrate</a></p>
+        <p>Don't have an account? <a routerLink="/register">Sign Up</a></p>
       </div>
     </div>
   </div>

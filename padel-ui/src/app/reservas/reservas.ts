@@ -43,8 +43,8 @@ export class ReservasComponent implements OnInit {
   }
 
   generarDias() {
-    const nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-    const nombresMeses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const nombresDias = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const nombresMeses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const dias: Dia[] = [];
 
     for (let i = 0; i < 14; i++) {
@@ -101,7 +101,7 @@ export class ReservasComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error obteniendo disponibilidad', err);
-          this.notificationService.error('No se pudo cargar la disponibilidad de pistas');
+          this.notificationService.error('Could not load court availability');
           this.cargandoPistas.set(false);
         }
       });
@@ -128,12 +128,12 @@ export class ReservasComponent implements OnInit {
 
     this.http.post(`${this.apiUrl}/reservas`, reservaData).subscribe({
       next: () => {
-        this.notificationService.success('Reserva confirmada con éxito!');
+        this.notificationService.success('Booking confirmed successfully!');
         this.resetearFlujo();
       },
       error: (err) => {
         // El interceptor ya normaliza el error para que err.error sea un string
-        this.notificationService.error(err.error || 'Ocurrió un error inesperado.');
+        this.notificationService.error(err.error || 'An unexpected error occurred.');
       }
     }).add(() => {
       this.cargando.set(false);

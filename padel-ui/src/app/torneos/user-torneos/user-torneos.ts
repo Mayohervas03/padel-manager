@@ -55,7 +55,7 @@ export class UserTorneosComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Error cargando torneos', err);
+        console.error('Error loading tournaments', err);
         this.isLoading.set(false);
       }
     });
@@ -77,7 +77,7 @@ export class UserTorneosComponent implements OnInit {
 
   inscribirse() {
     if (!this.nombreCompanero || !this.categoriaId) {
-      this.mensajeError.set('Debes completar todos los campos.');
+      this.mensajeError.set('You must fill in all fields.');
       return;
     }
 
@@ -89,7 +89,7 @@ export class UserTorneosComponent implements OnInit {
       categoriaId: this.categoriaId
     }).subscribe({
       next: () => {
-        this.mensajeExito.set('Inscripción registrada! Recuerda abonar la cuota en el club para confirmar tu plaza.');
+        this.mensajeExito.set('Registration recorded! Remember to pay the fee at the club to confirm your spot.');
         this.mensajeError.set('');
         setTimeout(() => {
           this.cerrarModal();

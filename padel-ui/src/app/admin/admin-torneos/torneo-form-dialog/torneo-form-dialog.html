@@ -2,99 +2,173 @@
   <div class="dialog-overlay" (click)="onCerrar()">
     <div class="dialog-box" (click)="$event.stopPropagation()">
       <div class="dialog-header">
-        <i class="fas fa-trophy"></i>
-        <h3>{{ t.id ? 'Edit Tournament' : 'Create Tournament' }}</h3>
+        <div class="header-left">
+          <i class="fas fa-trophy"></i>
+          <h3>{{ t.id ? 'Edit Tournament' : 'Create Tournament' }}</h3>
+        </div>
+        <button type="button" class="btn-close" (click)="onCerrar()" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
 
       <div class="dialog-body">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="tf-titulo">Title *</label>
-            <input id="tf-titulo" type="text" [(ngModel)]="titulo" placeholder="Tournament title" class="form-input" />
+        <!-- Section: Basic Info -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-info-circle"></i>
+            <span>Basic Information</span>
           </div>
-
-          <div class="form-group">
-            <label for="tf-imagen">Image URL</label>
-            <input id="tf-imagen" type="url" [(ngModel)]="imagenUrl" placeholder="https://..." class="form-input" />
-          </div>
-
-          <div class="form-group form-full">
-            <label for="tf-desc">Description</label>
-            <textarea id="tf-desc" [(ngModel)]="descripcion" rows="3" placeholder="Tournament description" class="form-input"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="tf-inicio">Start Date *</label>
-            <input id="tf-inicio" type="date" [(ngModel)]="fechaInicio" class="form-input" />
-          </div>
-
-          <div class="form-group">
-            <label for="tf-fin">End Date *</label>
-            <input id="tf-fin" type="date" [(ngModel)]="fechaFin" class="form-input" />
-          </div>
-
-          <div class="form-group">
-            <label for="tf-precio">Pair Price (€) *</label>
-            <input id="tf-precio" type="number" [(ngModel)]="precioPareja" min="0" class="form-input" />
-          </div>
-
-          <div class="form-group">
-            <label for="tf-estado">Status</label>
-            <select id="tf-estado" [(ngModel)]="estado" class="form-input">
-              <option value="ABIERTO">Open</option>
-              <option value="CERRADO">Closed</option>
-              <option value="CANCELADO">Canceled</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="tf-cierre">Registration Closing Date</label>
-            <input id="tf-cierre" type="date" [(ngModel)]="fechaCierreInscripcion" class="form-input" />
-          </div>
-
-          <!-- Categories -->
-          <div class="form-group form-full categorias-section">
-            <label>Categories *</label>
-            <div class="categorias-list">
-              @for (cat of categorias(); track $index; let i = $index) {
-                <div class="categoria-row">
-                  <input 
-                    type="text" 
-                    [value]="cat.nombre"
-                    (input)="actualizarCategoria(i, 'nombre', $any($event.target).value)"
-                    placeholder="Category name (e.g. Men A)"
-                    class="form-input cat-nombre"
-                  />
-                  <input 
-                    type="number" 
-                    [value]="cat.maxParejas"
-                    (input)="actualizarCategoria(i, 'maxParejas', +$any($event.target).value)"
-                    placeholder="Max pairs"
-                    min="1"
-                    class="form-input cat-max"
-                  />
-                  <button 
-                    type="button" 
-                    class="btn-icon btn-danger" 
-                    (click)="eliminarCategoria(i)"
-                    [disabled]="categorias().length <= 1"
-                    title="Delete category"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              }
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label for="tf-titulo">
+                Title <span class="required">*</span>
+              </label>
+              <input id="tf-titulo" type="text" [(ngModel)]="titulo" placeholder="Tournament title" class="form-input" />
             </div>
-            <button type="button" class="btn btn-sm btn-secondary" (click)="agregarCategoria()">
-              <i class="fas fa-plus"></i> Add category
-            </button>
+
+            <div class="form-group form-full">
+              <label for="tf-desc">Description</label>
+              <textarea id="tf-desc" [(ngModel)]="descripcion" rows="3" placeholder="Describe the tournament, rules, prizes..." class="form-input"></textarea>
+              <div class="char-count">{{ descripcion().length }}/500</div>
+            </div>
+
+            <div class="form-group">
+              <label for="tf-imagen">Image URL</label>
+              <input id="tf-imagen" type="url" [(ngModel)]="imagenUrl" placeholder="https://..." class="form-input" />
+            </div>
+
+            <div class="form-group image-preview-group">
+              <label>Preview</label>
+              <div class="image-preview-wrapper">
+                @if (imagenUrl()) {
+                  <img [src]="imagenUrl()" alt="Tournament preview" class="image-preview" (error)="$event.target.style.display='none'" />
+                } @else {
+                  <div class="image-placeholder">
+                    <i class="fas fa-image"></i>
+                    <span>No image</span>
+                  </div>
+                }
+              </div>
+            </div>
           </div>
+        </div>
+
+        <!-- Section: Dates -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Dates</span>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="tf-inicio">
+                Start Date <span class="required">*</span>
+              </label>
+              <input id="tf-inicio" type="date" [(ngModel)]="fechaInicio" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label for="tf-fin">
+                End Date <span class="required">*</span>
+              </label>
+              <input id="tf-fin" type="date" [(ngModel)]="fechaFin" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label for="tf-cierre">Registration Closing Date</label>
+              <input id="tf-cierre" type="date" [(ngModel)]="fechaCierreInscripcion" class="form-input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Pricing & Status -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-euro-sign"></i>
+            <span>Pricing & Status</span>
+          </div>
+          <div class="form-grid two-col">
+            <div class="form-group">
+              <label for="tf-precio">
+                Pair Price (€) <span class="required">*</span>
+              </label>
+              <div class="input-prefix">
+                <span class="prefix">€</span>
+                <input id="tf-precio" type="number" [(ngModel)]="precioPareja" min="0" class="form-input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="tf-estado">Status</label>
+              <select id="tf-estado" [(ngModel)]="estado" class="form-input">
+                <option value="ABIERTO">Open</option>
+                <option value="CERRADO">Closed</option>
+                <option value="CANCELADO">Canceled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Categories -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-layer-group"></i>
+            <span>Categories <span class="required">*</span></span>
+            <span class="section-badge">{{ categorias().length }}</span>
+          </div>
+          <div class="categorias-list">
+            @for (cat of categorias(); track $index; let i = $index) {
+              <div class="categoria-card">
+                <div class="cat-number">#{{ i + 1 }}</div>
+                <div class="cat-fields">
+                  <div class="form-group">
+                    <label>Category Name</label>
+                    <input 
+                      type="text" 
+                      [value]="cat.nombre"
+                      (input)="actualizarCategoria(i, 'nombre', $any($event.target).value)"
+                      placeholder="e.g. Gold, Silver..."
+                      class="form-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Max Pairs</label>
+                    <input 
+                      type="number" 
+                      [value]="cat.maxParejas"
+                      (input)="actualizarCategoria(i, 'maxParejas', +$any($event.target).value)"
+                      placeholder="8"
+                      min="1"
+                      class="form-input"
+                    />
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  class="btn-icon btn-remove" 
+                  (click)="eliminarCategoria(i)"
+                  [disabled]="categorias().length <= 1"
+                  [title]="categorias().length <= 1 ? 'At least one category required' : 'Delete category'"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            }
+          </div>
+          <button type="button" class="btn btn-add-category" (click)="agregarCategoria()">
+            <i class="fas fa-plus-circle"></i> Add Category
+          </button>
         </div>
       </div>
 
       <div class="dialog-footer">
         <button class="btn btn-secondary" (click)="onCerrar()">Cancel</button>
-        <button class="btn btn-primary" (click)="onGuardar()">
+        <button 
+          class="btn btn-primary" 
+          (click)="onGuardar()"
+          [disabled]="!isFormValid()"
+          [class.btn-disabled]="!isFormValid()"
+        >
           <i class="fas fa-save"></i> Save
         </button>
       </div>

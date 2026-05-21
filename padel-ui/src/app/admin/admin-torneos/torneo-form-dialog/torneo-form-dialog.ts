@@ -1,4 +1,4 @@
-import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, signal, ChangeDetectionStrategy, HostListener, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import type { Torneo, CategoriaTorneo } from '../../../shared/models';
@@ -90,4 +90,27 @@ export class TorneoFormDialogComponent {
   onCerrar() {
     this.cerrar.emit();
   }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.onCerrar();
+  }
+
+  readonly isFormValid = computed(() => {
+    const titulo = this.titulo().trim();
+    const fechaInicio = this.fechaInicio();
+    const fechaFin = this.fechaFin();
+    const precio = this.precioPareja();
+    const cats = this.categorias();
+
+    if (!titulo || titulo.length < 3) return false;
+    if (!fechaInicio) return false;
+    if (!fechaFin) return false;
+    if (new Date(fechaFin) < new Date(fechaInicio)) return false;
+    if (precio == null || precio < 0) return false;
+    if (cats.length === 0) return false;
+    if (cats.some(c => !c.nombre?.trim() || c.maxParejas == null || c.maxParejas < 1)) return false;
+
+    return true;
+  });
 }

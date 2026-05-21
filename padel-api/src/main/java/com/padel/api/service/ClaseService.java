@@ -113,6 +113,22 @@ public class ClaseService {
         claseRepository.save(clase);
     }
 
+    @Transactional
+    public void eliminarAlumno(Long claseId, Long usuarioId) {
+        Clase clase = claseRepository.findById(claseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Clase no encontrada"));
+        
+        boolean alumnoEnClase = clase.getAlumnos().stream()
+                .anyMatch(u -> u.getId().equals(usuarioId));
+        
+        if (!alumnoEnClase) {
+            throw new BusinessException("El usuario no esta inscrito en esta clase.");
+        }
+        
+        clase.getAlumnos().removeIf(u -> u.getId().equals(usuarioId));
+        claseRepository.save(clase);
+    }
+
     @Transactional(readOnly = true)
     public List<Clase> obtenerClasesDisponibles() {
         List<Clase> futuras = claseRepository.findByFechaGreaterThanEqualAndEstadoNotOrderByFechaAscHoraAsc(

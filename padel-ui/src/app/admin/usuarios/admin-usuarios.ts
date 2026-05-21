@@ -68,7 +68,10 @@ export class AdminUsuariosComponent implements OnInit {
         this.usuarios.set(data);
         this.filtrarUsuarios();
       },
-      error: (err) => console.error('Error loading users', err)
+      error: (err) => {
+        console.error('Error loading users', err);
+        this.notificationService.error('Could not load users. Please try again.');
+      }
     });
   }
 

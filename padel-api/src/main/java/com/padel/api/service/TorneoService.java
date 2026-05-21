@@ -248,6 +248,32 @@ public class TorneoService {
         return InscripcionTorneoDto.fromEntity(saved);
     }
 
+    @Transactional
+    public void deleteInscripcion(Long inscripcionId) {
+        InscripcionTorneo inscripcion = inscripcionRepository.findById(inscripcionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inscripcion no encontrada"));
+        inscripcion.setEstado(EstadoInscripcion.CANCELADA);
+        inscripcionRepository.save(inscripcion);
+    }
+
+    @Transactional
+    public InscripcionTorneoDto updateInscripcion(Long inscripcionId, String nombreCompanero) {
+        InscripcionTorneo inscripcion = inscripcionRepository.findById(inscripcionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inscripcion no encontrada"));
+        
+        if (nombreCompanero == null || nombreCompanero.trim().isEmpty()) {
+            throw new BusinessException("El nombre del compañero no puede estar vacío");
+        }
+        
+        inscripcion.setNombreCompanero(nombreCompanero.trim());
+        InscripcionTorneo saved = inscripcionRepository.save(inscripcion);
+        // Forzar carga de relaciones lazy antes de cerrar la transacción
+        saved.getTorneo().getId();
+        saved.getUser1().getId();
+        saved.getCategoriaTorneo().getId();
+        return InscripcionTorneoDto.fromEntity(saved);
+    }
+
     private Torneo mapToEntity(TorneoRequest request) {
         Torneo torneo = new Torneo();
         torneo.setTitulo(request.getTitulo());

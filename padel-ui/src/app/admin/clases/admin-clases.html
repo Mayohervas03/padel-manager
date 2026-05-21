@@ -129,7 +129,15 @@
                   @if (clase.alumnos && clase.alumnos.length > 0) {
                     <div class="alumnos-list">
                       @for (alumno of clase.alumnos; track alumno.id) {
-                        <span class="alumno-tag">{{ alumno.nombre }}</span>
+                        <span class="alumno-tag">
+                          {{ alumno.nombre }}
+                          <button class="btn-remove-alumno" 
+                                  (click)="eliminarAlumno(clase.id, alumno.id); $event.stopPropagation()" 
+                                  title="Remove student" 
+                                  aria-label="Remove student {{ alumno.nombre }}">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        </span>
                       }
                     </div>
                   }

@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { PedidoService } from '../../shop/pedido.service';
 import { NotificationService } from '../../shared/notification.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
+import { ActivityLogService } from '../../shared/activity-log.service';
 import type { Pedido } from '../../shared/models';
 
 type FiltroEstado = 'TODOS' | 'PENDIENTE' | 'COMPLETADO' | 'CANCELADO';
@@ -21,6 +22,7 @@ export class AdminPedidosComponent implements OnInit {
   private readonly pedidoService = inject(PedidoService);
   private readonly notificationService = inject(NotificationService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly activityLog = inject(ActivityLogService);
 
   readonly pedidos = signal<Pedido[]>([]);
   readonly isLoading = signal(true);
@@ -85,6 +87,7 @@ export class AdminPedidosComponent implements OnInit {
     this.pedidoService.cambiarEstadoPedido(pedido.id, nuevoEstado).subscribe({
       next: () => {
         this.notificationService.success(`Order #${pedido.id} updated to ${nuevoEstado}`);
+        this.activityLog.log('CAMBIAR_ESTADO', 'PEDIDO', `Order #${pedido.id} status changed from ${pedido.estado} to ${nuevoEstado}`, pedido.id);
         this.cargarPedidos();
       },
       error: (err) => {

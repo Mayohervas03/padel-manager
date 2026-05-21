@@ -5,13 +5,173 @@
       <button class="btn-export" (click)="exportarCSV()" title="Export to CSV" aria-label="Export tournaments to CSV">
         <i class="fas fa-file-csv"></i> Export
       </button>
-      <button class="btn-neon" (click)="abrirCrearModal()">
-        <i class="fas fa-plus"></i> New Tournament
+      <button class="btn-neon" (click)="toggleFormulario()">
+        <i class="fas" [class.fa-times]="mostrarFormulario()" [class.fa-plus]="!mostrarFormulario()"></i>
+        {{ mostrarFormulario() ? 'Cancel' : 'New Tournament' }}
       </button>
     </div>
   </div>
 
-    <!-- Filters -->
+  <!-- Formulario Inline -->
+  @if (mostrarFormulario()) {
+    <div class="form-panel">
+      <div class="form-header">
+        <i class="fas fa-trophy"></i>
+        <h3>{{ torneoEditando.id ? 'Edit Tournament' : 'New Tournament' }}</h3>
+      </div>
+
+      <div class="form-body">
+        <!-- Section: Basic Info -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-info-circle"></i>
+            <span>Basic Information</span>
+          </div>
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label>Title <span class="required">*</span></label>
+              <input type="text" [(ngModel)]="torneoEditando.titulo" placeholder="Tournament title" class="form-input" />
+            </div>
+
+            <div class="form-group form-full">
+              <label>Description</label>
+              <textarea [(ngModel)]="torneoEditando.descripcion" rows="3" placeholder="Describe the tournament, rules, prizes..." class="form-input"></textarea>
+              <div class="char-count">{{ (torneoEditando.descripcion || '').length }}/500</div>
+            </div>
+
+            <div class="form-group">
+              <label>Image URL</label>
+              <input type="url" [(ngModel)]="torneoEditando.imagenUrl" placeholder="https://..." class="form-input" />
+            </div>
+
+            <div class="form-group image-preview-group">
+              <label>Preview</label>
+              <div class="image-preview-wrapper">
+                @if (torneoEditando.imagenUrl) {
+                  <img [src]="torneoEditando.imagenUrl" alt="Tournament preview" class="image-preview" (error)="$event.target.style.display='none'" />
+                } @else {
+                  <div class="image-placeholder">
+                    <i class="fas fa-image"></i>
+                    <span>No image</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Dates -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Dates</span>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Start Date <span class="required">*</span></label>
+              <input type="date" [(ngModel)]="torneoEditando.fechaInicio" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label>End Date <span class="required">*</span></label>
+              <input type="date" [(ngModel)]="torneoEditando.fechaFin" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label>Registration Closing Date</label>
+              <input type="date" [(ngModel)]="torneoEditando.fechaCierreInscripcion" class="form-input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Pricing & Status -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-euro-sign"></i>
+            <span>Pricing & Status</span>
+          </div>
+          <div class="form-grid two-col">
+            <div class="form-group">
+              <label>Pair Price (€) <span class="required">*</span></label>
+              <div class="input-prefix">
+                <span class="prefix">€</span>
+                <input type="number" [(ngModel)]="torneoEditando.precioPareja" min="0" class="form-input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Status</label>
+              <select [(ngModel)]="torneoEditando.estado" class="form-input">
+                <option value="ABIERTO">Open</option>
+                <option value="CERRADO">Closed</option>
+                <option value="CANCELADO">Canceled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Categories -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-layer-group"></i>
+            <span>Categories <span class="required">*</span></span>
+            <span class="section-badge">{{ torneoEditando.categorias.length }}</span>
+          </div>
+          <div class="categorias-list">
+            @for (cat of torneoEditando.categorias; track $index; let i = $index) {
+              <div class="categoria-card">
+                <div class="cat-number">#{{ i + 1 }}</div>
+                <div class="cat-fields">
+                  <div class="form-group">
+                    <label>Category Name</label>
+                    <input 
+                      type="text" 
+                      [value]="cat.nombre"
+                      (input)="actualizarCategoria(i, 'nombre', $any($event.target).value)"
+                      placeholder="e.g. Gold, Silver..."
+                      class="form-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Max Pairs</label>
+                    <input 
+                      type="number" 
+                      [value]="cat.maxParejas"
+                      (input)="actualizarCategoria(i, 'maxParejas', +$any($event.target).value)"
+                      placeholder="8"
+                      min="1"
+                      class="form-input"
+                    />
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  class="btn-icon btn-remove" 
+                  (click)="eliminarCategoria(i)"
+                  [disabled]="torneoEditando.categorias.length <= 1"
+                  [title]="torneoEditando.categorias.length <= 1 ? 'At least one category required' : 'Delete category'"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            }
+          </div>
+          <button type="button" class="btn-add-category" (click)="agregarCategoria()">
+            <i class="fas fa-plus-circle"></i> Add Category
+          </button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-glass" (click)="toggleFormulario()">Cancel</button>
+        <button class="btn-neon" (click)="guardarTorneo()">
+          <i class="fas fa-save"></i> Save
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Filters -->
   <div class="filters-bar">
     <div class="search-wrap">
       <i class="fas fa-search icon-search"></i>
@@ -92,7 +252,7 @@
                 <a class="btn-neon-small" [routerLink]="['/admin/torneos', t.id]">
                   <i class="fas fa-users"></i> Manage
                 </a>
-                <button class="btn-icon btn-edit" (click)="abrirEditarModal(t)" title="Edit" aria-label="Edit tournament {{ t.titulo }}">
+                <button class="btn-icon btn-edit" (click)="editarTorneo(t)" title="Edit" aria-label="Edit tournament {{ t.titulo }}">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="btn-icon btn-delete" (click)="borrarTorneo(t.id)" title="Delete" aria-label="Delete tournament {{ t.titulo }}">
@@ -150,12 +310,3 @@
     </div>
   }
 </div>
-
-<!-- Modal formulario -->
-@if (torneoEditando(); as torneo) {
-  <app-torneo-form-dialog
-    [torneo]="torneo"
-    (guardar)="guardarTorneo($event)"
-    (cerrar)="cerrarModal()"
-  />
-}

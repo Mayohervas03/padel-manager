@@ -1,0 +1,44 @@
+@if (data(); as d) {
+  <div class="dialog-overlay" (click)="onCerrar()">
+    <div class="dialog-box" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <i class="fas fa-user-edit"></i>
+        <h3>Edit Partner</h3>
+      </div>
+
+      <div class="dialog-body">
+        <div class="form-group">
+          <label for="edit-jugador">Player</label>
+          <input
+            id="edit-jugador"
+            type="text"
+            [value]="d.jugadorNombre"
+            disabled
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-companero">Partner Name</label>
+          <input
+            id="edit-companero"
+            type="text"
+            [(ngModel)]="nombreCompanero"
+            placeholder="Partner name"
+            class="form-input"
+            (keyup.enter)="onGuardar()"
+          />
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn btn-secondary" (click)="onCerrar()">
+          Cancel
+        </button>
+        <button class="btn btn-primary" (click)="onGuardar()">
+          <i class="fas fa-save"></i> Save
+        </button>
+      </div>
+    </div>
+  </div>
+}

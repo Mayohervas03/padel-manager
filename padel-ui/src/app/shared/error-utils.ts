@@ -5,7 +5,7 @@
  */
 export function extractErrorMessage(error: any): string {
   if (!error) {
-    return 'An error has occurred. Please try again.';
+    return 'Something went wrong. Please try again or contact support if the problem persists.';
   }
 
   let body = error.error;
@@ -40,5 +40,5 @@ export function extractErrorMessage(error: any): string {
     return error.message;
   }
 
-  return 'An error has occurred. Please try again.';
+  return 'Something went wrong. Please try again or contact support if the problem persists.';
 }

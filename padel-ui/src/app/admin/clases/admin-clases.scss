@@ -76,12 +76,30 @@
   margin-top: 5px;
 
   .alumno-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: rgba(255, 255, 255, 0.05);
     color: $text-secondary;
     padding: 3px 8px;
     border-radius: 4px;
     font-size: 0.75rem;
     border: 1px solid $border-glass;
+
+    .btn-remove-alumno {
+      background: none;
+      border: none;
+      color: $text-muted;
+      cursor: pointer;
+      padding: 0;
+      font-size: 0.7rem;
+      line-height: 1;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #ff6b6b;
+      }
+    }
   }
 }
 

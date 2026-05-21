@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PistaService } from './pista.service';
 import { AuthService } from '../auth/auth.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
+import { NotificationService } from '../shared/notification.service';
 import type { Pista } from '../shared/models';
 
 @Component({
@@ -16,6 +17,7 @@ import type { Pista } from '../shared/models';
 export class PistasComponent implements OnInit {
   private readonly pistaService = inject(PistaService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly notificationService = inject(NotificationService);
   readonly authService = inject(AuthService);
 
   readonly pistas = signal<Pista[]>([]);
@@ -37,7 +39,10 @@ export class PistasComponent implements OnInit {
   cargarPistas() {
     this.pistaService.getPistas().subscribe({
       next: (datos) => this.pistas.set(datos),
-      error: (err) => console.error('Error cargando pistas:', err)
+      error: (err) => {
+        console.error('Error loading courts:', err);
+        this.notificationService.error('Could not load courts. Please try again.');
+      }
     });
   }
 

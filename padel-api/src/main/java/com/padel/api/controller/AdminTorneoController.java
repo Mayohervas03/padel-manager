@@ -1,6 +1,7 @@
 package com.padel.api.controller;
 
 import com.padel.api.dto.InscripcionTorneoDto;
+import com.padel.api.dto.UpdateInscripcionRequest;
 import com.padel.api.model.EstadoTorneo;
 import com.padel.api.model.Torneo;
 import com.padel.api.service.TorneoService;
@@ -48,6 +49,21 @@ public class AdminTorneoController {
     public ResponseEntity<InscripcionTorneoDto> updatePago(@PathVariable Long id, @RequestParam boolean pagado) {
         logSecurityInfo();
         return ResponseEntity.ok(torneoService.marcarPagado(id, pagado));
+    }
+
+    @DeleteMapping("/inscripciones/{id}")
+    public ResponseEntity<Void> deleteInscripcion(@PathVariable Long id) {
+        logSecurityInfo();
+        torneoService.deleteInscripcion(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/inscripciones/{id}")
+    public ResponseEntity<InscripcionTorneoDto> updateInscripcion(
+            @PathVariable Long id,
+            @RequestBody UpdateInscripcionRequest request) {
+        logSecurityInfo();
+        return ResponseEntity.ok(torneoService.updateInscripcion(id, request.getNombreCompanero()));
     }
 
     @PatchMapping("/torneos/{id}/estado")

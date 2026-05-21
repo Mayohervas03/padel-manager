@@ -15,6 +15,7 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 export class AdminLogsComponent implements OnInit {
   private readonly logService = inject(ActivityLogService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly activityLog = inject(ActivityLogService);
 
   readonly filtro = signal('');
   readonly paginaActual = signal(1);
@@ -66,6 +67,7 @@ export class AdminLogsComponent implements OnInit {
     }).subscribe(confirmed => {
       if (confirmed) {
         this.isLoading.set(true);
+        this.activityLog.log('LIMPIAR', 'AUDITORIA', 'Activity history cleared by admin');
         this.logService.clearLogs();
         this.isLoading.set(false);
       }
@@ -87,11 +89,16 @@ export class AdminLogsComponent implements OnInit {
   getActionIcon(action: string): string {
     switch (action.toLowerCase()) {
       case 'crear': return 'fa-plus-circle';
-      case 'editar': return 'fa-edit';
+      case 'editar':
+      case 'actualizar': return 'fa-edit';
       case 'eliminar': return 'fa-trash-alt';
       case 'anular': return 'fa-times-circle';
-      case 'cambiar': return 'fa-exchange-alt';
+      case 'cambiar':
+      case 'cambiar_estado':
+      case 'cambiar_rol':
+      case 'cambiar_pago': return 'fa-exchange-alt';
       case 'exportar': return 'fa-file-export';
+      case 'limpiar': return 'fa-broom';
       default: return 'fa-info-circle';
     }
   }
@@ -99,11 +106,16 @@ export class AdminLogsComponent implements OnInit {
   getActionColor(action: string): string {
     switch (action.toLowerCase()) {
       case 'crear': return 'action-create';
-      case 'editar': return 'action-edit';
+      case 'editar':
+      case 'actualizar': return 'action-edit';
       case 'eliminar': return 'action-delete';
       case 'anular': return 'action-delete';
-      case 'cambiar': return 'action-edit';
+      case 'cambiar':
+      case 'cambiar_estado':
+      case 'cambiar_rol':
+      case 'cambiar_pago': return 'action-edit';
       case 'exportar': return 'action-export';
+      case 'limpiar': return 'action-delete';
       default: return 'action-default';
     }
   }

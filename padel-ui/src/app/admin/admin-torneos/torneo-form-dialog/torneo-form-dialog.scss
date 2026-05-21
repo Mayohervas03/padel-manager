@@ -16,7 +16,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-  max-width: 600px;
+  max-width: 640px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -26,26 +26,96 @@
 .dialog-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   padding: 20px 24px 0;
 
-  i {
-    font-size: 1.5rem;
-    color: #CCFF00;
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    i {
+      font-size: 1.5rem;
+      color: #CCFF00;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+    }
   }
 
-  h3 {
-    margin: 0;
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #fff;
+  .btn-close {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transform: rotate(90deg);
+    }
   }
 }
 
 .dialog-body {
-  padding: 20px 24px;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
+// Sections
+.form-section {
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    i {
+      color: #CCFF00;
+      font-size: 0.9rem;
+    }
+
+    span {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      .required {
+        color: #ff6b6b;
+        font-weight: 700;
+      }
+    }
+
+    .section-badge {
+      margin-left: auto;
+      background: rgba(204, 255, 0, 0.15);
+      color: #CCFF00;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+  }
+}
+
+// Grid
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -53,6 +123,10 @@
 
   .form-full {
     grid-column: 1 / -1;
+  }
+
+  &.two-col {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -65,6 +139,11 @@
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.7);
     font-weight: 500;
+
+    .required {
+      color: #ff6b6b;
+      margin-left: 2px;
+    }
   }
 }
 
@@ -92,13 +171,192 @@
     background: #141928;
     color: #fff;
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
+// Character count
 textarea.form-input {
   resize: vertical;
+  min-height: 80px;
 }
 
-.dialog-footer {
+.char-count {
+  text-align: right;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+}
+
+// Image preview
+.image-preview-group {
+  .image-preview-wrapper {
+    height: 120px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.3);
+
+    i {
+      font-size: 1.5rem;
+    }
+
+    span {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// Input with prefix
+.input-prefix {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .prefix {
+    position: absolute;
+    left: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    font-size: 0.95rem;
+    z-index: 1;
+  }
+
+  .form-input {
+    padding-left: 28px;
+  }
+}
+
+// Categories
+categorias-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.categoria-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .cat-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(204, 255, 0, 0.15);
+    color: #CCFF00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .cat-fields {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+
+    .form-group {
+      label {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-top: 22px;
+
+    &.btn-remove {
+      background: rgba(220, 53, 69, 0.15);
+      color: #ff6b6b;
+
+      &:hover:not(:disabled) {
+        background: rgba(220, 53, 69, 0.25);
+        transform: scale(1.1);
+      }
+
+      &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.btn-add-category {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+
+  &:hover {
+    border-color: #CCFF00;
+    color: #CCFF00;
+    background: rgba(204, 255, 0, 0.05);
+  }
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+// Footer
+dialog-footer {
   display: flex;
   gap: 10px;
   padding: 0 24px 20px;
@@ -141,8 +399,14 @@ textarea.form-input {
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(204, 255, 0, 0.3);
 
-    &:hover {
+    &:hover:not(:disabled) {
       box-shadow: 0 6px 16px rgba(204, 255, 0, 0.4);
+    }
+
+    &.btn-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
     }
   }
 }
@@ -178,6 +442,12 @@ textarea.form-input {
 
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .categoria-card {
+    .cat-fields {
+      grid-template-columns: 1fr;
+    }
   }
 
   .dialog-footer {

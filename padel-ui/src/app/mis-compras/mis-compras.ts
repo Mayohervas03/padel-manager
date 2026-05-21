@@ -44,38 +44,103 @@ export class MisComprasComponent implements OnInit {
     this.pedidoExpandido.update(current => current === id ? null : id);
   }
 
-  descargarRecibo(pedido: Pedido) {
+  private translateEstado(estado: string): string {
+    switch (estado) {
+      case 'COMPLETADO': return 'Completed';
+      case 'PENDIENTE': return 'Pending';
+      case 'CANCELADO': return 'Cancelled';
+      default: return estado;
+    }
+  }
+
+  async descargarRecibo(pedido: Pedido) {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 20;
     let y = 20;
 
-    // Header
+    // Header background
     doc.setFillColor(10, 25, 47);
     doc.rect(0, 0, pageWidth, 50, 'F');
-    
+
+    // Logo SVG
+    try {
+      const svgResponse = await fetch('logo.svg');
+      const svgText = await svgResponse.text();
+      const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+      const svgUrl = URL.createObjectURL(svgBlob);
+      
+      const img = new Image();
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = reject;
+        img.src = svgUrl;
+      });
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = 200;
+      canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, 200, 200);
+        const imgData = canvas.toDataURL('image/png');
+        doc.addImage(imgData, 'PNG', margin, 8, 32, 32);
+      }
+      URL.revokeObjectURL(svgUrl);
+    } catch {
+      // Fallback sin logo
+    }
+
+    // Título del recibo
     doc.setTextColor(204, 255, 0);
-    doc.setFontSize(24);
+    doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text('ELITE PADEL', pageWidth / 2, y + 10, { align: 'center' });
+    doc.text('ELITE PADEL', margin + 38, y + 8);
     
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text('Purchase Receipt', pageWidth / 2, y + 20, { align: 'center' });
+    doc.text('Purchase Receipt', margin + 38, y + 16);
 
-    y = 70;
+    // Datos de la empresa (derecha)
+    doc.setTextColor(180, 180, 180);
+    doc.setFontSize(8);
+    doc.text('Calle del Deporte, 22', pageWidth - margin, y + 4, { align: 'right' });
+    doc.text('Phone: 912 345 678', pageWidth - margin, y + 9, { align: 'right' });
+    doc.text('admin@padel.com', pageWidth - margin, y + 14, { align: 'right' });
 
-    // Info del pedido
-    doc.setTextColor(50, 50, 50);
+    y = 65;
+
+    // Datos del comprador
+    doc.setTextColor(10, 25, 47);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
+    doc.text('Buyer:', margin, y);
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(pedido.usuarioNombre || 'N/A', margin, y);
+    y += 6;
+    doc.text(pedido.usuarioEmail || 'N/A', margin, y);
+    y += 12;
+
+    // Separador entre Buyer y Order
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.3);
+    doc.line(margin, y - 2, pageWidth - margin, y - 2);
+    y += 8;
+
+    // Info del pedido
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
     doc.text(`Order #${pedido.id}`, margin, y);
     y += 8;
     doc.setFont('helvetica', 'normal');
-    doc.text(`Date: ${new Date(pedido.fecha).toLocaleDateString('en-US')}`, margin, y);
+    const fecha = new Date(pedido.fecha);
+    const fechaStr = `${fecha.getDate().toString().padStart(2, '0')}/${(fecha.getMonth() + 1).toString().padStart(2, '0')}/${fecha.getFullYear()}`;
+    doc.text(`Date: ${fechaStr}`, margin, y);
     y += 8;
-    doc.text(`Status: ${pedido.estado}`, margin, y);
+    doc.text(`Status: ${this.translateEstado(pedido.estado)}`, margin, y);
     y += 15;
 
     // Línea separadora
@@ -88,8 +153,8 @@ export class MisComprasComponent implements OnInit {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.text('Product', margin, y);
-    doc.text('Qty', pageWidth - margin - 80, y, { align: 'center' });
-    doc.text('Price', pageWidth - margin - 40, y, { align: 'center' });
+    doc.text('Qty', pageWidth - margin - 90, y, { align: 'center' });
+    doc.text('Price', pageWidth - margin - 50, y, { align: 'right' });
     doc.text('Subtotal', pageWidth - margin, y, { align: 'right' });
     y += 5;
 
@@ -103,8 +168,8 @@ export class MisComprasComponent implements OnInit {
     
     for (const item of pedido.items) {
       doc.text(item.producto.nombre, margin, y);
-      doc.text(item.cantidad.toString(), pageWidth - margin - 80, y, { align: 'center' });
-      doc.text(`${item.precioUnitario.toFixed(2)} EUR`, pageWidth - margin - 40, y, { align: 'center' });
+      doc.text(item.cantidad.toString(), pageWidth - margin - 90, y, { align: 'center' });
+      doc.text(`${item.precioUnitario.toFixed(2)} EUR`, pageWidth - margin - 50, y, { align: 'right' });
       const subtotal = item.cantidad * item.precioUnitario;
       doc.text(`${subtotal.toFixed(2)} EUR`, pageWidth - margin, y, { align: 'right' });
       y += 7;
@@ -115,26 +180,31 @@ export class MisComprasComponent implements OnInit {
     doc.line(margin, y, pageWidth - margin, y);
     y += 10;
 
-    // Total
+    // Total con fondo destacado
+    const totalBoxY = y - 4;
+    const totalBoxH = 12;
+    doc.setFillColor(245, 247, 250);
+    doc.rect(margin + 60, totalBoxY, pageWidth - margin - 60 - margin, totalBoxH, 'F');
+
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(10, 25, 47);
     doc.text('TOTAL:', pageWidth - margin - 60, y);
-    doc.setTextColor(204, 255, 0);
+    doc.setTextColor(10, 25, 47);
     doc.text(`${pedido.total.toFixed(2)} EUR`, pageWidth - margin, y, { align: 'right' });
 
-    y += 20;
+    y += 30;
 
     // Footer
     doc.setDrawColor(10, 25, 47);
     doc.setLineWidth(0.5);
-    doc.line(margin, pageWidth - 30, pageWidth - margin, pageWidth - 30);
+    doc.line(margin, y, pageWidth - margin, y);
     
     doc.setTextColor(100, 100, 100);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Thank you for your purchase at Elite Padel', pageWidth / 2, pageWidth - 20, { align: 'center' });
+    doc.text('Thank you for your purchase at Elite Padel', pageWidth / 2, y + 15, { align: 'center' });
 
-    doc.save(`recibo-pedido-${pedido.id}.pdf`);
+    doc.save(`receipt-order-${pedido.id}.pdf`);
   }
 }

@@ -65,14 +65,20 @@ export class AdminDashboardComponent implements OnInit {
     this.http.get<AgendaItem[]>(`${this.apiUrl}/admin/reservas?fecha=${this.fechaActual()}`)
       .subscribe({
         next: (data) => this.reservas.set(data),
-        error: (err) => console.error('Error loading bookings', err)
+        error: (err) => {
+          console.error('Error loading bookings', err);
+          this.notificationService.error('Could not load daily schedule. Please try again.');
+        }
       });
   }
 
   cargarPistasActivas() {
     this.http.get<DashboardStats>(`${this.apiUrl}/dashboard`).subscribe({
       next: (data) => this.pistasActivas.set(data.pistasActivas || 0),
-      error: (err) => console.error('Error loading active courts', err)
+      error: (err) => {
+        console.error('Error loading active courts', err);
+        this.notificationService.error('Could not load court statistics. Please try again.');
+      }
     });
   }
 

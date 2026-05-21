@@ -67,4 +67,12 @@ export class TorneoService {
   cambiarEstadoAdmin(id: number, estado: string): Observable<Torneo> {
     return this.http.patch<Torneo>(`${this.apiUrl}/admin/torneos/${id}/estado?estado=${estado}`, {});
   }
+
+  deleteInscripcionAdmin(inscripcionId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/admin/inscripciones/${inscripcionId}`);
+  }
+
+  updateInscripcionAdmin(inscripcionId: number, nombreCompanero: string): Observable<InscripcionTorneo> {
+    return this.http.put<InscripcionTorneo>(`${this.apiUrl}/admin/inscripciones/${inscripcionId}`, { nombreCompanero });
+  }
 }

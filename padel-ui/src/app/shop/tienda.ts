@@ -127,7 +127,7 @@ export class TiendaComponent implements OnInit {
         this.cargarCarrito();
       },
       error: (err) => {
-        this.notificationService.error(err.error || 'Error adding to cart');
+        this.notificationService.error(err.error || 'Could not add item to cart. Please try again.');
       }
     });
   }
@@ -147,7 +147,7 @@ export class TiendaComponent implements OnInit {
     }
     this.carritoService.actualizarCantidad(itemId, cantidad).subscribe({
       next: () => this.cargarCarrito(),
-      error: (err) =>         this.notificationService.error(err.error || 'Error updating quantity')
+      error: (err) =>         this.notificationService.error(err.error || 'Could not update cart quantity. Please try again.')
     });
   }
 
@@ -157,7 +157,7 @@ export class TiendaComponent implements OnInit {
         this.cargarCarrito();
         this.notificationService.info('Product removed from cart');
       },
-      error: (err) =>         this.notificationService.error(err.error || 'Error removing product')
+      error: (err) =>         this.notificationService.error(err.error || 'Could not remove item from cart. Please try again.')
     });
   }
 
@@ -171,7 +171,7 @@ export class TiendaComponent implements OnInit {
         this.cargarProductos();
       },
       error: (err) => {
-        this.notificationService.error(err.error || 'Error al procesar el pedido');
+        this.notificationService.error(err.error || 'Could not place order. Please try again.');
       }
     });
   }

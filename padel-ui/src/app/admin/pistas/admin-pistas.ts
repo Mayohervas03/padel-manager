@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../../shared/api.config';
 import { NotificationService } from '../../shared/notification.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
+import { ActivityLogService } from '../../shared/activity-log.service';
 import type { Pista } from '../../shared/models';
 
 @Component({
@@ -20,6 +21,7 @@ export class AdminPistasComponent implements OnInit {
   private readonly apiUrl = inject(API_BASE_URL);
   private readonly notificationService = inject(NotificationService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly activityLog = inject(ActivityLogService);
 
   readonly pistas = signal<Pista[]>([]);
   readonly mostrarFormulario = signal(false);
@@ -81,19 +83,21 @@ export class AdminPistasComponent implements OnInit {
       this.http.put<Pista>(`${this.apiUrl}/admin/pistas/${p.id}`, payload).subscribe({
         next: () => {
           this.notificationService.success('Court updated');
+          this.activityLog.log('EDITAR', 'PISTA', `Updated court "${payload.nombre}" (#${p.id})`, p.id);
           this.toggleFormulario();
           this.cargarPistas();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error updating')
+        error: (err) => this.notificationService.error(err.error || 'Could not save court changes. Please try again.')
       });
     } else {
       this.http.post<Pista>(`${this.apiUrl}/admin/pistas`, payload).subscribe({
-        next: () => {
+        next: (created) => {
           this.notificationService.success('Court created');
+          this.activityLog.log('CREAR', 'PISTA', `Created court "${payload.nombre}"`, created.id);
           this.toggleFormulario();
           this.cargarPistas();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error creating')
+        error: (err) => this.notificationService.error(err.error || 'Could not create the court. Please check the details and try again.')
       });
     }
   }
@@ -111,9 +115,10 @@ export class AdminPistasComponent implements OnInit {
     this.http.put<Pista>(`${this.apiUrl}/admin/pistas/${pista.id}`, payload).subscribe({
       next: () => {
         this.notificationService.success(`Court ${nuevoEstado ? 'activated' : 'deactivated'}`);
+        this.activityLog.log('CAMBIAR_ESTADO', 'PISTA', `Court "${pista.nombre}" ${nuevoEstado ? 'activated' : 'deactivated'}`, pista.id);
         this.cargarPistas();
       },
-      error: (err) => this.notificationService.error(err.error || 'Error changing status')
+        error: (err) => this.notificationService.error(err.error || 'Could not change court status. Please try again.')
     });
   }
 
@@ -130,9 +135,10 @@ export class AdminPistasComponent implements OnInit {
         this.http.delete(`${this.apiUrl}/admin/pistas/${id}`, { responseType: 'text' }).subscribe({
           next: () => {
             this.notificationService.success('Court deleted');
+            this.activityLog.log('ELIMINAR', 'PISTA', `Deleted court #${id}`, id);
             this.cargarPistas();
           },
-          error: (err) => this.notificationService.error(err.error || 'Error deleting')
+          error: (err) => this.notificationService.error(err.error || 'Could not delete the court. It may have upcoming bookings.')
         });
       }
     });

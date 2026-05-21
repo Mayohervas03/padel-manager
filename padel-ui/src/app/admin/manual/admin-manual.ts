@@ -91,7 +91,7 @@ export class AdminManualComponent implements OnInit, OnDestroy {
         this.seleccionarUsuario(user);
       },
       error: () => {
-        this.notificationService.error('Error loading user');
+        this.notificationService.error('Could not load user details. Please try searching again.');
       }
     });
   }
@@ -175,8 +175,8 @@ export class AdminManualComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.isProcessing.set(false);
-        this.mensajeError.set(err.error || 'Error creating booking');
-        this.notificationService.error(err.error || 'Error creating booking');
+        this.mensajeError.set(err.error || 'Could not create the booking. The court may be unavailable.');
+        this.notificationService.error(err.error || 'Could not create the booking. The court may be unavailable.');
       }
     });
   }

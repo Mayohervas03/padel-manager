@@ -44,4 +44,12 @@ public class AdminClaseController {
         claseService.eliminarClase(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{claseId}/alumnos/{usuarioId}")
+    public ResponseEntity<Void> eliminarAlumno(
+            @PathVariable("claseId") Long claseId,
+            @PathVariable("usuarioId") Long usuarioId) {
+        claseService.eliminarAlumno(claseId, usuarioId);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -7,13 +7,12 @@ import { NotificationService } from '../../shared/notification.service';
 import { ExportService } from '../../shared/export.service';
 import { ActivityLogService } from '../../shared/activity-log.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
-import { TorneoFormDialogComponent, type TorneoFormData } from './torneo-form-dialog/torneo-form-dialog';
 import type { Torneo } from '../../shared/models';
 
 @Component({
   selector: 'app-admin-torneos',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe, TorneoFormDialogComponent],
+  imports: [CommonModule, FormsModule, RouterLink, DatePipe],
   templateUrl: './admin-torneos.html',
   styleUrl: './admin-torneos.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,7 +29,21 @@ export class AdminTorneosComponent implements OnInit {
   readonly filtroTexto = signal('');
   readonly filtroEstado = signal<'TODOS' | 'ABIERTO' | 'CERRADO' | 'CANCELADO'>('TODOS');
   readonly isLoading = signal<number | null>(null);
-  readonly torneoEditando = signal<TorneoFormData | null>(null);
+  readonly mostrarFormulario = signal(false);
+
+  // Formulario inline
+  torneoEditando: {
+    id?: number;
+    titulo: string;
+    descripcion: string;
+    fechaInicio: string;
+    fechaFin: string;
+    precioPareja: number;
+    categorias: { nombre: string; maxParejas: number }[];
+    imagenUrl: string;
+    estado: Torneo['estado'];
+    fechaCierreInscripcion: string;
+  } = this.resetTorneo();
 
   // Paginación
   readonly paginaActual = signal(1);
@@ -96,8 +109,19 @@ export class AdminTorneosComponent implements OnInit {
     this.paginaActual.set(1);
   }
 
-  abrirCrearModal() {
-    this.torneoEditando.set({
+  resetTorneo(): {
+    id?: number;
+    titulo: string;
+    descripcion: string;
+    fechaInicio: string;
+    fechaFin: string;
+    precioPareja: number;
+    categorias: { nombre: string; maxParejas: number }[];
+    imagenUrl: string;
+    estado: Torneo['estado'];
+    fechaCierreInscripcion: string;
+  } {
+    return {
       titulo: '',
       descripcion: '',
       fechaInicio: '',
@@ -107,11 +131,16 @@ export class AdminTorneosComponent implements OnInit {
       imagenUrl: '',
       estado: 'ABIERTO',
       fechaCierreInscripcion: ''
-    });
+    };
   }
 
-  abrirEditarModal(torneo: Torneo) {
-    this.torneoEditando.set({
+  toggleFormulario() {
+    this.mostrarFormulario.update(v => !v);
+    this.torneoEditando = this.resetTorneo();
+  }
+
+  editarTorneo(torneo: Torneo) {
+    this.torneoEditando = {
       id: torneo.id,
       titulo: torneo.titulo,
       descripcion: torneo.descripcion || '',
@@ -122,62 +151,92 @@ export class AdminTorneosComponent implements OnInit {
       imagenUrl: torneo.imagenUrl || '',
       estado: torneo.estado,
       fechaCierreInscripcion: torneo.fechaCierreInscripcion || ''
-    });
+    };
+    this.mostrarFormulario.set(true);
+    // Scroll al formulario
+    setTimeout(() => {
+      document.querySelector('.form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 
-  cerrarModal() {
-    this.torneoEditando.set(null);
-  }
+  guardarTorneo() {
+    const t = this.torneoEditando;
 
-  guardarTorneo(datos: TorneoFormData) {
-    const editando = this.torneoEditando();
-    if (!editando) return;
-
-    if (!datos.titulo || !datos.fechaInicio || !datos.fechaFin) {
-      this.notificationService.error('Please fill in the required fields (Title and Dates)');
+    if (!t.titulo?.trim()) {
+      this.notificationService.error('Title is required');
       return;
     }
-
-    if (datos.fechaInicio > datos.fechaFin) {
+    if (!t.fechaInicio) {
+      this.notificationService.error('Start date is required');
+      return;
+    }
+    if (!t.fechaFin) {
+      this.notificationService.error('End date is required');
+      return;
+    }
+    if (t.fechaInicio > t.fechaFin) {
       this.notificationService.error('Start date cannot be after end date');
       return;
     }
-
-    if ((datos.precioPareja ?? 0) < 0) {
+    if ((t.precioPareja ?? 0) < 0) {
       this.notificationService.error('Price cannot be negative');
       return;
     }
-
-    if (!datos.categorias || datos.categorias.length === 0) {
+    if (!t.categorias || t.categorias.length === 0) {
       this.notificationService.error('You must define at least one category');
       return;
     }
-
-    for (const cat of datos.categorias) {
-      if (!cat.nombre || (cat.maxParejas ?? 0) < 1) {
+    for (const cat of t.categorias) {
+      if (!cat.nombre?.trim() || (cat.maxParejas ?? 0) < 1) {
         this.notificationService.error('All categories must have a name and at least 1 pair');
         return;
       }
     }
 
-    this.isLoading.set(editando.id ?? -1);
-    const operacion = editando.id
-      ? this.torneoService.updateTorneo(editando.id, datos as any)
-      : this.torneoService.createTorneo(datos as any);
+    const payload = {
+      titulo: t.titulo.trim(),
+      descripcion: t.descripcion || '',
+      fechaInicio: t.fechaInicio,
+      fechaFin: t.fechaFin,
+      precioPareja: t.precioPareja ?? 0,
+      categorias: t.categorias,
+      imagenUrl: t.imagenUrl || '',
+      estado: t.estado || 'ABIERTO',
+      fechaCierreInscripcion: t.fechaCierreInscripcion || ''
+    };
+
+    this.isLoading.set(t.id ?? -1);
+    const operacion = t.id
+      ? this.torneoService.updateTorneo(t.id, payload as any)
+      : this.torneoService.createTorneo(payload as any);
 
     operacion.subscribe({
       next: () => {
-        const action = editando.id ? 'ACTUALIZAR' : 'CREAR';
-        this.activityLog.log(action, 'TORNEO', `${action === 'CREAR' ? 'Created' : 'Updated'} tournament ${datos.titulo}`, editando.id);
+        const action = t.id ? 'EDITAR' : 'CREAR';
+        this.activityLog.log(action, 'TORNEO', `${action === 'CREAR' ? 'Created' : 'Updated'} tournament ${payload.titulo}`, t.id);
         this.isLoading.set(null);
-        this.cerrarModal();
+        this.toggleFormulario();
         this.cargarTorneos();
       },
       error: (err) => {
         this.isLoading.set(null);
-        this.notificationService.error(err.error?.message || 'Error saving tournament');
+        this.notificationService.error(err.error?.message || 'Could not save tournament. Please check dates and categories.');
       }
     });
+  }
+
+  agregarCategoria() {
+    this.torneoEditando.categorias = [...this.torneoEditando.categorias, { nombre: '', maxParejas: 8 }];
+  }
+
+  eliminarCategoria(index: number) {
+    this.torneoEditando.categorias = this.torneoEditando.categorias.filter((_, i) => i !== index);
+  }
+
+  actualizarCategoria(index: number, campo: 'nombre' | 'maxParejas', valor: string | number) {
+    const nuevas = [...this.torneoEditando.categorias];
+    nuevas[index] = { ...nuevas[index], [campo]: valor };
+    this.torneoEditando.categorias = nuevas;
   }
 
   borrarTorneo(id: number) {
@@ -200,7 +259,7 @@ export class AdminTorneosComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading.set(null);
-          this.notificationService.error(err.error?.message || 'Error deleting tournament');
+          this.notificationService.error(err.error?.message || 'Could not delete tournament. Registrations may exist.');
         }
       });
     });
@@ -228,7 +287,7 @@ export class AdminTorneosComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading.set(null);
-          this.notificationService.error(err.error?.message || 'Error changing status');
+          this.notificationService.error(err.error?.message || 'Could not change tournament status. Please try again.');
         }
       });
     });

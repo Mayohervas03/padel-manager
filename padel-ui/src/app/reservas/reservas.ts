@@ -100,8 +100,8 @@ export class ReservasComponent implements OnInit {
           this.cargandoPistas.set(false);
         },
         error: (err) => {
-          console.error('Error obteniendo disponibilidad', err);
-          this.notificationService.error('Could not load court availability');
+          console.error('Error loading court availability', err);
+          this.notificationService.error('Could not load court availability. Please try again.');
           this.cargandoPistas.set(false);
         }
       });
@@ -133,7 +133,7 @@ export class ReservasComponent implements OnInit {
       },
       error: (err) => {
         // El interceptor ya normaliza el error para que err.error sea un string
-        this.notificationService.error(err.error || 'An unexpected error occurred.');
+        this.notificationService.error(err.error || 'Could not confirm booking. The court may no longer be available.');
       }
     }).add(() => {
       this.cargando.set(false);

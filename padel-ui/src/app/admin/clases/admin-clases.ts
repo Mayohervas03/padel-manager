@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../shared/api.config';
 import { NotificationService } from '../../shared/notification.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
+import { ActivityLogService } from '../../shared/activity-log.service';
 import type { Clase, Pista } from '../../shared/models';
 
 @Component({
@@ -20,6 +21,7 @@ export class AdminClasesComponent implements OnInit {
   private readonly apiUrl = inject(API_BASE_URL);
   private readonly notificationService = inject(NotificationService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly activityLog = inject(ActivityLogService);
 
   readonly clases = signal<Clase[]>([]);
   readonly pistas = signal<Pista[]>([]);
@@ -96,19 +98,21 @@ export class AdminClasesComponent implements OnInit {
       this.http.put<Clase>(`${this.apiUrl}/admin/clases/${c.id}`, payload).subscribe({
         next: () => {
           this.notificationService.success('Class updated');
+          this.activityLog.log('EDITAR', 'CLASE', `Updated class "${payload.titulo}" (#${c.id})`, c.id);
           this.toggleFormulario();
           this.cargarClases();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error updating')
+        error: (err) => this.notificationService.error(err.error || 'Could not save class changes. Please try again.')
       });
     } else {
       this.http.post<Clase>(`${this.apiUrl}/admin/clases`, payload).subscribe({
-        next: () => {
+        next: (created) => {
           this.notificationService.success('Class created');
+          this.activityLog.log('CREAR', 'CLASE', `Created class "${payload.titulo}"`, created.id);
           this.toggleFormulario();
           this.cargarClases();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error creating')
+        error: (err) => this.notificationService.error(err.error || 'Could not create the class. Please check the details and try again.')
       });
     }
   }
@@ -126,9 +130,32 @@ export class AdminClasesComponent implements OnInit {
         this.http.delete(`${this.apiUrl}/admin/clases/${id}`).subscribe({
           next: () => {
             this.notificationService.success('Class deleted');
+            this.activityLog.log('ELIMINAR', 'CLASE', `Deleted class #${id}`, id);
             this.cargarClases();
           },
-          error: (err) => this.notificationService.error(err.error || 'Error deleting')
+          error: (err) => this.notificationService.error(err.error || 'Could not delete the class. Students may still be enrolled.')
+        });
+      }
+    });
+  }
+
+  eliminarAlumno(claseId: number, alumnoId: number) {
+    this.confirmDialog.confirm({
+      title: 'Remove Student',
+      message: 'Are you sure you want to remove this student from the class?',
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
+      confirmButtonClass: 'btn-danger',
+      icon: 'fa-user-minus'
+    }).subscribe(result => {
+      if (result) {
+        this.http.delete(`${this.apiUrl}/admin/clases/${claseId}/alumnos/${alumnoId}`).subscribe({
+          next: () => {
+            this.notificationService.success('Student removed from class');
+            this.activityLog.log('ELIMINAR', 'ALUMNO_CLASE', `Removed student #${alumnoId} from class #${claseId}`, claseId);
+            this.cargarClases();
+          },
+          error: (err) => this.notificationService.error(err.error || 'Could not remove student from class.')
         });
       }
     });

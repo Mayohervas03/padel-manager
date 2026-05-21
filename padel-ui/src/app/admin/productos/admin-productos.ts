@@ -150,7 +150,7 @@ export class AdminProductosComponent implements OnInit {
           this.toggleFormulario();
           this.cargarProductos();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error updating')
+        error: (err) => this.notificationService.error(err.error || 'Could not save product changes. Please try again.')
       });
     } else {
       this.productoService.createProducto(payload).subscribe({
@@ -160,7 +160,7 @@ export class AdminProductosComponent implements OnInit {
           this.toggleFormulario();
           this.cargarProductos();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error creating')
+        error: (err) => this.notificationService.error(err.error || 'Could not create the product. Please check the details and try again.')
       });
     }
   }
@@ -180,7 +180,7 @@ export class AdminProductosComponent implements OnInit {
           this.notificationService.success('Product deleted');
           this.cargarProductos();
         },
-        error: (err) => this.notificationService.error(err.error || 'Error deleting')
+        error: (err) => this.notificationService.error(err.error || 'Could not delete the product. It may be referenced in existing orders.')
       });
     });
   }

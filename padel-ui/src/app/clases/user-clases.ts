@@ -37,7 +37,8 @@ export class UserClasesComponent implements OnInit {
         this.cargarMisClases();
       },
       error: (err) => {
-        console.error('Error cargando academia', err);
+        console.error('Error loading academy classes', err);
+        this.notificationService.error('Could not load classes. Please try again.');
         this.isLoading.set(false);
       }
     });

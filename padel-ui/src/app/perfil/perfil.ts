@@ -205,7 +205,7 @@ export class PerfilComponent implements OnInit {
         setTimeout(() => this.showPasswordForm.set(false), 2000);
       },
       error: (err) => {
-        this.mensajeError.set(err.error || 'Error changing password');
+        this.mensajeError.set(err.error || 'Could not change password. Please verify your current password and try again.');
       }
     });
   }

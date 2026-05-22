@@ -51,12 +51,10 @@ export class TiendaComponent implements OnInit {
   readonly productosFiltrados = computed(() => {
     let resultado = [...this.productos()];
 
-    // Filtrar por categoría
     if (this.categoriaSeleccionada() !== 'TODAS') {
       resultado = resultado.filter(p => p.categoria === this.categoriaSeleccionada());
     }
 
-    // Filtrar por búsqueda
     const termino = this.terminoBusqueda().toLowerCase().trim();
     if (termino) {
       resultado = resultado.filter(p =>
@@ -65,7 +63,6 @@ export class TiendaComponent implements OnInit {
       );
     }
 
-    // Ordenar
     switch (this.ordenamiento()) {
       case 'nombre':
         resultado.sort((a, b) => a.nombre.localeCompare(b.nombre));

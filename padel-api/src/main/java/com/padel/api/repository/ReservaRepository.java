@@ -46,7 +46,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     @Query("SELECT COUNT(r) FROM Reserva r WHERE r.pista.id = :pistaId AND r.estado IN ('PENDIENTE', 'CONFIRMADA') AND r.fecha >= CURRENT_DATE")
     long countReservasActivasFuturasByPistaId(@Param("pistaId") Long pistaId);
 
-    // Estadísticas sin filtro de fecha
     @Query("SELECT r.pista.nombre, COUNT(r) FROM Reserva r GROUP BY r.pista.nombre")
     List<Object[]> getOcupacionPistas();
 
@@ -56,7 +55,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     @Query("SELECT r.hora, COUNT(r) FROM Reserva r GROUP BY r.hora")
     List<Object[]> getOcupacionHoras();
 
-    // Estadísticas con filtro de fecha
     @Query("SELECT r.pista.nombre, COUNT(r) FROM Reserva r WHERE r.fecha >= :desde AND r.fecha <= :hasta GROUP BY r.pista.nombre")
     List<Object[]> getOcupacionPistasBetween(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 

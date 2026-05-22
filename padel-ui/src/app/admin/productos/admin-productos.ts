@@ -27,12 +27,10 @@ export class AdminProductosComponent implements OnInit {
   readonly mostrarFormulario = signal(false);
   readonly isLoading = signal(true);
 
-  // Filtros
   readonly filtroBusqueda = signal('');
   readonly filtroCategoria = signal<'TODAS' | CategoriaProducto>('TODAS');
   readonly filtroActivo = signal<'TODOS' | 'ACTIVO' | 'INACTIVO'>('TODOS');
 
-  // Paginación
   readonly paginaActual = signal(1);
   readonly itemsPorPagina = signal(10);
   readonly opcionesItemsPorPagina = [10, 25, 50];

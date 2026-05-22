@@ -95,14 +95,11 @@ public class AdminReservaService {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada"));
 
-        // Validaciones de transicion de estado
         if (reserva.getEstado() == EstadoReserva.CANCELADA && nuevoEstado != EstadoReserva.CANCELADA) {
-            // Al restaurar, validar que no haya conflicto de horario
             validarDisponibilidadAlRestaurar(reserva);
         }
 
         if (nuevoEstado == EstadoReserva.COMPLETADA) {
-            // Solo se puede marcar como completada si la fecha/hora ya paso
             if (reserva.getFecha().isAfter(LocalDate.now()) ||
                 (reserva.getFecha().isEqual(LocalDate.now()) && reserva.getHora().isAfter(LocalTime.now()))) {
                 throw new BusinessException("No se puede marcar como completada una reserva futura.");
@@ -194,7 +191,6 @@ public class AdminReservaService {
             throw new BusinessException("El horario debe estar entre 09:00 y 23:00.");
         }
 
-        // AL-5: Validar que el slot completo (90min) quepa dentro del horario
         if (minutos + slot > cierre) {
             throw new BusinessException("El horario seleccionado no permite completar la reserva de 90 minutos dentro del horario del club.");
         }

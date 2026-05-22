@@ -38,13 +38,10 @@ public class TorneoService {
 
     public List<Torneo> findActivos() {
         List<Torneo> torneos = torneoRepository.findByEstadoAndFechaFinGreaterThanEqualOrderByFechaFinAsc(EstadoTorneo.ABIERTO, LocalDate.now());
-        // Cargar categorías y contar inscripciones para cada torneo
         for (Torneo torneo : torneos) {
-            torneo.getCategorias().size(); // Forzar carga lazy
-            // Contar inscripciones totales del torneo
+            torneo.getCategorias().size();
             long totalInscritos = inscripcionRepository.countByTorneoIdAndEstado(torneo.getId(), EstadoInscripcion.ACTIVA);
             torneo.setInscripcionesCount((int) totalInscritos);
-            // Contar inscripciones por categoría
             for (CategoriaTorneo categoria : torneo.getCategorias()) {
                 long countCategoria = inscripcionRepository.countByCategoriaTorneoIdAndEstado(categoria.getId(), EstadoInscripcion.ACTIVA);
                 categoria.setInscripcionesCount((int) countCategoria);
@@ -63,7 +60,6 @@ public class TorneoService {
         Torneo torneo = mapToEntity(request);
         Torneo saved = torneoRepository.save(torneo);
         
-        // Crear categorías
         for (CategoriaTorneoRequest catReq : request.getCategorias()) {
             CategoriaTorneo categoria = new CategoriaTorneo();
             categoria.setNombre(catReq.getNombre());
@@ -91,16 +87,13 @@ public class TorneoService {
             torneo.setFechaCierreInscripcion(request.getFechaCierreInscripcion());
         }
         
-        // Actualizar categorías: eliminar las que ya no están, actualizar existentes, crear nuevas
         List<CategoriaTorneo> categoriasExistentes = new ArrayList<>(torneo.getCategorias());
         List<CategoriaTorneoRequest> categoriasNuevas = request.getCategorias();
         
-        // Eliminar categorías que ya no están en la lista
         categoriasExistentes.forEach(catExistente -> {
             boolean sigue = categoriasNuevas.stream()
                     .anyMatch(cn -> cn.getNombre().equals(catExistente.getNombre()));
             if (!sigue) {
-                // Cancelar inscripciones de esta categoría antes de eliminar
                 List<InscripcionTorneo> inscripciones = inscripcionRepository
                         .findByCategoriaTorneoIdAndEstado(catExistente.getId(), EstadoInscripcion.ACTIVA);
                 inscripciones.forEach(i -> i.setEstado(EstadoInscripcion.CANCELADA));
@@ -109,7 +102,6 @@ public class TorneoService {
             }
         });
         
-        // Actualizar o crear categorías
         for (CategoriaTorneoRequest catReq : categoriasNuevas) {
             CategoriaTorneo categoria = categoriasExistentes.stream()
                     .filter(c -> c.getNombre().equals(catReq.getNombre()))
@@ -117,7 +109,6 @@ public class TorneoService {
                     .orElse(null);
             
             if (categoria == null) {
-                // Nueva categoría
                 categoria = new CategoriaTorneo();
                 categoria.setNombre(catReq.getNombre());
                 categoria.setTorneo(torneo);
@@ -186,7 +177,6 @@ public class TorneoService {
             throw new BusinessException("La categoria no pertenece a este torneo");
         }
 
-        // Validar que el usuario no esté inscrito en otra categoría del mismo torneo
         boolean yaInscritoEnOtraCategoria = inscripcionRepository
                 .existsByTorneoIdAndUser1IdAndEstadoAndCategoriaTorneoIdNot(
                         torneoId, usuario.getId(), EstadoInscripcion.ACTIVA, request.getCategoriaId());
@@ -194,14 +184,12 @@ public class TorneoService {
             throw new BusinessException("Ya estas inscrito en otra categoria de este torneo");
         }
         
-        // Validar que no esté inscrito en esta misma categoría
         boolean yaInscritoEnEstaCategoria = inscripcionRepository
                 .existsByTorneoIdAndUser1IdAndEstado(torneoId, usuario.getId(), EstadoInscripcion.ACTIVA);
         if (yaInscritoEnEstaCategoria) {
             throw new BusinessException("Ya estas inscrito en este torneo");
         }
 
-        // Validar cupo por categoría
         long count = inscripcionRepository.countByCategoriaTorneoIdAndEstado(request.getCategoriaId(), EstadoInscripcion.ACTIVA);
         if (count >= categoria.getMaxParejas()) {
             throw new BusinessException("La categoria '" + categoria.getNombre() + "' esta llena");
@@ -241,7 +229,6 @@ public class TorneoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Inscripcion no encontrada"));
         inscripcion.setPagado(pagado);
         InscripcionTorneo saved = inscripcionRepository.save(inscripcion);
-        // Forzar carga de relaciones lazy antes de cerrar la transacción
         saved.getTorneo().getId();
         saved.getUser1().getId();
         saved.getCategoriaTorneo().getId();
@@ -267,7 +254,6 @@ public class TorneoService {
         
         inscripcion.setNombreCompanero(nombreCompanero.trim());
         InscripcionTorneo saved = inscripcionRepository.save(inscripcion);
-        // Forzar carga de relaciones lazy antes de cerrar la transacción
         saved.getTorneo().getId();
         saved.getUser1().getId();
         saved.getCategoriaTorneo().getId();

@@ -48,7 +48,6 @@ public class AdminUsuarioController {
     public ResponseEntity<Usuario> cambiarRol(@PathVariable("id") Long id, @RequestBody String nuevoRol) {
         Usuario usuario = usuarioService.buscarPorId(id);
         usuario.setRol(nuevoRol.replace("\"", ""));
-        // Nota: deberia ir a un metodo especifico en el servicio
         return ResponseEntity.ok(usuario);
     }
 

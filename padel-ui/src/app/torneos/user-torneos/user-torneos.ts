@@ -24,7 +24,6 @@ export class UserTorneosComponent implements OnInit {
   readonly mensajeError = signal('');
   readonly isLoading = signal(true);
 
-  // Propiedades planas para ngModel
   nombreCompanero = '';
   categoriaId: number | null = null;
 
@@ -35,7 +34,6 @@ export class UserTorneosComponent implements OnInit {
   cargarTorneos() {
     this.isLoading.set(true);
     
-    // Cargar torneos activos y mis inscripciones en paralelo
     this.torneoService.getTorneosActivos().subscribe({
       next: (torneosData) => {
         this.torneoService.getMisInscripciones().subscribe({
@@ -112,8 +110,6 @@ export class UserTorneosComponent implements OnInit {
   }
 
   getPlazasDisponiblesCategoria(torneo: Torneo, categoria: CategoriaTorneo): number {
-    // Esto es una aproximación. En realidad necesitaríamos el conteo por categoría del backend.
-    // Por ahora asumimos que las inscripciones están distribuidas equitativamente o usamos el total.
     return categoria.maxParejas - (categoria.inscripcionesCount || 0);
   }
 }

@@ -45,7 +45,6 @@ public class PedidoService {
             throw new BusinessException("El carrito esta vacio");
         }
 
-        // Validar stock
         for (CarritoItem item : items) {
             Producto producto = item.getProducto();
             if (producto.getStock() < item.getCantidad()) {
@@ -54,7 +53,6 @@ public class PedidoService {
             }
         }
 
-        // Crear pedido
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
         pedido.setFecha(LocalDateTime.now());
@@ -64,7 +62,6 @@ public class PedidoService {
         for (CarritoItem item : items) {
             Producto producto = item.getProducto();
             
-            // Descontar stock
             producto.setStock(producto.getStock() - item.getCantidad());
             productoRepository.save(producto);
 
@@ -81,7 +78,6 @@ public class PedidoService {
         pedido.setTotal(total);
         Pedido saved = pedidoRepository.save(pedido);
 
-        // Vaciar carrito
         carritoRepository.deleteByUsuarioId(usuario.getId());
 
         return PedidoDto.fromEntity(saved);

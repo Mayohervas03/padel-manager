@@ -28,7 +28,7 @@ export class AdminDashboardComponent implements OnInit {
   readonly pistasActivas = signal<number>(0);
   readonly filtroTipo = signal<'TODOS' | 'RESERVA' | 'CLASE'>('TODOS');
   readonly filtroPista = signal<string>('TODAS');
-  readonly isLoading = signal<number | null>(null); // ID de elemento en proceso de anulación
+  readonly isLoading = signal<number | null>(null);
 
   readonly pistasDisponibles = computed(() => {
     const pistas = new Set(this.reservas().map(r => r.pista?.nombre).filter(Boolean));
@@ -50,7 +50,6 @@ export class AdminDashboardComponent implements OnInit {
     const pistasUnicas = new Set(items.map(i => i.pista?.nombre).filter(Boolean)).size;
     const totalItems = items.length;
     const pistasActivas = this.pistasActivas();
-    // Capacidad real: pistas activas * 10 slots diarios (aprox 9h-21h con slots de 90min)
     const capacidadTotal = pistasActivas > 0 ? pistasActivas * 10 : 1;
     const ocupacionPct = totalItems > 0 ? Math.round((totalItems / capacidadTotal) * 100) : 0;
     return { reservasCount, clasesCount, pistasUnicas, totalItems, ocupacionPct, pistasActivas };

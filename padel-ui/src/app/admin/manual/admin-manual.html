@@ -4,7 +4,6 @@
   </div>
 
   <div class="steps-container">
-    <!-- Step 1: Búsqueda inteligente -->
     <div class="step-card">
         <div class="step-header">
           <span class="step-number">1</span>
@@ -60,7 +59,6 @@
     </div>
 
     <form (ngSubmit)="crearReserva()">
-      <!-- Step 2 -->
       <div class="step-card" [class.disabled]="!usuarioSeleccionado()">
         <div class="step-header">
           <span class="step-number">2</span>
@@ -99,7 +97,6 @@
         </div>
       </div>
 
-      <!-- Step 3 -->
       <div class="step-card" [class.disabled]="!usuarioSeleccionado()">
         <div class="step-header">
           <span class="step-number">3</span>

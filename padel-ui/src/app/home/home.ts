@@ -70,7 +70,6 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit() {
-    // Inicializar animaciones de scroll si es necesario
   }
 
   scrollToSection(sectionId: string) {

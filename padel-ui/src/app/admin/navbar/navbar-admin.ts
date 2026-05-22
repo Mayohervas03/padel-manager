@@ -38,7 +38,6 @@ export class NavbarAdminComponent {
 
   toggleMobileMenu() {
     this.showMobileMenu.update(v => !v);
-    // Prevenir scroll del body cuando el menú está abierto
     document.body.style.overflow = this.showMobileMenu() ? 'hidden' : '';
   }
 
@@ -63,7 +62,6 @@ export class NavbarAdminComponent {
 
   @HostListener('window:resize')
   onResize() {
-    // Cerrar menú móvil al redimensionar a desktop
     if (window.innerWidth > 768 && this.showMobileMenu()) {
       this.closeMobileMenu();
     }

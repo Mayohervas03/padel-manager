@@ -44,7 +44,6 @@ export class AdminLogsComponent implements OnInit {
   });
 
   ngOnInit() {
-    // Logs cargados automáticamente por el servicio
   }
 
   filtrarLogs() {

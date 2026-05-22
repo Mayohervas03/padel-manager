@@ -81,10 +81,6 @@ export class PerfilComponent implements OnInit {
     });
   }
 
-  /**
-   * Formatea una fecha ISO a formato legible en español
-   * Ej: "2026-05-01" -> "Jue, 1 Mayo"
-   */
   formatearFecha(fechaStr: string): string {
     const [year, month, day] = fechaStr.split('-').map(Number);
     const fecha = new Date(Date.UTC(year, month - 1, day));
@@ -99,16 +95,10 @@ export class PerfilComponent implements OnInit {
     return `${diaSemana}, ${diaNum} ${mes}`;
   }
 
-  /**
-   * Formatea una hora de formato "HH:MM:SS" a "HH:MMh"
-   */
   formatearHora(horaStr: string): string {
     return horaStr.substring(0, 5) + 'h';
   }
 
-  /**
-   * Determina el nivel/rango del jugador basado en partidos del mes
-   */
   getRangoJugador(partidosMes: number): { titulo: string; icono: string; color: string } {
     if (partidosMes >= 20) return { titulo: 'Legend', icono: 'fa-crown', color: '#FFD700' };
     if (partidosMes >= 12) return { titulo: 'Elite', icono: 'fa-star', color: '#CCFF00' };

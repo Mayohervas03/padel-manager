@@ -80,7 +80,6 @@ public class ClaseService {
             throw new BusinessException("No se puede editar una clase que ya ha pasado.");
         }
 
-        // Solo validar disponibilidad si cambia la pista, fecha u hora
         if (!clase.getPista().getId().equals(request.getPistaId()) ||
             !clase.getFecha().equals(request.getFecha()) ||
             !clase.getHora().equals(request.getHora())) {
@@ -162,14 +161,12 @@ public class ClaseService {
             throw new BusinessException("Ya estas inscrito en esta clase.");
         }
 
-        // Control de concurrencia: recargar y verificar cupo
         Clase claseActualizada = claseRepository.findById(claseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Clase no encontrada"));
         if (claseActualizada.getAlumnos().size() >= claseActualizada.getMaxAlumnos()) {
             throw new BusinessException("La clase ya esta llena.");
         }
 
-        // Validar límite de 3 clases activas
         long activas = claseRepository.countByAlumnosIdAndFechaGreaterThanEqualAndEstadoNot(
                 usuario.getId(), LocalDate.now(), EstadoClase.CANCELADA);
         if (activas >= 3) {

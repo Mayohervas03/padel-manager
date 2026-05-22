@@ -21,7 +21,6 @@ public interface InscripcionTorneoRepository extends JpaRepository<InscripcionTo
     boolean existsByTorneoIdAndUser1IdAndEstado(Long torneoId, Long usuarioId, EstadoInscripcion estado);
     long countByTorneoIdAndEstado(Long torneoId, EstadoInscripcion estado);
 
-    // Nuevos métodos para categorías
     long countByCategoriaTorneoIdAndEstado(Long categoriaId, EstadoInscripcion estado);
     
     boolean existsByTorneoIdAndUser1IdAndEstadoAndCategoriaTorneoIdNot(

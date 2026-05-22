@@ -59,11 +59,9 @@ export class MisComprasComponent implements OnInit {
     const margin = 20;
     let y = 20;
 
-    // Header background
     doc.setFillColor(10, 25, 47);
     doc.rect(0, 0, pageWidth, 50, 'F');
 
-    // Logo SVG
     try {
       const svgResponse = await fetch('logo.svg');
       const svgText = await svgResponse.text();
@@ -88,10 +86,8 @@ export class MisComprasComponent implements OnInit {
       }
       URL.revokeObjectURL(svgUrl);
     } catch {
-      // Fallback sin logo
     }
 
-    // Título del recibo
     doc.setTextColor(204, 255, 0);
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
@@ -102,7 +98,6 @@ export class MisComprasComponent implements OnInit {
     doc.setFont('helvetica', 'normal');
     doc.text('Purchase Receipt', margin + 38, y + 16);
 
-    // Datos de la empresa (derecha)
     doc.setTextColor(180, 180, 180);
     doc.setFontSize(8);
     doc.text('Calle del Deporte, 22', pageWidth - margin, y + 4, { align: 'right' });
@@ -111,7 +106,6 @@ export class MisComprasComponent implements OnInit {
 
     y = 65;
 
-    // Datos del comprador
     doc.setTextColor(10, 25, 47);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
@@ -124,13 +118,11 @@ export class MisComprasComponent implements OnInit {
     doc.text(pedido.usuarioEmail || 'N/A', margin, y);
     y += 12;
 
-    // Separador entre Buyer y Order
     doc.setDrawColor(220, 220, 220);
     doc.setLineWidth(0.3);
     doc.line(margin, y - 2, pageWidth - margin, y - 2);
     y += 8;
 
-    // Info del pedido
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.text(`Order #${pedido.id}`, margin, y);
@@ -143,13 +135,11 @@ export class MisComprasComponent implements OnInit {
     doc.text(`Status: ${this.translateEstado(pedido.estado)}`, margin, y);
     y += 15;
 
-    // Línea separadora
     doc.setDrawColor(204, 255, 0);
     doc.setLineWidth(0.5);
     doc.line(margin, y, pageWidth - margin, y);
     y += 10;
 
-    // Tabla de items
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.text('Product', margin, y);
@@ -180,7 +170,6 @@ export class MisComprasComponent implements OnInit {
     doc.line(margin, y, pageWidth - margin, y);
     y += 10;
 
-    // Total con fondo destacado
     const totalBoxY = y - 4;
     const totalBoxH = 12;
     doc.setFillColor(245, 247, 250);
@@ -195,7 +184,6 @@ export class MisComprasComponent implements OnInit {
 
     y += 30;
 
-    // Footer
     doc.setDrawColor(10, 25, 47);
     doc.setLineWidth(0.5);
     doc.line(margin, y, pageWidth - margin, y);

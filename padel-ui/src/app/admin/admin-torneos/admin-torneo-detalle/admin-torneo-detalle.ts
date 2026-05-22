@@ -24,7 +24,6 @@ export class AdminTorneoDetalleComponent implements OnInit {
   private readonly activityLog = inject(ActivityLogService);
   private readonly confirmDialog = inject(ConfirmDialogService);
 
-  // Modal de edición
   readonly companeroEditData = signal<CompaneroEditData | null>(null);
   readonly isLoadingAction = signal<number | null>(null);
 
@@ -116,7 +115,6 @@ export class AdminTorneoDetalleComponent implements OnInit {
     return this.torneo()?.categorias?.reduce((sum, cat) => sum + (cat.maxParejas || 0), 0) || 0;
   }
 
-  // --- EDITAR COMPAÑERO ---
   abrirModalEditar(insc: InscripcionTorneo) {
     this.companeroEditData.set({
       id: insc.id,
@@ -156,7 +154,6 @@ export class AdminTorneoDetalleComponent implements OnInit {
     });
   }
 
-  // --- ELIMINAR PAREJA ---
   eliminarPareja(insc: InscripcionTorneo) {
     this.confirmDialog.confirm({
       title: 'Delete Pair',

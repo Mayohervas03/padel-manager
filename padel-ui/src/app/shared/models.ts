@@ -168,9 +168,6 @@ export interface HorasStats {
   readonly [hora: string]: number;
 }
 
-// =====================================================
-// TIENDA / SHOP MODELS
-// =====================================================
 
 export type CategoriaProducto = 'PALAS' | 'ROPA' | 'ACCESORIOS';
 

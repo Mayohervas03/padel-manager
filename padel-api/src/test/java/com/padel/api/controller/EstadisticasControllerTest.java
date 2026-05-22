@@ -96,6 +96,5 @@ class EstadisticasControllerTest {
         estadisticasController.getOcupacion(desde, hasta);
 
         // Verifica que el servicio recibió exactamente esas fechas
-        // (Mockito ya verifica esto implícitamente con el when)
     }
 }

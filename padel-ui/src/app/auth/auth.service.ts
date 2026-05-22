@@ -52,9 +52,6 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
-  /**
-   * Decodifica el payload de un token JWT y devuelve el objeto.
-   */
   private decodeToken(token: string): any {
     try {
       const payload = token.split('.')[1];
@@ -65,10 +62,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Verifica si el token actual ha expirado.
-   * Devuelve true si el token existe y NO ha expirado.
-   */
   isTokenValid(): boolean {
     const token = this.getToken();
     if (!token) return false;
@@ -76,7 +69,6 @@ export class AuthService {
     const decoded = this.decodeToken(token);
     if (!decoded || !decoded.exp) return false;
 
-    // exp está en segundos, Date.now() en milisegundos
     const now = Math.floor(Date.now() / 1000);
     return decoded.exp > now;
   }
@@ -106,9 +98,6 @@ export class AuthService {
     this.nombreSubject.next(null);
   }
 
-  /**
-   * Cierra sesión y redirige al login con un mensaje opcional.
-   */
   logoutAndRedirect(message?: string): void {
     this.logout();
     const queryParams = message ? { message } : undefined;

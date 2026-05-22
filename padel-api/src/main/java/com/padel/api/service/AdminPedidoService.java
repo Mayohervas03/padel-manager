@@ -36,7 +36,6 @@ public class AdminPedidoService {
             throw new BusinessException("Estado no válido. Valores permitidos: PENDIENTE, COMPLETADO, CANCELADO");
         }
 
-        // Validar transiciones de estado
         Pedido.EstadoPedido estadoActual = pedido.getEstado();
 
         if (estadoActual == Pedido.EstadoPedido.COMPLETADO) {

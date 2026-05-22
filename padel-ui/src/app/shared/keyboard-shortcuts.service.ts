@@ -32,7 +32,6 @@ export class KeyboardShortcutsService implements OnDestroy {
   }
 
   private registerDefaults() {
-    // Navegación rápida con g + tecla
     this.register('g+d', 'Go to Dashboard (Schedule)', () => {
       this.router.navigate(['/admin/dashboard']);
     });
@@ -52,7 +51,6 @@ export class KeyboardShortcutsService implements OnDestroy {
       this.router.navigate(['/admin/logs']);
     });
 
-    // Help
     this.register('?', 'Show/Hide shortcut help', () => {
       this.showHelp.update(v => !v);
     });
@@ -73,10 +71,8 @@ export class KeyboardShortcutsService implements OnDestroy {
   }
 
   private handleKeydown(event: KeyboardEvent) {
-    // No interceptar si el usuario está escribiendo en un input/textarea
     if (this.isInputActive(event.target)) {
       if (event.key === 'Escape') {
-        // Cerrar dropdowns al presionar ESC en inputs también
         this.closeDropdowns();
       }
       return;
@@ -84,14 +80,12 @@ export class KeyboardShortcutsService implements OnDestroy {
 
     const key = event.key.toLowerCase();
 
-    // ESC cierra todo
     if (key === 'escape') {
       this.closeDropdowns();
       this.showHelp.set(false);
       return;
     }
 
-    // Atajos con modificadores
     if (event.ctrlKey || event.altKey || event.metaKey) {
       const combo = this.buildCombo(event);
       const shortcut = this.shortcuts.get(combo);
@@ -102,7 +96,6 @@ export class KeyboardShortcutsService implements OnDestroy {
       }
     }
 
-    // Atajos de secuencia (g + tecla)
     if (key === 'g') {
       this.sequenceBuffer = 'g';
       this.resetSequenceTimer();
@@ -121,14 +114,12 @@ export class KeyboardShortcutsService implements OnDestroy {
       return;
     }
 
-    // Atajo simple
     if (key === '?') {
       event.preventDefault();
       this.showHelp.update(v => !v);
       return;
     }
 
-    // Reset sequence buffer
     if (this.sequenceBuffer) {
       this.sequenceBuffer = '';
       clearTimeout(this.sequenceTimer);
@@ -158,7 +149,6 @@ export class KeyboardShortcutsService implements OnDestroy {
   }
 
   private closeDropdowns() {
-    // Emitir evento para que los componentes cierren sus dropdowns
     document.dispatchEvent(new CustomEvent('admin:close-dropdowns'));
   }
 

@@ -1,5 +1,4 @@
 <div class="tienda-container">
-  <!-- HEADER -->
   <header class="tienda-header">
     <div class="header-content">
       <div class="header-title">
@@ -26,9 +25,7 @@
     </div>
   </header>
 
-  <!-- CONTROLES: Búsqueda + Filtros + Ordenamiento -->
   <div class="controles-container">
-    <!-- Buscador -->
     <div class="buscador-wrapper">
       <i class="fas fa-search"></i>
       <input
@@ -45,7 +42,6 @@
       }
     </div>
 
-    <!-- Filtros de categoría -->
     <nav class="filtros-nav">
       @for (cat of categorias; track cat.value) {
         <button
@@ -57,7 +53,6 @@
       }
     </nav>
 
-    <!-- Ordenamiento -->
     <div class="ordenamiento-wrapper">
       <i class="fas fa-sort"></i>
       <select
@@ -72,12 +67,10 @@
     </div>
   </div>
 
-  <!-- RESULTS COUNT -->
   <div class="resultados-info">
     <span>{{ productosFiltrados().length }} product{{ productosFiltrados().length === 1 ? '' : 's' }}</span>
   </div>
 
-  <!-- PRODUCTOS GRID -->
   @if (isLoading()) {
     <div class="productos-grid">
       @for (i of [1,2,3,4,5,6]; track i) {
@@ -163,7 +156,6 @@
   }
 </div>
 
-<!-- CARRITO SIDEBAR -->
 @if (carritoVisible()) {
   <div class="carrito-overlay" (click)="toggleCarrito()"></div>
 

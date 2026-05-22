@@ -119,7 +119,6 @@ export class ReservasComponent implements OnInit {
 
     this.cargando.set(true);
 
-    // Payload actualizado: enviamos pistaId como campo plano (DTO del backend)
     const reservaData = {
       pistaId: pista.id,
       fecha,
@@ -132,7 +131,6 @@ export class ReservasComponent implements OnInit {
         this.resetearFlujo();
       },
       error: (err) => {
-        // El interceptor ya normaliza el error para que err.error sea un string
         this.notificationService.error(err.error || 'Could not confirm booking. The court may no longer be available.');
       }
     }).add(() => {

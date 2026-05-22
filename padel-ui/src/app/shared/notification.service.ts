@@ -19,26 +19,22 @@ export class NotificationService {
   private readonly _notifications = signal<Toast[]>([]);
   readonly notifications = this._notifications.asReadonly();
 
-  // Deduplicacion: evita toasts duplicados dentro de una ventana de tiempo
   private readonly recentMessages = new Map<string, number>();
   private readonly dedupWindowMs = 3000;
 
   private isDuplicate(message: string): boolean {
     const now = Date.now();
 
-    // Limpiar mensajes antiguos
     for (const [msg, time] of this.recentMessages.entries()) {
       if (now - time > this.dedupWindowMs) {
         this.recentMessages.delete(msg);
       }
     }
 
-    // Si el mensaje ya existe en la ventana, es duplicado
     if (this.recentMessages.has(message)) {
       return true;
     }
 
-    // Registrar nuevo mensaje
     this.recentMessages.set(message, now);
     return false;
   }
@@ -63,10 +59,6 @@ export class NotificationService {
     this.add(message, 'success', duration);
   }
 
-  /**
-   * Acepta un string directo o un objeto de error HTTP (err.error, err, etc.).
-   * Normaliza automaticamente los mensajes de validacion del backend.
-   */
   error(messageOrError: string | any, duration?: number): void {
     const msg = typeof messageOrError === 'string'
       ? messageOrError

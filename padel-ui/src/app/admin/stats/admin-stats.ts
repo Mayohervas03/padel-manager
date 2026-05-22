@@ -28,7 +28,6 @@ export class AdminStatsComponent implements OnInit {
   readonly pieChartData = signal<ChartConfiguration<'doughnut'>['data'] | undefined>(undefined);
   readonly pieChartOptions: ChartConfiguration<'doughnut'>['options'] = { responsive: true, maintainAspectRatio: false };
 
-  // Datos raw para KPIs
   readonly ocupacionRaw = signal<OcupacionStats | null>(null);
   readonly ingresosRaw = signal<IngresoStats[] | null>(null);
   readonly horasRaw = signal<HorasStats | null>(null);

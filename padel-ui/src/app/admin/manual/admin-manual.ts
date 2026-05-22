@@ -35,7 +35,6 @@ export class AdminManualComponent implements OnInit, OnDestroy {
   readonly mensajeExito = signal('');
   readonly isProcessing = signal(false);
 
-  // Writable fields for form binding (two-way without signals)
   fechaValue = new Date().toISOString().split('T')[0];
   horaValue = '09:00';
   pistaIdValue: number | null = null;

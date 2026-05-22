@@ -31,7 +31,6 @@ public class UsuarioController {
                 .filter(u -> u.getEmail().equals(usuario.getEmail()))
                 .findFirst()
                 .orElseGet(() -> {
-                    // Nota: esto es un workaround temporal, deberia ir a un servicio
                     return usuario;
                 });
     }

@@ -68,7 +68,6 @@ public class PistaService {
                 " reserva(s) activa(s) futura(s). Cancela las reservas primero.");
         }
         
-        // Soft delete de reservas pasadas (por integridad de historial)
         reservaRepository.cancelarReservasActivasByPistaId(id);
         
         pistaRepository.deleteById(id);

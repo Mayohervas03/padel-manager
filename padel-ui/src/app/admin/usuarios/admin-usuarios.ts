@@ -33,10 +33,9 @@ export class AdminUsuariosComponent implements OnInit {
   readonly usuarios = signal<Usuario[]>([]);
   readonly usuariosFiltrados = signal<Usuario[]>([]);
   readonly filtro = signal('');
-  readonly isLoading = signal<number | null>(null); // ID de usuario en proceso
+  readonly isLoading = signal<number | null>(null);
   readonly usuarioEditando = signal<Usuario | null>(null);
 
-  // Paginación
   readonly paginaActual = signal(1);
   readonly itemsPorPagina = signal(10);
   readonly opcionesItemsPorPagina = [10, 25, 50];

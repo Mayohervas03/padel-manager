@@ -26,7 +26,6 @@ export class LoginComponent implements OnInit {
   readonly showPassword = signal(false);
 
   ngOnInit() {
-    // Verificar si venimos de una sesion expirada
     this.route.queryParams.subscribe(params => {
       if (params['message']) {
         this.sessionExpiredMessage.set(params['message']);

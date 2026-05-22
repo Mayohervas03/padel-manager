@@ -1,6 +1,5 @@
 <header class="main-navbar" *ngIf="!hideNavbar()" [class.scrolled]="isScrolled()">
   <div class="navbar-inner">
-    <!-- Logo -->
     <a routerLink="/home" class="navbar-logo">
       <svg class="logo-svg" width="40" height="40" viewBox="0 0 680 680" role="img" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -20,7 +19,6 @@
       <span class="logo-text">ÉLITE PADEL</span>
     </a>
 
-    <!-- Center Navigation -->
     <nav class="navbar-menu">
       @if (authService.isLoggedIn()) {
         <a routerLink="/home" routerLinkActive="active" class="nav-item">Home</a>
@@ -37,7 +35,6 @@
       }
     </nav>
 
-    <!-- Right: User -->
     <div class="navbar-user">
       @if (authService.isLoggedIn()) {
         <a routerLink="/perfil" class="user-pill" title="My Profile">
@@ -50,7 +47,6 @@
       }
     </div>
 
-    <!-- Mobile Toggle -->
     <button class="mobile-toggle" (click)="showMobileMenu.set(!showMobileMenu())" [class.active]="showMobileMenu()">
       <span></span>
       <span></span>
@@ -58,7 +54,6 @@
     </button>
   </div>
 
-  <!-- Mobile Menu -->
   @if (showMobileMenu()) {
     <div class="mobile-menu">
       @if (authService.isLoggedIn()) {

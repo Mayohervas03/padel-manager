@@ -1,6 +1,5 @@
 <div class="perfil-dashboard">
   
-  <!-- LOADING STATE -->
   @if (isLoading()) {
     <div class="loading-overlay">
       <div class="loading-content">
@@ -10,7 +9,6 @@
     </div>
   }
 
-  <!-- ERROR STATE -->
   @if (!isLoading() && hayError()) {
     <div class="error-overlay">
       <div class="error-content">
@@ -24,10 +22,8 @@
     </div>
   }
 
-  <!-- MAIN CONTENT -->
   @if (!isLoading() && !hayError()) {
     
-    <!-- USER HERO CARD -->
     <section class="hero-card">
       <div class="hero-bg-glow"></div>
       
@@ -85,7 +81,6 @@
         </div>
       </div>
 
-      <!-- PASSWORD FORM -->
       @if (showPasswordForm()) {
         <div class="password-panel">
           <div class="password-panel-content">
@@ -133,10 +128,8 @@
       }
     </section>
 
-    <!-- ACTIVITY GRID -->
     <section class="activity-grid">
       
-      <!-- MIS RESERVAS -->
       <div class="activity-column">
         <div class="column-header">
           <div class="column-icon icon-reservas">
@@ -271,7 +264,6 @@
         </div>
       </div>
 
-      <!-- MIS CLASES -->
       <div class="activity-column">
         <div class="column-header">
           <div class="column-icon icon-clases">
@@ -410,7 +402,6 @@
         </div>
       </div>
 
-      <!-- MIS TORNEOS -->
       <div class="activity-column">
         <div class="column-header">
           <div class="column-icon icon-torneos">

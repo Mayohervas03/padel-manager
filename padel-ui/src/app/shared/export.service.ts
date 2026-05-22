@@ -10,14 +10,11 @@ export class ExportService {
       return;
     }
 
-    // Obtener headers de las claves del primer objeto si no se proporcionan
     const csvHeaders = headers || Object.keys(data[0]);
     
-    // Crear filas de datos
     const csvRows = data.map(row => {
       return csvHeaders.map(header => {
         const value = row[header];
-        // Escapar comillas y envolver en comillas si es necesario
         const stringValue = value === null || value === undefined ? '' : String(value);
         if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
           return `"${stringValue.replace(/"/g, '""')}"`;
@@ -26,10 +23,8 @@ export class ExportService {
       }).join(',');
     });
 
-    // Crear contenido CSV con BOM para soportar caracteres especiales en Excel
     const csvContent = '\uFEFF' + [csvHeaders.join(','), ...csvRows].join('\n');
 
-    // Crear blob y descargar
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);

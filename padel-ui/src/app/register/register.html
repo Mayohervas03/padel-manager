@@ -6,7 +6,6 @@
 
   <div class="auth-container">
     <div class="auth-card">
-      <!-- Logo -->
       <div class="auth-brand">
         <svg class="brand-logo-svg" width="90" height="90" viewBox="0 0 680 680" role="img" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -29,7 +28,6 @@
         </div>
       </div>
 
-      <!-- Alerts -->
       @if (errorMessage()) {
         <div class="alert alert-error">
           <i class="fas fa-times-circle"></i>
@@ -43,7 +41,6 @@
         </div>
       }
 
-      <!-- Form -->
       <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="auth-form">
         <div class="form-group">
           <label for="nombre">Full Name</label>

@@ -32,12 +32,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Detectar sesión expirada o acceso no autorizado
       if (error.status === 401 || error.status === 403) {
         console.warn(`[ErrorInterceptor] Error ${error.status} detectado. Cerrando sesión...`);
         authService.logoutAndRedirect('Your session has expired, please log in again.');
         
-        // Creamos un error específico para informar al componente
         const sessionError = {
           status: error.status,
           statusText: error.statusText,
@@ -56,17 +54,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       const errorMessage = extractErrorMessage(error);
 
-      // Mostramos toast de error para feedback visual global
       notificationService.error(errorMessage, 5000);
 
-      // Creamos un objeto de error estandarizado
       const standardizedError = {
         status: error.status,
         statusText: error.statusText,
         message: errorMessage,
-        // Mantenemos compatibilidad: err.error será un string con el mensaje
         error: errorMessage,
-        // Y también como objeto para quien use err.error.message
         errorObject: {
           message: errorMessage,
           status: error.status,

@@ -31,7 +31,6 @@ export class AdminTorneosComponent implements OnInit {
   readonly isLoading = signal<number | null>(null);
   readonly mostrarFormulario = signal(false);
 
-  // Formulario inline
   torneoEditando: {
     id?: number;
     titulo: string;
@@ -45,7 +44,6 @@ export class AdminTorneosComponent implements OnInit {
     fechaCierreInscripcion: string;
   } = this.resetTorneo();
 
-  // Paginación
   readonly paginaActual = signal(1);
   readonly itemsPorPagina = signal(10);
   readonly opcionesItemsPorPagina = [10, 25, 50];
@@ -153,7 +151,6 @@ export class AdminTorneosComponent implements OnInit {
       fechaCierreInscripcion: torneo.fechaCierreInscripcion || ''
     };
     this.mostrarFormulario.set(true);
-    // Scroll al formulario
     setTimeout(() => {
       document.querySelector('.form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 50);

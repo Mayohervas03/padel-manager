@@ -20,7 +20,6 @@ export class AdminLayoutComponent implements OnInit {
   readonly keyboardShortcuts = inject(KeyboardShortcutsService);
 
   ngOnInit() {
-    // El servicio de atajos se inicializa automáticamente al inyectarse
   }
 
   logout() {

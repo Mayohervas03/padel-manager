@@ -52,7 +52,6 @@ export class ActivityLogService {
         this.saveLogs();
       },
       error: () => {
-        // Fallback: mantener localStorage si backend no disponible
       }
     });
   }
@@ -72,7 +71,6 @@ export class ActivityLogService {
     this.logs.update(current => [newLog, ...current].slice(0, 1000));
     this.saveLogs();
 
-    // Sync to backend
     this.http.post(`${this.apiUrl}/admin/logs`, {
       action,
       entityType: entity,
@@ -80,7 +78,6 @@ export class ActivityLogService {
       entityId
     }).subscribe({
       error: () => {
-        // Silently fail; log is already saved locally
       }
     });
   }
@@ -93,7 +90,6 @@ export class ActivityLogService {
         this.nextId = 1;
       },
       error: () => {
-        // Fallback: clear local only
         this.logs.set([]);
         localStorage.removeItem(this.storageKey);
         this.nextId = 1;

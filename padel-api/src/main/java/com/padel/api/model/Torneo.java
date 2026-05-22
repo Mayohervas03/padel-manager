@@ -51,9 +51,6 @@ public class Torneo {
     @Transient
     private Integer inscripcionesCount;
 
-    /**
-     * Calcula el cupo total como la suma de maxParejas de todas las categorias.
-     */
     public int getMaxParejas() {
         if (categorias == null || categorias.isEmpty()) {
             return 0;

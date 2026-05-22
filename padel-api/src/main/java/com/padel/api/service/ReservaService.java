@@ -67,7 +67,6 @@ public class ReservaService {
         var pista = pistaRepository.findById(request.getPistaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pista no encontrada"));
 
-        // Verificar que no existe una reserva activa en ese slot
         boolean ocupada = reservaRepository.existsByPistaIdAndFechaAndHoraAndEstadoIn(
                 request.getPistaId(), request.getFecha(), request.getHora(), ESTADOS_ACTIVOS);
         if (ocupada) {

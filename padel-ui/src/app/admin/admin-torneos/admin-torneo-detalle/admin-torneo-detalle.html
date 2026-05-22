@@ -1,6 +1,5 @@
 @if (torneo(); as t) {
   <div class="admin-torneo-detalle">
-    <!-- Header -->
     <div class="page-header-bar">
       <div class="header-left">
         <a [routerLink]="['/admin/torneos']" class="btn-glass btn-sm" aria-label="Back to tournament list">
@@ -23,7 +22,6 @@
     </div>
 
     <div class="detalle-content">
-      <!-- Categories with occupancy -->
       @if (t.categorias && t.categorias.length > 0) {
         <div class="categorias-ocupacion">
           <h3><i class="fas fa-layer-group"></i> Categories</h3>
@@ -46,7 +44,6 @@
         </div>
       }
 
-      <!-- Filter Pills -->
       <div class="filters-bar">
         <span class="filters-label"><i class="fas fa-filter" aria-hidden="true"></i> Filter Category:</span>
         @for (cat of categoriasDisponibles(); track cat) {
@@ -59,7 +56,6 @@
         }
       </div>
 
-      <!-- Tabla -->
       <div class="admin-table-container">
         <div class="table-responsive">
           <table class="admin-table">
@@ -132,7 +128,6 @@
       </div>
     </div>
 
-    <!-- Modal Editar Compañero -->
     @if (companeroEditData(); as data) {
       <app-editar-companero-dialog
         [data]="data"

@@ -19,7 +19,6 @@ export class PedidoService {
     return this.http.post<Pedido>(`${this.apiUrl}/pedidos/checkout`, {});
   }
 
-  // Admin endpoints
   getAllPedidos(): Observable<Pedido[]> {
     return this.http.get<Pedido[]>(`${this.apiUrl}/admin/pedidos`);
   }
